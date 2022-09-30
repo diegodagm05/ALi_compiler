@@ -21,35 +21,41 @@ reserved = {
     'read': 'READ',
     'for': 'FOR',
     'until': 'UNTIL',
-    'while': 'WHILE'
+    'while': 'WHILE',
+    'read': 'READ',
 }
 # TODO: List of token names
 tokens = (
-   'CTE_I', 'CTE_F', 'CTE_STRING', 'ID', 'DIFFERENT'
+   'I_CONST', 'F_CONST', 'C_CONST', 'STRING_CONST', 'ID', 'DIFFERENT', 'EQUAL', 'AND', 'OR', 'GREATER_EQ', 'LESS_EQ'
 ) + tuple(reserved.values())
 
 # literal symbols
-literals = [';', ',', ':', '.', '{', '}', '(', ')', '[', ']', '=', '+', '-', '*', '/', '>', '<', '!', '&', '|']
+literals = [';', ',', ':', '.', '{', '}', '(', ')', '[', ']', '=', '+', '-', '*', '/', '>', '<', '!']
 
 
 # Token regular expressions
-t_CTE_STRING = r'\"[0-9A-Za-z_ ]*\"'
+t_STRING_CONST = r'\"(\w+|\s)+\"'
 t_DIFFERENT = r'\!\='
+t_EQUAL = r'\=\='
+t_AND = r'\&\&'
+t_OR = r'\|\|'
+t_GREATER_EQ = r'\>\='
+t_LESS_EQ = r'\<\='
 
 #  Complex tokens
-def t_CTE_F(t):
+def t_F_CONST(t):
     r'\d+\.\d+'
     t.value = float(t.value)
     return t
     
-def t_CTE_I(t):
+def t_I_CONST(t):
     r'\d+'
     t.value = int(t.value)
     return t
 
-def t_CTE_C(t):
+def t_C_CONST(t):
     r'\'[0-9A-Za-z_ ]{1}\''
-    t.value = chr(t.value)
+    t.value = list(t.value)[1]
     return t
 
 
@@ -80,7 +86,7 @@ lexer = lex.lex()
 
 def test():
     print('Testing')
-    file = open('hello_world.ld')
+    file = open('./test_files/helloWorld.al')
     input_str = file.read()
     file.close()
     lexer.input(input_str)
