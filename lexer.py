@@ -34,7 +34,7 @@ literals = [';', ',', ':', '.', '{', '}', '(', ')', '[', ']', '=', '+', '-', '*'
 
 
 # Token regular expressions
-t_STRING_CONST = r'\"(\w+|\s)+\"'
+t_STRING_CONST = r'\"([^\\]|(\\.))*?\"'
 t_DIFFERENT = r'\!\='
 t_EQUAL = r'\=\='
 t_AND = r'\&\&'
@@ -74,6 +74,9 @@ def t_newline(t):
 
 # A string containing ignored characters (spaces and tabs)
 t_ignore  = ' \t'
+# Ignore comments
+t_ignore_COMMENT = r'\/\/.*'
+
 
 # Error handling rule
 def t_error(t):
