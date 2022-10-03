@@ -12,7 +12,7 @@ float func bar(param1 : int, param2 : float) {
     return param1 * param2;
 }
 
-void func main() {
+func main() {
     // First, declare your variables
     var a, k : int;
     var b, m : float;
