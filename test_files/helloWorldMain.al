@@ -1,4 +1,4 @@
-void func main() {
+func main() {
     // First, declare your variables
     var a, k : int;
     var b, m : float;

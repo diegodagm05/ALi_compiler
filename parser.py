@@ -22,7 +22,7 @@ def p_g_vf(p):
             | functions'''
 
 def p_main(p):
-    '''main : VOID FUNC MAIN '(' ')' '{' function_block '}' '''
+    '''main : FUNC MAIN '(' ')' '{' function_block '}' '''
 
 # ----------------------
 # STATEMENTS RULES 
