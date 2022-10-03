@@ -77,10 +77,6 @@ def p_content(p):
     '''content : vars s
                | empty'''
 
-def p_ret(p):
-    '''ret : ID
-           | expression'''
-
 def p_void_function(p):
     '''void_function : VOID FUNC ID '(' p ')' '{' content '}' '''
 
