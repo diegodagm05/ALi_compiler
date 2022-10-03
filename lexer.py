@@ -11,6 +11,7 @@ reserved = {
     'float': 'FLOAT',
     'char': 'CHAR',
     'array': 'ARRAY',
+    'bool': 'BOOL',
     'void': 'VOID',
     'func': 'FUNC',
     'main': 'MAIN',

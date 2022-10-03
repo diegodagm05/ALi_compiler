@@ -1,4 +1,4 @@
-var PI : float = 3.1416
+var PI : float = 3.1416;
 
 int func foo() {
     return 3;

@@ -30,22 +30,22 @@ def p_g_functions(p):
                    | functions'''
 
 def p_main(p):
-    '''main : VOID FUNC MAIN ( ) { vars s }
-            | VOID FUNC MAIN ( ) { }'''
+    '''main : VOID FUNC MAIN '(' ')' '{' vars s '}'
+            | VOID FUNC MAIN '(' ')' '{' '}' '''
 
 # ----------------------
 # STATEMENTS RULES 
 
 def p_vars(p):
-    '''vars : VAR ids : type ; vars
-            | VAR ids : type ;'''
+    '''vars : VAR ids ':' type ';' vars
+            | VAR ids ':' type ';' '''
 
 def p_s(p):
     '''s : statements s
          | statements'''
 
 def p_ids(p):
-    '''ids : ID , ids
+    '''ids : ID ',' ids
            | ID'''
 
 def p_type(p):
@@ -56,8 +56,8 @@ def p_type(p):
             | array_type'''
 
 def p_array_type(p):
-    '''array_type : ARRAY [ expression ]
-                  | ARRAY [ expression ] [ expression ]'''
+    '''array_type : ARRAY '[' expression ']'
+                  | ARRAY '[' expression ']' '[' expression ']' '''
 
 def p_functions(p):
     '''functions : return_function functions
@@ -66,7 +66,7 @@ def p_functions(p):
                  | void_function'''
 
 def p_return_function(p):
-    '''return_function : type FUNC ID ( p ) { content RETURN ret }'''
+    '''return_function : type FUNC ID '(' p ')' '{' content RETURN ret '}' '''
 
 def p_p(p):
     '''p : params
@@ -81,66 +81,66 @@ def p_ret(p):
            | expression'''
 
 def p_void_function(p):
-    '''void_function : VOID FUNC ID ( p ) { content }'''
+    '''void_function : VOID FUNC ID '(' p ')' '{' content '}' '''
 
 def p_statements(p):
-    '''statements : assigment
+    '''statements : assignment
                   | array_assignment
-                  | call_to_fun ;
-                  | write
+                  | call_to_fun ';'
+                  | write 
                   | conditionals
                   | cycles
                   | read'''
 
 def p_conditionals(p):
-    '''conditionals : IF ( expression ) interior_block cond_in_p ELSE interior_block'''
+    '''conditionals : IF '(' expression ')' interior_block cond_in_p ELSE interior_block'''
 
 def p_cond_in_p(p):
     '''cond_in_p : cond_in
                  | empty'''
 
 def p_cond_in(p):
-    '''cond_in : ELSE IF ( expression ) interior_block cond_in
-               | ELSE IF ( expression ) interior_block'''
+    '''cond_in : ELSE IF '(' expression ')' interior_block cond_in
+               | ELSE IF '(' expression ')' interior_block'''
 
 def p_interior_block(p):
-    '''interior_block : { }
-                      | { s }'''
+    '''interior_block : '{' '}'
+                      | '{' s '}' '''
 
 def p_params(p):
-    '''params : ID : type , params
-              | ID : type'''
+    '''params : ID ':' type ',' params
+              | ID ':' type'''
 
 def p_assignment(p):
-    '''assignment : ID = expression ;
-                  | ID array_type = expression'''
+    '''assignment : ID '=' expression ';'
+                  | ID array_type '=' expression'''
 
 def p_array_assignment(p):
-    '''array_assignment : ID = array_assign_type ;'''
-
+    '''array_assignment : ID '=' array_assign_type ';' '''
+ 
 def p_array_assign_type(p): 
     '''array_assign_type : 1d_array_init
                          | 2d_array_init'''
 
 def p_1d_array_init(p):
-    '''1d_array_init : [ exp_1d ]'''
+    '''1d_array_init : '[' exp_1d ']' '''
 
 def p_exp_1d(p):
-    '''exp_1d : expression , exp1_d
+    '''exp_1d : expression ',' exp_1d
               | expression'''
 
 def p_2d_array_init(p):
-    '''2d_array_init : [ exp_2d ]'''
+    '''2d_array_init : '[' exp_2d ']' '''
 
 def p_exp_2d(p):
-    '''exp_2d : 1d_array_init , exp_2d
+    '''exp_2d : 1d_array_init ',' exp_2d
               | 1d_array_init'''
 
 def p_write(p):
-    '''write : PRINT ( write_p ) ;'''
-
+    '''write : PRINT '(' write_p ')' ';' '''
+ 
 def p_write_p(p):
-    '''write_p : write_param , write_p 
+    '''write_p : write_param ',' write_p 
                | write_param'''
 
 def p_write_param(p):
@@ -148,17 +148,17 @@ def p_write_param(p):
                    | ID'''
 
 def p_read(p):
-    '''read : READ ( read_p ) ;'''
-
+    '''read : READ '(' read_p ')' ';' '''
+ 
 def p_read_p(p):
-    '''read_p : STRING_CONST , read_p
+    '''read_p : STRING_CONST ',' read_p
               | STRING_CONST'''
 
 def p_call_to_fun(p):
-    '''call_to_fun : ID ( )
-                   | ID ( call_p )'''
+    '''call_to_fun : ID '(' ')'
+                   | ID '(' call_p ')' '''
 def p_call_p(p):
-    '''call_p : expression , call_p
+    '''call_p : expression ',' call_p
               | expression'''
 
 def p_cycles(p):
@@ -166,11 +166,11 @@ def p_cycles(p):
                 | for'''
 
 def p_array_indexing(p):
-    '''array_indexing : ID [ expression ]
-                      | ID [ expression ] [ expression ]'''
+    '''array_indexing : ID '[' expression ']' 
+                      | ID '[' expression ']'  '[' expression ']' '''
 
 def p_while(p):
-    '''while : WHILE ( expression ) interior_block'''
+    '''while : WHILE '(' expression ')' interior_block'''
 
 def p_for(p):
     '''for : FOR assignment UNTIL expression interior_block'''
@@ -189,11 +189,11 @@ def p_expression_p(p):
 def p_ex(p):
     '''ex : exp
           | exp op exp
-          | ! exp'''
+          | '!' exp'''
 
 def p_op(p):
-    '''op : >
-          | <
+    '''op : '>'
+          | '<'
           | GREATER_EQ
           | LESS_EQ
           | EQUAL
@@ -204,19 +204,19 @@ def p_exp(p):
            | term op_1 term'''
 
 def p_op_1(p):
-    '''op_1 : +
-            | -'''
+    '''op_1 : '+'
+            | '-' '''
 
 def p_term(p):
     '''term : factor
             | factor op_2 factor'''
 
 def p_op_2(p):
-    '''op_2 : *
-            | /'''
+    '''op_2 : '*'
+            | '/' '''
 
 def p_factor(p):
-    '''factor : ( expression ) 
+    '''factor : '(' expression ')'
               | ID
               | array_indexing
               | call_to_fun
@@ -239,3 +239,15 @@ def p_error(p):
     raise Exception(p)
 
 parser = yacc.yacc()
+
+def test():
+    print('Enter file name to be tested (with .ld extension)')
+    filename = input()
+    file = open(filename)
+    input_str = file.read()
+    file.close()
+    parser.parse(input_str)
+    print('Accepted code')
+
+if __name__ == "__main__":
+    test()
