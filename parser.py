@@ -1,7 +1,14 @@
+# ------------------------------------------------------------
+# parser.py
+#
+# parser for ALi language
+# ------------------------------------------------------------
 import ply.yacc as yacc
 
 from lexer import tokens
 
+# ----------------------
+# GLOBAL RULES 
 def p_programa(p):
     '''programa : global_vars_funs main
                 | main'''
@@ -25,6 +32,9 @@ def p_g_functions(p):
 def p_main(p):
     '''main : VOID FUNC MAIN ( ) { vars s }
             | VOID FUNC MAIN ( ) { }'''
+
+# ----------------------
+# STATMENTS RULES 
 
 def p_vars(p):
     '''vars : VAR ids : type ; vars
@@ -143,6 +153,12 @@ def p_while(p):
 def p_for(p):
     '''for : FOR assignment UNTIL expression interior_block'''
 
+# ----------------------
+# EXRPESSIONS RULES 
+
+
+# ----------------------
+# EMPTY & ERROR RULES 
 def p_empty(p):
     'empty :'
     pass
