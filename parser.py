@@ -85,6 +85,7 @@ def p_void_function(p):
 
 def p_statements(p):
     '''statements : assigment
+                  | array_assignment
                   | call_to_fun ;
                   | write
                   | conditionals
@@ -113,6 +114,27 @@ def p_params(p):
 def p_assignment(p):
     '''assignment : ID = expression ;
                   | ID array_type = expression'''
+
+def p_array_assignment(p):
+    '''array_assignment : ID = array_assign_type ;'''
+
+def p_array_assign_type(p): 
+    '''array_assign_type : 1d_array_init
+                         | 2d_array_init'''
+
+def p_1d_array_init(p):
+    '''1d_array_init : [ exp_1d ]'''
+
+def p_exp_1d(p):
+    '''exp_1d : expression , exp1_d
+              | expression'''
+
+def p_2d_array_init(p):
+    '''2d_array_init : [ exp_2d ]'''
+
+def p_exp_2d(p):
+    '''exp_2d : 1d_array_init , exp_2d
+              | 1d_array_init'''
 
 def p_write(p):
     '''write : PRINT ( write_p ) ;'''
