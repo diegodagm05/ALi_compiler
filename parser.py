@@ -17,36 +17,36 @@ def p_global_vars_funs(p):
     '''global_vars_funs : g_vf''' 
 
 def p_g_vf(p):
-    '''g_vf : g_vars g_functions
-            | g_vars
-            | g_functions'''
-
-def p_g_vars(p):
-    '''g_vars : vars g_vars
-              | vars'''
-
-def p_g_functions(p):
-    '''g_functions : functions g_functions
-                   | functions'''
+    '''g_vf : vars functions
+            | vars
+            | functions'''
 
 def p_main(p):
-    '''main : VOID FUNC MAIN '(' ')' '{' vars s '}'
-            | VOID FUNC MAIN '(' ')' '{' '}' '''
+    '''main : VOID FUNC MAIN '(' ')' '{' function_block '}' '''
 
 # ----------------------
 # STATEMENTS RULES 
 
 def p_vars(p):
-    '''vars : VAR ids ':' type ';' vars
-            | VAR ids ':' type ';' '''
+    '''vars : VAR ids ':' type ';' vars_p'''
 
-def p_s(p):
-    '''s : statements s
-         | statements'''
+def p_vars_p(p):
+    '''vars_p : vars
+              | empty'''
+
+def p_stm(p):
+    '''stm : statements stm_p '''
+
+def p_stm_p(p):
+    '''stm_p : stm
+             | empty'''
 
 def p_ids(p):
-    '''ids : ID ',' ids
-           | ID'''
+    '''ids : ID ids_p'''
+
+def p_ids_p(p):
+    '''ids_p : ',' ids
+             | empty'''
 
 def p_type(p):
     '''type : INT 
@@ -65,20 +65,20 @@ def p_functions(p):
                  | return_function
                  | void_function'''
 
+def p_function_block(p):
+    '''function_block : vars stm
+                        | stm '''
+
 def p_return_function(p):
-    '''return_function : type FUNC ID '(' p ')' '{' content RETURN ID '}'
-                       | type FUNC ID '(' p ')' '{' content RETURN expression '}' '''
+    '''return_function : type FUNC ID '(' p ')' '{' function_block RETURN ID ';' '}'
+                       | type FUNC ID '(' p ')' '{' function_block RETURN expression ';' '}' '''
 
 def p_p(p):
     '''p : params
          | empty'''
 
-def p_content(p):
-    '''content : vars s
-               | empty'''
-
 def p_void_function(p):
-    '''void_function : VOID FUNC ID '(' p ')' '{' content '}' '''
+    '''void_function : VOID FUNC ID '(' p ')' '{' function_block '}' '''
 
 def p_statements(p):
     '''statements : assignment
@@ -102,7 +102,7 @@ def p_cond_in(p):
 
 def p_interior_block(p):
     '''interior_block : '{' '}'
-                      | '{' s '}' '''
+                      | '{' stm '}' '''
 
 def p_params(p):
     '''params : ID ':' type ',' params
@@ -232,13 +232,13 @@ def p_empty(p):
 
 # Error rule for syntax errors
 def p_error(p):
-    print("Syntax error in input!")
-    raise Exception(p)
+    print(f"Syntax error in input at line {p.lineno}")
+    raise Exception(p.type, p.value, p.lineno, p.lexpos)
 
-parser = yacc.yacc()
+parser = yacc.yacc(debug=True)
 
 def test():
-    print('Enter file name to be tested (with .ld extension)')
+    print('Enter file name to be tested (with .al extension)')
     filename = input()
     file = open(filename)
     input_str = file.read()

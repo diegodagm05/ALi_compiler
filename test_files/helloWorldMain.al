@@ -1,17 +1,3 @@
-var PI : float;
-
-int func foo() {
-    PI = 3.14;
-    return 3;
-}
-
-float func bar(param1 : int, param2 : float) {
-    var PI : float;
-    PI = 3.1416;
-    six_pi = 2 * PI;
-    return param1 * param2;
-}
-
 void func main() {
     // First, declare your variables
     var a, k : int;
