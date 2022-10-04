@@ -90,15 +90,27 @@ def p_statements(p):
                   | read'''
 
 def p_conditionals(p):
-    '''conditionals : IF '(' expression ')' interior_block cond_in_p ELSE interior_block'''
+    '''conditionals : if_statement conditional_else_if conditional_else'''
 
-def p_cond_in_p(p):
-    '''cond_in_p : cond_in
-                 | empty'''
+def p_if_statement(p):
+    '''if_statement : IF '(' expression ')' interior_block'''
 
-def p_cond_in(p):
-    '''cond_in : ELSE IF '(' expression ')' interior_block cond_in
-               | ELSE IF '(' expression ')' interior_block'''
+def p_conditional_else_if(p):
+    '''conditional_else_if : conditional_else_if_p
+                    | empty'''
+
+def p_conditional_else_if_p(p):
+    '''conditional_else_if_p : conditional_else_if_pp conditional_else_if_p_factors'''
+def p_conditional_else_if_p_factors(p):
+    '''conditional_else_if_p_factors : conditional_else_if_p
+                                     | empty'''
+
+def p_conditional_else_if_pp(p):
+    '''conditional_else_if_pp : ELSE if_statement '''
+
+def p_conditional_else(p):
+    '''conditional_else : ELSE interior_block
+                        | empty'''
 
 def p_interior_block(p):
     '''interior_block : '{' '}'
@@ -142,7 +154,8 @@ def p_write_p(p):
 
 def p_write_param(p):
     '''write_param : STRING_CONST
-                   | ID'''
+                   | ID
+                   | array_indexing '''
 
 def p_read(p):
     '''read : READ '(' read_p ')' ';' '''
@@ -170,7 +183,7 @@ def p_while(p):
     '''while : WHILE '(' expression ')' interior_block'''
 
 def p_for(p):
-    '''for : FOR assignment UNTIL expression interior_block'''
+    '''for : FOR ID '=' expression UNTIL expression interior_block'''
 
 # ----------------------
 # EXRPESSIONS RULES 
@@ -232,8 +245,7 @@ def p_empty(p):
 
 # Error rule for syntax errors
 def p_error(p):
-    print(f"Syntax error in input at line {p.lineno}")
-    raise Exception(p.type, p.value, p.lineno, p.lexpos)
+    raise Exception(f"Syntax error in input at line {p.lineno} at character {p.lexpos} unexpected \'{p.value}\' ")
 
 parser = yacc.yacc(debug=True)
 

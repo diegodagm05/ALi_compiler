@@ -16,12 +16,10 @@ func main() {
         print("Hello world!");
     } else if (a >= b && j > arr[1] || b < arr[3] || a <= arr[2]) {
         print("Hello universe!");
-    } else {
-        read("myFile.txt");
-    }
+    } 
     // Foor loop
     for k = 0 until k < 3 {
-        print("Arr[k]() :", arr[k]);
+       print("Arr[k]() :", arr[k]);
     }
     // While loop
     while (k < 6) {
