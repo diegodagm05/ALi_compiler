@@ -27,12 +27,9 @@ def p_main(p):
 # ----------------------
 # STATEMENTS RULES 
 
-def p_vars(p):
-    '''vars : VAR ids ':' type ';' vars_p'''
-
-def p_vars_p(p):
-    '''vars_p : vars
-              | empty'''
+def p_function_block(p):
+    '''function_block : vars stm
+                        | stm '''
 
 def p_stm(p):
     '''stm : statements stm_p '''
@@ -40,6 +37,13 @@ def p_stm(p):
 def p_stm_p(p):
     '''stm_p : stm
              | empty'''
+             
+def p_vars(p):
+    '''vars : VAR ids ':' type ';' vars_p'''
+
+def p_vars_p(p):
+    '''vars_p : vars
+              | empty'''
 
 def p_ids(p):
     '''ids : ID ids_p'''
@@ -64,10 +68,6 @@ def p_functions(p):
                  | void_function functions
                  | return_function
                  | void_function'''
-
-def p_function_block(p):
-    '''function_block : vars stm
-                        | stm '''
 
 def p_return_function(p):
     '''return_function : type FUNC ID '(' p ')' '{' function_block RETURN ID ';' '}'
