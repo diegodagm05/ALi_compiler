@@ -14,7 +14,7 @@ func main() {
     // conditional statments
     if (a != b) {
         print("Hello world!");
-    } else if (a >= b && j > arr[1] || b < arr[3] || a <= arr[2]) {
+    } elif (a >= b && j > arr[1] || b < arr[3] || a <= arr[2]) {
         print("Hello universe!");
     } 
     // Foor loop

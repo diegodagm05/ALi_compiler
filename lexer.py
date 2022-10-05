@@ -17,6 +17,7 @@ reserved = {
     'main': 'MAIN',
     'if': 'IF',
     'else': 'ELSE',
+    'elif': 'ELIF',
     'return': 'RETURN',
     'print': 'PRINT',
     'read': 'READ',

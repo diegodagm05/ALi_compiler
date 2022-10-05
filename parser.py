@@ -90,27 +90,33 @@ def p_statements(p):
                   | read'''
 
 def p_conditionals(p):
-    '''conditionals : if_statement conditional_else_if conditional_else'''
+    '''conditionals : if_statement 
+                    | if_else_statement
+                    | if_else_if_statement'''
 
 def p_if_statement(p):
-    '''if_statement : IF '(' expression ')' interior_block'''
+    '''if_statement : simple_if_statement'''
 
-def p_conditional_else_if(p):
-    '''conditional_else_if : conditional_else_if_p
-                    | empty'''
+def p_simple_if_statement(p):
+    '''simple_if_statement : IF '(' expression ')' interior_block'''
 
-def p_conditional_else_if_p(p):
-    '''conditional_else_if_p : conditional_else_if_pp conditional_else_if_p_factors'''
-def p_conditional_else_if_p_factors(p):
-    '''conditional_else_if_p_factors : conditional_else_if_p
-                                     | empty'''
+def p_if_else_statement(p):
+    '''if_else_statement : simple_if_statement simple_else_statement'''
 
-def p_conditional_else_if_pp(p):
-    '''conditional_else_if_pp : ELSE if_statement '''
+def p_simple_else_statement(p):
+    '''simple_else_statement : ELSE interior_block'''
 
-def p_conditional_else(p):
-    '''conditional_else : ELSE interior_block
-                        | empty'''
+def p_if_else_if_statement(p):
+    '''if_else_if_statement : simple_if_statement simple_else_if_statement simple_else_statement
+                            | simple_if_statement simple_else_if_statement'''
+
+def p_simple_else_if_statement(p):
+    '''simple_else_if_statement : ELIF '(' expression ')' interior_block more_else_if_statement '''
+
+def p_more_else_if_statement(p):
+    '''more_else_if_statement : simple_else_if_statement
+                              | empty'''
+
 
 def p_interior_block(p):
     '''interior_block : '{' '}'
@@ -245,7 +251,8 @@ def p_empty(p):
 
 # Error rule for syntax errors
 def p_error(p):
-    raise Exception(f"Syntax error in input at line {p.lineno} at character {p.lexpos} unexpected \'{p.value}\' ")
+    err_string = f"Syntax error in input at line {p.lineno} at character {p.lexpos} unexpected \'{p.value}\' "
+    raise Exception(err_string)
 
 parser = yacc.yacc(debug=True)
 
