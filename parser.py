@@ -195,15 +195,17 @@ def p_for(p):
 # EXRPESSIONS RULES 
 
 def p_expression(p):
-    '''expression : t_exp OR t_exp'''
+    '''expression : t_exp
+                  | expression OR t_exp'''
 
 def p_t_exp(p):
-    '''t_exp : g_exp AND g_exp'''
+    '''t_exp : g_exp
+             | t_exp AND g_exp'''
 
 def p_g_exp(p):
-    '''g_exp : exp
-          | exp op exp
-          | '!' exp'''
+    '''g_exp : m_exp
+          | m_exp op m_exp 
+          | '!' g_exp'''
 
 def p_op(p):
     '''op : '>'
@@ -213,27 +215,27 @@ def p_op(p):
           | EQUAL
           | DIFFERENT'''
 
-def p_exp(p):
-    '''exp : term
-           | term '+' term
-           | term '-' term '''
+def p_m_exp(p):
+    '''m_exp : term
+           | m_exp '+' term
+           | m_exp '-' term '''
 
 def p_term(p):
-    '''term : factor
-            | factor '*' factor
-            | factor '/' factor'''
+    '''term : factor 
+            | term '*' factor
+            | term '/' factor'''
 
 def p_factor(p):
     '''factor : '(' expression ')'
-              | ID
-              | array_indexing
-              | call_to_fun
-              | constants'''
+              | constants '''
 
 def p_constants(p):
-    '''constants : I_CONST
+    '''constants : ID
+                 | I_CONST
                  | F_CONST
-                 | C_CONST'''
+                 | C_CONST
+                 | array_indexing
+                 | call_to_fun'''
 
 # ----------------------
 # EMPTY & ERROR RULES 

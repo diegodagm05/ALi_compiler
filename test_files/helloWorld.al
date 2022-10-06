@@ -9,8 +9,8 @@ int func foo() {
 float func bar(param1 : int, param2 : float) {
     var PI : float;
     PI = 3.1416;
-    six_pi = 2 + PI + 6;
-    return param1 * param2;
+    random_op = 2 + PI + 6 * (7 / 3) / 3;
+    return param1 * param2 + random_op;
 }
 
 func main() {
@@ -27,7 +27,7 @@ func main() {
     c = 'c';
     arr = [1,2,3];
     // conditional statments
-    if (a != b) {
+    if (a != b && !(b == m)) {
         print("Hello world!");
     } elif (a >= b && j > arr[1] || b < arr[3] || a <= arr[2]) {
         print("Hello universe!");
