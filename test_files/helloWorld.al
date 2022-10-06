@@ -1,14 +1,15 @@
 var PI : float;
 
 int func foo() {
-    PI = 3.14;
-    return 3;
+    // PI = 3.14;
+    print("Hello");
+    return PI;
 }
 
 float func bar(param1 : int, param2 : float) {
     var PI : float;
     PI = 3.1416;
-    six_pi = 2 * PI;
+    six_pi = 2 + PI + 6;
     return param1 * param2;
 }
 

@@ -128,7 +128,7 @@ def p_params(p):
 
 def p_assignment(p):
     '''assignment : ID '=' expression ';'
-                  | ID array_type '=' expression'''
+                  | ID array_type '=' expression ';' '''
 
 def p_array_assignment(p):
     '''array_assignment : ID '=' array_assign_type ';' '''
@@ -195,15 +195,13 @@ def p_for(p):
 # EXRPESSIONS RULES 
 
 def p_expression(p):
-    '''expression : expression_p '''
+    '''expression : t_exp OR t_exp'''
 
-def p_expression_p(p):
-    '''expression_p : ex
-                    | ex AND expression_p
-                    | ex OR expression_p'''
+def p_t_exp(p):
+    '''t_exp : g_exp AND g_exp'''
 
-def p_ex(p):
-    '''ex : exp
+def p_g_exp(p):
+    '''g_exp : exp
           | exp op exp
           | '!' exp'''
 
@@ -217,19 +215,13 @@ def p_op(p):
 
 def p_exp(p):
     '''exp : term
-           | term op_1 term'''
-
-def p_op_1(p):
-    '''op_1 : '+'
-            | '-' '''
+           | term '+' term
+           | term '-' term '''
 
 def p_term(p):
     '''term : factor
-            | factor op_2 factor'''
-
-def p_op_2(p):
-    '''op_2 : '*'
-            | '/' '''
+            | factor '*' factor
+            | factor '/' factor'''
 
 def p_factor(p):
     '''factor : '(' expression ')'
