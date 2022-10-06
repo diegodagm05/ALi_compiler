@@ -204,7 +204,7 @@ def p_t_exp(p):
 
 def p_g_exp(p):
     '''g_exp : m_exp
-          | m_exp op m_exp 
+          | m_exp op g_exp 
           | '!' g_exp'''
 
 def p_op(p):
