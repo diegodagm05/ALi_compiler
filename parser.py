@@ -196,11 +196,11 @@ def p_for(p):
 
 def p_expression(p):
     '''expression : t_exp
-                  | expression OR t_exp'''
+                  | t_exp OR expression'''
 
 def p_t_exp(p):
     '''t_exp : g_exp
-             | t_exp AND g_exp'''
+             | g_exp AND t_exp'''
 
 def p_g_exp(p):
     '''g_exp : m_exp
