@@ -70,8 +70,7 @@ def p_functions(p):
                  | void_function'''
 
 def p_return_function(p):
-    '''return_function : type FUNC ID '(' p ')' '{' function_block RETURN ID ';' '}'
-                       | type FUNC ID '(' p ')' '{' function_block RETURN expression ';' '}' '''
+    '''return_function : type FUNC ID '(' p ')' '{' function_block RETURN expression ';' '}' '''
 
 def p_p(p):
     '''p : params
