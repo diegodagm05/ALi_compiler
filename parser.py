@@ -246,7 +246,7 @@ def p_while(p):
     '''while : WHILE '(' expression ')' interior_block'''
 
 def p_for(p):
-    '''for : FOR ID '=' expression UNTIL expression interior_block'''
+    '''for : FOR '(' assignment ';' expression ';' assignment ')' interior_block'''
 
 # ----------------------
 # EXRPESSIONS RULES 
