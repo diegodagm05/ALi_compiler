@@ -1,23 +1,24 @@
 var PI : float;
 
 int func foo() {
-    PI = 3.14;
-    return 3;
+    // PI = 3.14;
+    print("Hello");
+    return PI;
 }
 
 float func bar(param1 : int, param2 : float) {
     var PI : float;
     PI = 3.1416;
-    six_pi = 2 * PI;
-    return param1 * param2;
+    random_op = 2 + PI + 6 * (7 / 3) / 3;
+    return param1 * param2 + random_op;
 }
 
 func main() {
     // First, declare your variables
-    var a, k : int;
+    var a, k, width, height, event : int;
     var b, m : float;
     var c : char;
-    var arr : array[3]; 
+    var arr : array<int>[3]; 
     // Assignment statements
     a = 20;
     j = foo(); 
@@ -26,7 +27,7 @@ func main() {
     c = 'c';
     arr = [1,2,3];
     // conditional statments
-    if (a != b) {
+    if (a != b && !(b == m)) {
         print("Hello world!");
     } elif (a >= b && j > arr[1] || b < arr[3] || a <= arr[2]) {
         print("Hello universe!");
@@ -34,11 +35,23 @@ func main() {
         read("myFile.txt");
     }
     // Foor loop
-    for k = 0 until k < 3 {
+    for (k = 0; k < 3; k = k + 1) {
         print("Arr[k]() :", arr[k]);
     }
     // While loop
     while (k < 6) {
         print("Hello all!");
+    }
+
+    void func start() {
+        generateCanvas(720, 720, "red");
+        setCanvasTitle("MyGame");
+        drawGameObject(a, k, arr[0], arr[1], "blue");
+    }
+
+    void func update() {
+        getGameEvent();
+        getWindowHeight();
+        getWindowWidth();
     }
 }
