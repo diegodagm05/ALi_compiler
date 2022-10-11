@@ -138,7 +138,7 @@ def p_void_function(p):
     '''void_function : VOID FUNC ID '(' p ')' '{' function_block '}' '''
 
 def p_statements(p):
-    '''statements : assignment
+    '''statements : assignment ';'
                   | array_assignment
                   | call_to_fun ';'
                   | write 
@@ -217,8 +217,7 @@ def p_write_p(p):
 
 def p_write_param(p):
     '''write_param : STRING_CONST
-                   | ID
-                   | array_indexing '''
+                   | variable '''
 
 def p_read(p):
     '''read : READ '(' read_p ')' ';' '''
@@ -287,12 +286,15 @@ def p_factor(p):
               | constants '''
 
 def p_constants(p):
-    '''constants : ID
-                 | I_CONST
+    '''constants : I_CONST
                  | F_CONST
                  | C_CONST
-                 | array_indexing
+                 | variable
                  | call_to_fun'''
+
+def p_variable(p):
+    '''variable : ID array_indexing 
+                | ID'''
 
 # ----------------------
 # EMPTY & ERROR RULES 
