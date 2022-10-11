@@ -25,6 +25,16 @@ reserved = {
     'until': 'UNTIL',
     'while': 'WHILE',
     'read': 'READ',
+    # Game Engine specific tokens
+    'start': 'START',
+    'update': 'UPDATE',
+    'generateCanvas': 'GEN_CANVAS',
+    'setCanvasTitle': 'SET_CANVAS_TITLE',
+    'setCanvasBackground': 'SET_CANVAS_BG',
+    'getWindowHeight': 'GET_WINDOW_H',
+    'getWindowWidth': 'GET_WINDOW_W',
+    'getGameEvent': 'GET_GAME_EV',
+    'drawGameObject': 'DRAW_GAME_OBJECT',
 }
 # TODO: List of token names
 tokens = (

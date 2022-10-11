@@ -22,7 +22,67 @@ def p_g_vf(p):
             | functions'''
 
 def p_main(p):
-    '''main : FUNC MAIN '(' ')' '{' function_block '}' '''
+    '''main : FUNC MAIN '(' ')' '{' main_block '}' '''
+
+# ----------------------
+# MAIN FUNCTION RULES 
+def p_main_block(p):
+    '''main_block : function_block start_function update_function'''
+
+def p_start_function(p):
+    '''start_function : VOID FUNC START '(' ')' '{' sft '}' '''
+
+def p_update_function(p):
+    '''update_function : VOID FUNC UPDATE '(' ')' '{' uft '}' '''
+
+def p_sft(p):
+    '''sft : start_function_statement sft
+            | start_function_statement'''
+
+def p_uft(p):
+    '''uft : update_function_statement uft
+            | update_function_statement'''
+
+def p_start_function_statement(p):
+    '''start_function_statement : statements 
+                                | gen_canvas
+                                | set_canvas_title
+                                | set_canvas_bg 
+                                | draw_game_object'''
+
+def p_update_function_statement(p):
+    '''update_function_statement : statements 
+                                | set_canvas_title
+                                | set_canvas_bg 
+                                | get_window_h
+                                | get_window_w
+                                | get_game_ev
+                                | draw_game_object'''
+
+def p_gen_canvas(p):
+    '''gen_canvas : GEN_CANVAS '(' pixel_param ',' pixel_param ',' STRING_CONST ')' ';' '''
+
+def p_set_canvas_title(p):
+    '''set_canvas_title : SET_CANVAS_TITLE '(' STRING_CONST ')' ';' '''
+
+def p_set_canvas_bg(p):
+    '''set_canvas_bg : SET_CANVAS_BG '(' STRING_CONST ')' ';' '''
+
+def p_get_window_h(p):
+    '''get_window_h : GET_WINDOW_H '(' ')' ';' '''
+
+def p_get_window_w(p):
+    '''get_window_w : GET_WINDOW_W '(' ')' ';' '''
+
+def p_get_game_ev(p):
+    '''get_game_ev : GET_GAME_EV '(' ')' ';' '''
+
+def p_draw_game_object(p):
+    '''draw_game_object : DRAW_GAME_OBJECT '(' pixel_param ',' pixel_param ',' pixel_param ',' pixel_param ',' STRING_CONST ')' ';' '''
+
+def p_pixel_param(p):
+    '''pixel_param : variable
+                    | I_CONST'''
 
 # ----------------------
 # STATEMENTS RULES 
