@@ -15,10 +15,10 @@ float func bar(param1 : int, param2 : float) {
 
 func main() {
     // First, declare your variables
-    var a, k : int;
+    var a, k, width, height, event : int;
     var b, m : float;
     var c : char;
-    var arr : array[3]; 
+    var arr : array<int>[3]; 
     // Assignment statements
     a = 20;
     j = foo(); 
@@ -35,11 +35,23 @@ func main() {
         read("myFile.txt");
     }
     // Foor loop
-    for k = 0 until k < 3 {
+    for (k = 0; k < 3; k = k + 1) {
         print("Arr[k]() :", arr[k]);
     }
     // While loop
     while (k < 6) {
         print("Hello all!");
+    }
+
+    void func start() {
+        generateCanvas(720, 720, "red");
+        setCanvasTitle("MyGame");
+        drawGameObject(a, k, arr[0], arr[1], "blue");
+    }
+
+    void func update() {
+        getGameEvent();
+        getWindowHeight();
+        getWindowWidth();
     }
 }

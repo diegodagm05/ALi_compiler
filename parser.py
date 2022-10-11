@@ -99,7 +99,11 @@ def p_stm_p(p):
              | empty'''
              
 def p_vars(p):
-    '''vars : VAR ids ':' type ';' vars_p'''
+    '''vars : VAR ids ':' vars_types ';' vars_p'''
+
+def p_vars_types(p):
+    '''vars_types : type
+                  | array_type'''
 
 def p_vars_p(p):
     '''vars_p : vars
@@ -184,8 +188,8 @@ def p_params(p):
               | ID ':' type'''
 
 def p_assignment(p):
-    '''assignment : ID '=' expression ';'
-                  | ID array_type '=' expression ';' '''
+    '''assignment : ID '=' expression 
+                  | ID array_type '=' expression '''
 
 def p_array_assignment(p):
     '''array_assignment : ID '=' array_assign_type ';' '''
