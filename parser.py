@@ -116,12 +116,10 @@ def p_type(p):
     '''type : INT 
             | FLOAT
             | CHAR
-            | BOOL
-            | array_type'''
+            | BOOL'''
 
 def p_array_type(p):
-    '''array_type : ARRAY '[' expression ']'
-                  | ARRAY '[' expression ']' '[' expression ']' '''
+    '''array_type : ARRAY '<' type '>' array_indexing'''
 
 def p_functions(p):
     '''functions : return_function functions
@@ -241,8 +239,8 @@ def p_cycles(p):
                 | for'''
 
 def p_array_indexing(p):
-    '''array_indexing : ID '[' expression ']' 
-                      | ID '[' expression ']'  '[' expression ']' '''
+    '''array_indexing : '[' expression ']' 
+                      | '[' expression ']'  '[' expression ']' '''
 
 def p_while(p):
     '''while : WHILE '(' expression ')' interior_block'''
