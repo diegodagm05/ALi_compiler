@@ -18,8 +18,27 @@
 
 ## Avance 0
 ---
-- **Fecha:**
+- **Fecha:** 08/Oct/2022
 
-- **Descripción:**
+- **Descripción:** Entrega de propuesta inicial
+
+- **Estado:** Completo
+
+## Avance 2
+---
+- **Fecha:** 11/Oct/2022
+
+- **Descripción:** Correción de parser, para incluir las funciones especiales. Se agregó el cubo semántico y la primera versión de la tabla de variables.
 
 - **Estado:**
+
+    Lexer - COMPLETO y FUNCIONANDO
+
+    Parser - COMPLETO Y FUNCIONANDO
+
+    Cubo semántico - COMPLETO, falta probarlo al generar las reglas semánticas
+
+    Tabla de variables - COMPLETO (la versión básica que se ha visto a la fecha en clase)
+
+<br>
+
