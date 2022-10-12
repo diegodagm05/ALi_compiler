@@ -246,12 +246,13 @@ class Semantic_Cube():
         }
     }
    
-    def match_types(self, type1, type2, operator):
+    def match_types(self, type1: str, type2: str, operator: str) -> str:
         if type1 not in types or type1 not in types:
             raise Exception('Unknown type used')
         
         if operator not in self.operators:
             raise Exception('Unknown operator used')
+
         result = self.semantic_cube[type1][type2][operator]
 
         if result == 'ERROR':
