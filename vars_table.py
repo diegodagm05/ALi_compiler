@@ -1,4 +1,3 @@
-from typing import Dict
 from semantic_cube import types
 
 # TODO: Grow this data structure as we add more to the variable table
