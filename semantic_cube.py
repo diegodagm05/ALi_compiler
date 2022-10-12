@@ -1,11 +1,15 @@
+types = {
+    'int': 'INT',
+    'float': 'FLOAT',
+    'char': 'CHAR',
+    'bool': 'BOOL',
+}
 
 class Semantic_Cube():
-    types = {
-        'int': 'INT',
-        'float': 'FLOAT',
-        'char': 'CHAR',
-        'bool': 'BOOL',
-    }
+
+    operators = (
+        '+', '-', '*', '/', '&&', '||', '==', '!=', '>', '<', '>=', '<=',
+    )
 
     semantic_cube = {
         'int': {
@@ -241,5 +245,16 @@ class Semantic_Cube():
             }
         }
     }
+   
+    def match_types(self, type1, type2, operator):
+        if type1 not in types or type1 not in types:
+            raise Exception('Unknown type used')
+        
+        if operator not in self.operators:
+            raise Exception('Unknown operator used')
+        result = self.semantic_cube[type1][type2][operator]
 
-    
+        if result == 'ERROR':
+            raise Exception(f'Type mismatch. \'{type1}\' cannot be combined with \'{type2}\' with the \'{operator}\' operator')
+        
+        return result
