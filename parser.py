@@ -33,34 +33,20 @@ def p_start_function(p):
     '''start_function : VOID FUNC START '(' ')' '{' sft '}' '''
 
 def p_update_function(p):
-    '''update_function : VOID FUNC UPDATE '(' ')' '{' uft '}' '''
+    '''update_function : VOID FUNC UPDATE '(' ')' interior_block '''
 
 def p_sft(p):
-    '''sft : start_function_statement sft
-            | start_function_statement'''
+    '''sft : gen_canvas stm
+            | stm'''
 
-def p_uft(p):
-    '''uft : update_function_statement uft
-            | update_function_statement'''
+def p_special_function_statement(p):
+    '''special_function_statement : set_canvas_title
+                                  | set_canvas_bg 
+                                  | draw_game_object'''
 
-def p_start_function_statement(p):
-    '''start_function_statement : statements 
-                                | gen_canvas
-                                | set_canvas_title
-                                | set_canvas_bg 
-                                | draw_game_object'''
-
-def p_update_function_statement(p):
-    '''update_function_statement : statements 
-                                | set_canvas_title
-                                | set_canvas_bg 
-                                | get_window_h
-                                | get_window_w
-                                | get_game_ev
-                                | draw_game_object'''
-
+# TODO: Add checks to make sure params are of the right type
 def p_gen_canvas(p):
-    '''gen_canvas : GEN_CANVAS '(' pixel_param ',' pixel_param ',' STRING_CONST ')' ';' '''
+    '''gen_canvas : GEN_CANVAS '(' expression ',' expression ',' STRING_CONST ')' ';' '''
 
 def p_set_canvas_title(p):
     '''set_canvas_title : SET_CANVAS_TITLE '(' STRING_CONST ')' ';' '''
@@ -68,21 +54,19 @@ def p_set_canvas_title(p):
 def p_set_canvas_bg(p):
     '''set_canvas_bg : SET_CANVAS_BG '(' STRING_CONST ')' ';' '''
 
+# Special getter functions will be treated as expressions 
 def p_get_window_h(p):
-    '''get_window_h : GET_WINDOW_H '(' ')' ';' '''
+    '''get_window_h : GET_WINDOW_H '(' ')' '''
 
 def p_get_window_w(p):
-    '''get_window_w : GET_WINDOW_W '(' ')' ';' '''
+    '''get_window_w : GET_WINDOW_W '(' ')' '''
 
 def p_get_game_ev(p):
-    '''get_game_ev : GET_GAME_EV '(' ')' ';' '''
+    '''get_game_ev : GET_GAME_EV '(' ')' '''
 
+# TODO: Add checks to make sure params are of the right type
 def p_draw_game_object(p):
-    '''draw_game_object : DRAW_GAME_OBJECT '(' pixel_param ',' pixel_param ',' pixel_param ',' pixel_param ',' STRING_CONST ')' ';' '''
-
-def p_pixel_param(p):
-    '''pixel_param : variable
-                    | I_CONST'''
+    '''draw_game_object : DRAW_GAME_OBJECT '(' expression ',' expression ',' expression ',' expression ',' STRING_CONST ')' ';' '''
 
 # ----------------------
 # STATEMENTS RULES 
@@ -148,7 +132,8 @@ def p_statements(p):
                   | write 
                   | conditionals
                   | cycles
-                  | read'''
+                  | read
+                  | special_function_statement'''
 
 def p_conditionals(p):
     '''conditionals : if_statement 
@@ -294,7 +279,10 @@ def p_constants(p):
                  | F_CONST
                  | C_CONST
                  | variable
-                 | call_to_fun'''
+                 | call_to_fun
+                 | get_window_h
+                 | get_window_w
+                 | get_game_ev'''
 
 def p_variable(p):
     '''variable : ID array_indexing 

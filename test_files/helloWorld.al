@@ -13,6 +13,10 @@ float func bar(param1 : int, param2 : float) {
     return param1 * param2 + random_op;
 }
 
+void func drawPlayer(xpos : int, ypos: int, xsize: int, ysize : int) {
+    drawGameObject(xpos, ypos, xsize*2, ysize*2, "blue");
+}
+
 func main() {
     // First, declare your variables
     var a, k, width, height, event : int;
@@ -50,8 +54,11 @@ func main() {
     }
 
     void func update() {
-        getGameEvent();
-        getWindowHeight();
-        getWindowWidth();
+        if (getWindowHeight() > 500) {
+            height = getWindowHeight();
+            event = getGameEvent();
+            width = getWindowWidth() / 2;
+        }
+        drawPlayer(20, 20+1, k, height);
     }
 }
