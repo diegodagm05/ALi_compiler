@@ -4,12 +4,27 @@ types = {
     'char': 'CHAR',
     'bool': 'BOOL',
 }
+# TODO: Add operators for special functions
+operations = {
+    '+': 0, 
+    '-': 1, 
+    '*': 2, 
+    '/': 3, 
+    '&&': 4, 
+    '||': 5, 
+    '==': 6, 
+    '!=': 7, 
+    '>': 8,
+    '<': 9,
+    '>=': 10, 
+    '<=': 11,
+    'print': 12,
+    'read': 13,
+    'write': 14
+}
 
 class Semantic_Cube():
-
-    operators = (
-        '+', '-', '*', '/', '&&', '||', '==', '!=', '>', '<', '>=', '<=',
-    )
+    
 
     semantic_cube = {
         'int': {
@@ -250,7 +265,7 @@ class Semantic_Cube():
         if type1 not in types or type2 not in types:
             raise Exception('Unknown type used')
         
-        if operator not in self.operators:
+        if operator not in operations:
             raise Exception('Unknown operator used')
 
         result = self.semantic_cube[type1][type2][operator]
