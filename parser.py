@@ -6,6 +6,12 @@
 import ply.yacc as yacc
 
 from lexer import tokens
+from quadruple import  Quadruple
+from semantic_cube import *
+
+operands_stack = []
+operators_stack = []
+types_stack = []
 
 # ----------------------
 # GLOBAL RULES 
@@ -241,16 +247,28 @@ def p_for(p):
 
 def p_expression(p):
     '''expression : t_exp
-                  | t_exp OR expression'''
+                  | t_exp OR add_logical_op expression'''
 
 def p_t_exp(p):
     '''t_exp : g_exp
-             | g_exp AND t_exp'''
+             | g_exp AND add_logical_op t_exp'''
+
+def p_add_logical_op(p):
+    '''
+    add_logical_op:
+    '''
+    operators_stack.append(p[-1])
 
 def p_g_exp(p):
     '''g_exp : m_exp
-          | m_exp op g_exp 
+          | m_exp op add_rel_op g_exp
           | '!' g_exp'''
+
+def p_add_rel_op(p):
+    '''
+    add_rel_op:
+    '''
+    operators_stack.append(p[-1])
 
 def p_op(p):
     '''op : '>'
@@ -262,13 +280,19 @@ def p_op(p):
 
 def p_m_exp(p):
     '''m_exp : term
-           | m_exp '+' term
-           | m_exp '-' term '''
+           | m_exp '+' add_op term
+           | m_exp '-' add_op term '''
 
 def p_term(p):
     '''term : factor 
-            | term '*' factor
-            | term '/' factor'''
+            | term '*' add_op factor
+            | term '/' add_op factor'''
+
+def p_add_op(p):
+    '''
+    add_op:
+    '''
+    operators_stack.append(p[-1])
 
 def p_factor(p):
     '''factor : '(' expression ')'
