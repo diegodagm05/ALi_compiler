@@ -24,6 +24,8 @@
 
 - **Estado:** Completo
 
+<br>
+
 ## Avance 2
 ---
 - **Fecha:** 11/Oct/2022
@@ -42,3 +44,25 @@
 
 <br>
 
+## Avance 3
+---
+- **Fecha:** 17/Oct/2022
+
+- **Descripción:** Añadición de puntos neurales iniciales, para expresiones y estatutos lineales
+
+- **Estado:**
+    
+    Generación de código intermedio para expresiones - INCOMPLETO (Se identificaron puntos neurales por añadir, sin embargo, falta pulir las acciones a realizar)
+        
+<br>
+
+## Avance num
+---
+- **Fecha:** 00/month/0000
+
+- **Descripción:**
+
+- **Estado:**
+
+        
+<br>
