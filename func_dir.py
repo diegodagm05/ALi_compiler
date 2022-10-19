@@ -1,13 +1,13 @@
-from vars_table import Vars_Table
+from vars_table import VarsTable
 
-class Func_Dir():
+class FuncDir():
     func_dir = {
-        'global': Vars_Table(),
-        'main': Vars_Table(),
+        'global': VarsTable(),
+        'main': VarsTable(),
     }
 
     def create_scope(self, scopeID: str) -> None:
-        self.func_dir[scopeID] = Vars_Table()
+        self.func_dir[scopeID] = VarsTable()
 
-    def get_scope(self, scopeID: str) -> Vars_Table:
+    def get_scope(self, scopeID: str) -> VarsTable:
         return self.func_dir[scopeID]
