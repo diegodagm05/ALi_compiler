@@ -21,7 +21,7 @@ operations = {
     '=': 12,
 }
 
-class Semantic_Cube():
+class SemanticCube():
     
 
     semantic_cube = {

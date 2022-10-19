@@ -1,13 +1,13 @@
 from semantic_cube import types
 
 # TODO: Grow this data structure as we add more to the variable table
-class Vars_Table_Entry:
+class VarsTableEntry:
     def __init__(self, type: str) -> None:
         self.type = type
 
     
 
-class Vars_Table():
+class VarsTable():
     vars_table = {}
     def add_entry(self, name: str, type: str) -> None:
         if type not in types:
@@ -15,9 +15,9 @@ class Vars_Table():
         if name in self.vars_table:
             raise Exception('Redeclaration of identifier is not allowed')
         # TODO: Figure out if we need to add more information when creating a new entry 
-        self.vars_table[name] = Vars_Table_Entry(types[type])
+        self.vars_table[name] = VarsTableEntry(types[type])
 
-    def lookup_entry(self, name: str) -> Vars_Table_Entry:
+    def lookup_entry(self, name: str) -> VarsTableEntry:
         if name not in self.vars_table:
             raise Exception('Undeclared identifier')
 
