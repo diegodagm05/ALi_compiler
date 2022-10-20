@@ -22,7 +22,6 @@ class SemanticRules:
     def store_ids(self) -> None:
         while len(self.id_stack) > 0:
             name = self.id_stack.pop()
-            print(f'Name: {name}')
             vars_table.add_entry(name, self.current_type)
 
     def add_operator(self, operator: str) -> None:
