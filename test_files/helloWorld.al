@@ -7,9 +7,9 @@ int func foo() {
 }
 
 float func bar(param1 : int, param2 : float) {
-    var PI : float;
-    PI = 3.1416;
-    random_op = 2 + PI + 6 * (7 / 3) / 3;
+    var PI_2 : float;
+    PI_2 = 3.1416;
+    random_op = 2 + PI_2 + 6 * (7 / 3) / 3;
     return param1 * param2 + random_op;
 }
 
