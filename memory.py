@@ -13,7 +13,7 @@ class Memory():
 
     memory = {}
 
-    def assign_mem(self, type: str, is_temp: bool, value) -> int:
+    def assign_mem_address(self, type: str, is_temp: bool) -> int:
         if type == types['int']:
             if is_temp:
                 if self.temp_int_counter > 8999:
@@ -73,8 +73,9 @@ class Memory():
                 address = self.const_counter
                 self.const_counter += 1
         else:
-            raise Exception('Unrecognized type on memory assignment')
-        
-        self.memory[address] = value
+            raise Exception('Unrecognized type on memory assignment')        
         return address
+
+    def get_mem_content(self, address: int):
+        return self.memory[address]
     

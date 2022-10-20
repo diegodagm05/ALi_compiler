@@ -6,13 +6,9 @@
 import ply.yacc as yacc
 
 from lexer import tokens
-from quadruple import  Quadruple
-from semantic_cube import *
+from semantic_rules import SemanticRules
 
-operands_stack = []
-operators_stack = []
-types_stack = []
-
+semantics = SemanticRules()
 # ----------------------
 # GLOBAL RULES 
 def p_program(p):
@@ -89,7 +85,7 @@ def p_stm_p(p):
              | empty'''
              
 def p_vars(p):
-    '''vars : VAR ids ':' vars_types ';' vars_p'''
+    '''vars : VAR ids ':' vars_types ';' store_ids vars_p'''
 
 def p_vars_types(p):
     '''vars_types : type
@@ -100,17 +96,29 @@ def p_vars_p(p):
               | empty'''
 
 def p_ids(p):
-    '''ids : ID ids_p'''
+    '''ids : ID store_id ids_p'''
+
+def p_store_id(p):
+    '''store_id : '''
+    semantics.add_id(p[-1])
+
+def p_store_ids(p):
+    '''store_ids : '''
+    semantics.store_ids()
 
 def p_ids_p(p):
     '''ids_p : ',' ids
              | empty'''
 
 def p_type(p):
-    '''type : INT 
-            | FLOAT
-            | CHAR
-            | BOOL'''
+    '''type : INT set_current_type
+            | FLOAT set_current_type
+            | CHAR set_current_type
+            | BOOL set_current_type '''
+
+def p_set_current_type(p):
+    '''set_current_type : '''
+    semantics.set_current_type(p[-1])
 
 def p_array_type(p):
     '''array_type : ARRAY '<' type '>' array_indexing'''
@@ -255,9 +263,9 @@ def p_t_exp(p):
 
 def p_add_logical_op(p):
     '''
-    add_logical_op:
+    add_logical_op :
     '''
-    operators_stack.append(p[-1])
+    semantics.add_operator(p[-1])
 
 def p_g_exp(p):
     '''g_exp : m_exp
@@ -266,9 +274,9 @@ def p_g_exp(p):
 
 def p_add_rel_op(p):
     '''
-    add_rel_op:
+    add_rel_op :
     '''
-    operators_stack.append(p[-1])
+    semantics.add_operator(p[-1])
 
 def p_op(p):
     '''op : '>'
@@ -290,9 +298,9 @@ def p_term(p):
 
 def p_add_op(p):
     '''
-    add_op:
+    add_op :
     '''
-    operators_stack.append(p[-1])
+    semantics.add_operator(p[-1])
 
 def p_factor(p):
     '''factor : '(' expression ')'
