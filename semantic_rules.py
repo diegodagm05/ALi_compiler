@@ -2,9 +2,10 @@ from collections import deque
 from quadruple import  Quadruple
 from semantic_cube import SemanticCube, types, operations
 from vars_table import VarsTable
+from memory import virtual_memory
 
 vars_table = VarsTable()
-
+sem_cube = SemanticCube()
 class SemanticRules:
     operands_stack = deque()
     operators_stack = deque()
@@ -33,8 +34,31 @@ class SemanticRules:
     def add_operator(self, operator: str) -> None:
         self.operators_stack.append(operator)
 
-    def add_operand(self, operand: int, operand_type: str) -> None:
-        self.types_stack.append(operand_type)
+    def add_id_operand(self, operand) -> None:
+        # TODO: We are using a "global" vars table right now, but this lookup must be done on the current scope when
+        # we enable context switching
+        variable = vars_table.lookup_entry(operand)
+        self.operands_stack.append(variable.address)
+        self.types_stack.append(variable.type)
+
+    def add_constant_operand(self, operand, type):
         self.operands_stack.append(operand)
+        self.types_stack.append(type)
+                    
+    def gen_operation_quad(self) -> None:
+        right_type = self.types_stack.pop()
+        left_type = self.types_stack.pop()
+        curr_operator = self.operators_stack.pop()
+        result = sem_cube.match_types(right_type, left_type, curr_operator)
+        if result == 'ERROR':
+            raise Exception(f'Type mismatch. \'{left_type}\' cannot be combined with \'{right_type}\' with the \'{curr_operator}\' operator')
+        else:
+            right_operand = self.operands_stack.pop()
+            left_operand = self.operands_stack.pop()
+            temp_result = virtual_memory.assign_mem_address(result, is_temp=True)
+            quadruple = Quadruple(curr_operator, left_operand, right_operand, temp_result)
+            self.quadruples.append(quadruple)
+            self.quadruple_counter += 1
+
 
 

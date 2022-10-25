@@ -1,7 +1,6 @@
 from semantic_cube import types
-from memory import Memory
+from memory import virtual_memory
 
-virtual_memory = Memory()
 # TODO: Grow this data structure as we add more to the variable table
 class VarsTableEntry:
     def __init__(self, type: str, address: int) -> None:
