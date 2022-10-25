@@ -11,6 +11,11 @@ class SemanticRules:
     types_stack = deque()
     jump_stack = deque()
     id_stack = deque()
+    quadruples : list[Quadruple]
+
+    def _init_(self) -> None:
+        self.quadruples = []
+        self.quadruple_counter = 1
 
     def add_id(self, id: str) -> None:
         self.id_stack.append(id)
@@ -24,6 +29,7 @@ class SemanticRules:
             name = self.id_stack.pop()
             vars_table.add_entry(name, self.current_type)
 
+    # Quadruple related modules
     def add_operator(self, operator: str) -> None:
         self.operators_stack.append(operator)
 
