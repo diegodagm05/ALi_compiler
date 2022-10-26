@@ -49,7 +49,7 @@ class SemanticRules:
             self.jump_stack.append(self.quadruple_counter - 1)
 
     def else_start(self):
-        quadruple = Quadruple('goto', -1)
+        quadruple = Quadruple('goto',-1)
         self.quadruple_counter += 1 
         self.quadruples.append(quadruple)
         false_jump = self.jump_stack.pop()
@@ -62,4 +62,24 @@ class SemanticRules:
             pending_jump = self.jump_stack.pop()
             self.quadruples[pending_jump].fill_result(self.quadruple_counter)
 
+    def start_while(self):
+        self.jump_stack.append(self.quadruple_counter)
 
+    def evaluate_while_expression(self):
+        expression_type = self.types_stack.pop()
+        if expression_type != types['bool']:
+            raise Exception('Type mismatch on conditional expression')
+        else:
+            result = self.operands_stack.pop()
+            quadruple = Quadruple('gotof', result)
+            self.quadruple_counter += 1
+            self.quadruples.append(quadruple)
+            self.jump_stack.append(self.quadruple_counter - 1)
+    
+    def end_while(self):
+        pending_jump = self.jump_stack.pop()
+        return_to = self.jump_stack.pop()
+        quadruple = Quadruple('goto', return_to)
+        self.quadruples.append(quadruple)
+        self.quadruple_counter += 1
+        self.quadruples[pending_jump].fill_result(self.quadruple_counter)

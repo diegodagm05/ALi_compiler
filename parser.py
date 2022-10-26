@@ -256,7 +256,25 @@ def p_array_indexing(p):
                       | '[' expression ']'  '[' expression ']' '''
 
 def p_while(p):
-    '''while : WHILE '(' expression ')' interior_block'''
+    '''while : WHILE start_while '(' expression ')' evaluate_while_expression interior_block end_while'''
+
+def p_start_while(p):
+    '''
+    start_while:
+    '''
+    semantics.start_while()
+
+def p_evaluate_while_expression(p):
+    '''
+    evaluate_while_expression:
+    '''
+    semantics.evaluate_while_expression()
+
+def p_end_while(p):
+    '''
+    end_while:
+    '''
+    semantics.end_while()
 
 def p_for(p):
     '''for : FOR '(' assignment ';' expression ';' assignment ')' interior_block'''
