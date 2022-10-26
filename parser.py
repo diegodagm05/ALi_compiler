@@ -187,8 +187,17 @@ def p_params(p):
               | ID ':' type'''
 
 def p_assignment(p):
-    '''assignment : ID '=' expression 
+    '''assignment : ID add_variable_to_operand_stack '=' expression gen_assignment_quad
                   | ID array_type '=' expression '''
+
+# def p_set_assignment_id(p):
+#     '''set_assignment_id : '''
+#     semantics.set_assignment_id(p[-1])
+
+def p_gen_assignment_quad(p):
+    '''gen_assignment_quad : '''
+    semantics.gen_assignment_quad()
+
 
 def p_array_assignment(p):
     '''array_assignment : ID '=' array_assign_type ';' '''
@@ -255,36 +264,24 @@ def p_for(p):
 
 def p_expression(p):
     '''expression : t_exp
-                  | t_exp OR add_logical_op expression'''
+                  | t_exp OR add_op expression'''
 
 def p_t_exp(p):
     '''t_exp : g_exp
-             | g_exp AND add_logical_op t_exp'''
-
-def p_add_logical_op(p):
-    '''
-    add_logical_op :
-    '''
-    semantics.add_operator(p[-1])
+             | g_exp AND add_op t_exp'''
 
 def p_g_exp(p):
     '''g_exp : m_exp
-          | m_exp op add_rel_op g_exp
+          | m_exp op add_op g_exp
           | '!' g_exp'''
 
-def p_add_rel_op(p):
-    '''
-    add_rel_op :
-    '''
-    semantics.add_operator(p[-1])
-
 def p_op(p):
-    '''op : '>'
-          | '<'
-          | GREATER_EQ
-          | LESS_EQ
-          | EQUAL
-          | DIFFERENT'''
+    '''op : '>' add_op
+          | '<' add_op
+          | GREATER_EQ add_op
+          | LESS_EQ add_op
+          | EQUAL add_op
+          | DIFFERENT add_op'''
 
 def p_m_exp(p):
     '''m_exp : term
@@ -307,9 +304,9 @@ def p_factor(p):
               | constants '''
 
 def p_constants(p):
-    '''constants : I_CONST
-                 | F_CONST
-                 | C_CONST
+    '''constants : I_CONST add_const_to_operand_stack_int
+                 | F_CONST add_const_to_operand_stack_float
+                 | C_CONST add_const_to_operand_stack_char
                  | variable
                  | call_to_fun
                  | get_window_h
@@ -318,7 +315,27 @@ def p_constants(p):
 
 def p_variable(p):
     '''variable : ID array_indexing 
-                | ID'''
+                | ID add_variable_to_operand_stack'''
+
+def p_add_variable_to_operand_stack(p):
+    '''add_variable_to_operand_stack : '''
+    semantics.add_id_operand(p[-1])
+def p_add_const_to_operand_stack_int(p):
+    '''add_const_to_operand_stack_int : '''
+    semantics.add_constant_operand(p[-1], 'INT')
+
+def p_add_const_to_operand_stack_float(p):
+    '''add_const_to_operand_stack_float : '''
+    semantics.add_constant_operand(p[-1], 'FLOAT')
+
+def p_add_const_to_operand_stack_char(p):
+    '''add_const_to_operand_stack_char : '''
+    semantics.add_constant_operand(p[-1], 'CHAR')
+
+# def p_add_const_to_operand_stack_bool(p):
+#     '''add_const_to_operand_stack_bool : '''
+#     semantics.add_constant_operand(p[-1], 'BOOL')
+
 
 # ----------------------
 # EMPTY & ERROR RULES 
@@ -344,3 +361,5 @@ def test():
 
 if __name__ == "__main__":
     test()
+    for i in range(len(semantics.quadruples)):
+        print(f'{i+1}. {semantics.quadruples[i].op_code} {semantics.quadruples[i].operator1} {semantics.quadruples[i].operator2} {semantics.quadruples[i].result}')

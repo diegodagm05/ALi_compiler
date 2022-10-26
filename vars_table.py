@@ -22,7 +22,7 @@ class VarsTable():
 
     def add_entry(self, name: str, type: str) -> None:
         if type not in types:
-            raise Exception('Unknown type used')
+            raise Exception(f'Unknown type used {type}')
         if name in self.vars_table:
             raise Exception('Redeclaration of identifier is not allowed')
         address = virtual_memory.assign_mem_address(types[type], is_temp=False)

@@ -62,15 +62,17 @@ class SemanticRules:
             self.types_stack.append(match_types)
             self.operands_stack.append(temp_result)
 
-    def gen_assignment_quad(self, id: str):
+    def gen_assignment_quad(self):
         assignment_operand_type = self.types_stack.pop()
-        id_to_assign = vars_table.lookup_entry(id)
-        match_types = sem_cube.match_types(id_to_assign.type, assignment_operand_type, '=')
+        assign_result_type = self.types_stack.pop()
+        
+        match_types = sem_cube.match_types(assign_result_type, assignment_operand_type, '=')
         if match_types == 'ERROR':
-            raise Exception(f'Type mismatch. \'{assignment_operand_type}\' cannot be assigned to \'{id_to_assign.type}')
+            raise Exception(f'Type mismatch. \'{assignment_operand_type}\' cannot be assigned to \'{assign_result_type}')
         else:
             expression_to_assign = self.operands_stack.pop()
-            quadruple = Quadruple('=', expression_to_assign, result=id_to_assign.address)
+            assign_result = self.operands_stack.pop()
+            quadruple = Quadruple('=', expression_to_assign, result=assign_result)
             self.quadruples.append(quadruple)
             self.quadruple_counter += 1
 
