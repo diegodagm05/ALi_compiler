@@ -78,4 +78,9 @@ class Memory():
 
     def get_mem_content(self, address: int):
         return self.memory[address]
+
+    def set_mem_content(self, address: int, content):
+        self.memory[address] = content
+
+virtual_memory = Memory()
     

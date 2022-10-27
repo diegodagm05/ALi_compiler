@@ -198,8 +198,12 @@ def p_params(p):
               | ID ':' type'''
 
 def p_assignment(p):
-    '''assignment : ID '=' expression 
+    '''assignment : ID '=' add_op expression
                   | ID array_type '=' expression '''
+    if len(p)-1 == 4:
+        semantics.add_id_operand(p[1])
+        semantics.gen_assignment_quad()
+
 
 def p_array_assignment(p):
     '''array_assignment : ID '=' array_assign_type ';' '''
@@ -260,19 +264,19 @@ def p_while(p):
 
 def p_start_while(p):
     '''
-    start_while:
+    start_while :
     '''
     semantics.start_while()
 
 def p_evaluate_while_expression(p):
     '''
-    evaluate_while_expression:
+    evaluate_while_expression :
     '''
     semantics.evaluate_while_expression()
 
 def p_end_while(p):
     '''
-    end_while:
+    end_while :
     '''
     semantics.end_while()
 
@@ -283,47 +287,35 @@ def p_for(p):
 # EXRPESSIONS RULES 
 
 def p_expression(p):
-    '''expression : t_exp
-                  | t_exp OR add_logical_op expression'''
+    '''expression : t_exp 
+                  | t_exp OR add_op expression gen_operation'''
 
 def p_t_exp(p):
-    '''t_exp : g_exp
-             | g_exp AND add_logical_op t_exp'''
-
-def p_add_logical_op(p):
-    '''
-    add_logical_op :
-    '''
-    semantics.add_operator(p[-1])
+    '''t_exp : g_exp 
+             | g_exp AND add_op t_exp gen_operation'''
 
 def p_g_exp(p):
-    '''g_exp : m_exp
-          | m_exp op add_rel_op g_exp
+    '''g_exp : m_exp 
+          | m_exp op g_exp gen_operation
           | '!' g_exp'''
 
-def p_add_rel_op(p):
-    '''
-    add_rel_op :
-    '''
-    semantics.add_operator(p[-1])
-
 def p_op(p):
-    '''op : '>'
-          | '<'
-          | GREATER_EQ
-          | LESS_EQ
-          | EQUAL
-          | DIFFERENT'''
+    '''op : '>' add_op
+          | '<' add_op
+          | GREATER_EQ add_op
+          | LESS_EQ add_op
+          | EQUAL add_op
+          | DIFFERENT add_op'''
 
 def p_m_exp(p):
     '''m_exp : term
-           | m_exp '+' add_op term
-           | m_exp '-' add_op term '''
+           | m_exp '+' add_op term gen_operation
+           | m_exp '-' add_op term gen_operation '''
 
 def p_term(p):
-    '''term : factor 
-            | term '*' add_op factor
-            | term '/' add_op factor'''
+    '''term : factor
+            | term '*' add_op factor gen_operation
+            | term '/' add_op factor gen_operation'''
 
 def p_add_op(p):
     '''
@@ -336,9 +328,9 @@ def p_factor(p):
               | constants '''
 
 def p_constants(p):
-    '''constants : I_CONST
-                 | F_CONST
-                 | C_CONST
+    '''constants : I_CONST add_const_to_operand_stack_int
+                 | F_CONST add_const_to_operand_stack_float
+                 | C_CONST add_const_to_operand_stack_char
                  | variable
                  | call_to_fun
                  | get_window_h
@@ -347,7 +339,31 @@ def p_constants(p):
 
 def p_variable(p):
     '''variable : ID array_indexing 
-                | ID'''
+                | ID add_variable_to_operand_stack'''
+
+def p_add_variable_to_operand_stack(p):
+    '''add_variable_to_operand_stack : '''
+    semantics.add_id_operand(p[-1])
+def p_add_const_to_operand_stack_int(p):
+    '''add_const_to_operand_stack_int : '''
+    semantics.add_constant_operand(p[-1], 'int')
+
+def p_add_const_to_operand_stack_float(p):
+    '''add_const_to_operand_stack_float : '''
+    semantics.add_constant_operand(p[-1], 'float')
+
+def p_add_const_to_operand_stack_char(p):
+    '''add_const_to_operand_stack_char : '''
+    semantics.add_constant_operand(p[-1], 'char')
+
+def p_gen_operation(p):
+    ''' gen_operation : '''
+    semantics.gen_operation_quad()
+
+# def p_add_const_to_operand_stack_bool(p):
+#     '''add_const_to_operand_stack_bool : '''
+#     semantics.add_constant_operand(p[-1], 'BOOL')
+
 
 # ----------------------
 # EMPTY & ERROR RULES 
@@ -373,3 +389,11 @@ def test():
 
 if __name__ == "__main__":
     test()
+    print(semantics.id_queue)
+    print(semantics.types_stack)
+    print(semantics.operands_stack)
+    print(semantics.operators_stack)
+    i = 1
+    for quad in semantics.quadruples:
+        print(f'{i}. {quad}')
+        i += 1
