@@ -264,19 +264,19 @@ def p_while(p):
 
 def p_start_while(p):
     '''
-    start_while:
+    start_while :
     '''
     semantics.start_while()
 
 def p_evaluate_while_expression(p):
     '''
-    evaluate_while_expression:
+    evaluate_while_expression :
     '''
     semantics.evaluate_while_expression()
 
 def p_end_while(p):
     '''
-    end_while:
+    end_while :
     '''
     semantics.end_while()
 

@@ -18,6 +18,7 @@ func main() {
         print("Hello universe!");
     } else {
         read("myFile.txt");
+        l = k;
     }
 
     void func start() {

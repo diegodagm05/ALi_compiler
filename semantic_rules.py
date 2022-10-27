@@ -94,13 +94,13 @@ class SemanticRules:
         self.quadruples.append(quadruple)
         false_jump = self.jump_stack.pop()
         self.jump_stack.append(self.quadruple_counter - 1)
-        self.quadruples[false_jump].fill_result(self.quadruple_counter)
+        self.quadruples[false_jump-1].fill_result(self.quadruple_counter)
 
 
     def end_if(self):
         while len(self.jump_stack) > 0:
             pending_jump = self.jump_stack.pop()
-            self.quadruples[pending_jump].fill_result(self.quadruple_counter)
+            self.quadruples[pending_jump-1].fill_result(self.quadruple_counter)
 
     def start_while(self):
         self.jump_stack.append(self.quadruple_counter)
@@ -122,4 +122,4 @@ class SemanticRules:
         quadruple = Quadruple('goto', return_to)
         self.quadruples.append(quadruple)
         self.quadruple_counter += 1
-        self.quadruples[pending_jump].fill_result(self.quadruple_counter)
+        self.quadruples[pending_jump - 1].fill_result(self.quadruple_counter)
