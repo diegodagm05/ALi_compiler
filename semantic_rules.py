@@ -12,26 +12,26 @@ class SemanticRules:
     types_stack = deque()
     jump_stack = deque()
     id_stack = deque()
-    quadruples : list[Quadruple]
-
-    def _init_(self) -> None:
-        self.quadruples = []
-        self.quadruple_counter = 1
+    quadruples : list[Quadruple] = []
+    quadruple_counter = 1
 
     def add_id(self, id: str) -> None:
         self.id_stack.append(id)
 
     # TODO: Change this function when handling array types
     def set_current_type(self, type: str) -> None:
+        print(f'Setting current type {type}')
         self.current_type = type
 
     def store_ids(self) -> None:
+        print(f'Storing ids {self.id_stack}')
         while len(self.id_stack) > 0:
             name = self.id_stack.pop()
             vars_table.add_entry(name, self.current_type)
 
     # Quadruple related modules
     def add_operator(self, operator: str) -> None:
+        print(f'adding operator {operator}')
         self.operators_stack.append(operator)
 
     def add_id_operand(self, operand) -> None:
@@ -50,6 +50,7 @@ class SemanticRules:
         left_type = self.types_stack.pop()
         curr_operator = self.operators_stack.pop()
         match_types = sem_cube.match_types(right_type, left_type, curr_operator)
+        print('generating operation quad')
         if match_types == 'ERROR':
             raise Exception(f'Type mismatch. \'{left_type}\' cannot be combined with \'{right_type}\' with the \'{curr_operator}\' operator')
         else:
@@ -57,6 +58,7 @@ class SemanticRules:
             left_operand = self.operands_stack.pop()
             temp_result = virtual_memory.assign_mem_address(match_types, is_temp=True)
             quadruple = Quadruple(curr_operator, left_operand, right_operand, temp_result)
+            print(f'generated quadruple: {quadruple}')
             self.quadruples.append(quadruple)
             self.quadruple_counter += 1
             self.types_stack.append(match_types)

@@ -30,6 +30,6 @@ class VarsTable():
 
     def lookup_entry(self, name: str) -> VarsTableEntry:
         if name not in self.vars_table:
-            raise Exception('Undeclared identifier')
+            raise Exception(f'Undeclared identifier {name}')
 
         return self.vars_table[name]

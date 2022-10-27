@@ -187,7 +187,7 @@ def p_params(p):
               | ID ':' type'''
 
 def p_assignment(p):
-    '''assignment : ID add_variable_to_operand_stack '=' expression gen_assignment_quad
+    '''assignment : ID '=' expression
                   | ID array_type '=' expression '''
 
 # def p_set_assignment_id(p):
@@ -272,7 +272,7 @@ def p_t_exp(p):
 
 def p_g_exp(p):
     '''g_exp : m_exp
-          | m_exp op add_op g_exp
+          | m_exp op g_exp
           | '!' g_exp'''
 
 def p_op(p):
@@ -322,15 +322,15 @@ def p_add_variable_to_operand_stack(p):
     semantics.add_id_operand(p[-1])
 def p_add_const_to_operand_stack_int(p):
     '''add_const_to_operand_stack_int : '''
-    semantics.add_constant_operand(p[-1], 'INT')
+    semantics.add_constant_operand(p[-1], 'int')
 
 def p_add_const_to_operand_stack_float(p):
     '''add_const_to_operand_stack_float : '''
-    semantics.add_constant_operand(p[-1], 'FLOAT')
+    semantics.add_constant_operand(p[-1], 'float')
 
 def p_add_const_to_operand_stack_char(p):
     '''add_const_to_operand_stack_char : '''
-    semantics.add_constant_operand(p[-1], 'CHAR')
+    semantics.add_constant_operand(p[-1], 'char')
 
 # def p_add_const_to_operand_stack_bool(p):
 #     '''add_const_to_operand_stack_bool : '''
@@ -361,5 +361,9 @@ def test():
 
 if __name__ == "__main__":
     test()
-    for i in range(len(semantics.quadruples)):
-        print(f'{i+1}. {semantics.quadruples[i].op_code} {semantics.quadruples[i].operator1} {semantics.quadruples[i].operator2} {semantics.quadruples[i].result}')
+    # help(semantics)
+    print(semantics.quadruples)
+    print(semantics.id_stack)
+    print(semantics.types_stack)
+    print(semantics.operands_stack)
+    print(semantics.operators_stack)
