@@ -150,33 +150,44 @@ def p_statements(p):
                   | special_function_statement'''
 
 def p_conditionals(p):
-    '''conditionals : if_statement 
-                    | if_else_statement
-                    | if_else_if_statement'''
+    '''conditionals : if_statement end_if
+                    | if_else_statement end_if
+                    | if_else_if_statement end_if '''
 
 def p_if_statement(p):
     '''if_statement : simple_if_statement'''
 
 def p_simple_if_statement(p):
-    '''simple_if_statement : IF '(' expression ')' interior_block'''
+    '''simple_if_statement : IF '(' expression ')' start_if  interior_block'''
 
 def p_if_else_statement(p):
     '''if_else_statement : simple_if_statement simple_else_statement'''
 
 def p_simple_else_statement(p):
-    '''simple_else_statement : ELSE interior_block'''
+    '''simple_else_statement : start_else ELSE interior_block'''
 
 def p_if_else_if_statement(p):
     '''if_else_if_statement : simple_if_statement simple_else_if_statement simple_else_statement
                             | simple_if_statement simple_else_if_statement'''
 
 def p_simple_else_if_statement(p):
-    '''simple_else_if_statement : ELIF '(' expression ')' interior_block more_else_if_statement '''
+    '''simple_else_if_statement : start_else ELIF '(' expression ')' start_if interior_block more_else_if_statement '''
 
 def p_more_else_if_statement(p):
     '''more_else_if_statement : simple_else_if_statement
                               | empty'''
 
+def p_start_if(p):
+    '''start_if : '''
+    semantics.if_start()
+
+def p_start_else(p):
+    '''start_else : '''
+    semantics.else_start()
+
+def p_end_if(p):
+    '''end_if : '''
+    semantics.end_if()
 
 def p_interior_block(p):
     '''interior_block : '{' '}'
@@ -249,7 +260,25 @@ def p_array_indexing(p):
                       | '[' expression ']'  '[' expression ']' '''
 
 def p_while(p):
-    '''while : WHILE '(' expression ')' interior_block'''
+    '''while : WHILE start_while '(' expression ')' evaluate_while_expression interior_block end_while'''
+
+def p_start_while(p):
+    '''
+    start_while:
+    '''
+    semantics.start_while()
+
+def p_evaluate_while_expression(p):
+    '''
+    evaluate_while_expression:
+    '''
+    semantics.evaluate_while_expression()
+
+def p_end_while(p):
+    '''
+    end_while:
+    '''
+    semantics.end_while()
 
 def p_for(p):
     '''for : FOR '(' assignment ';' expression ';' assignment ')' interior_block'''
