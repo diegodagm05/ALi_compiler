@@ -263,16 +263,16 @@ def p_for(p):
 # EXRPESSIONS RULES 
 
 def p_expression(p):
-    '''expression : t_exp
-                  | t_exp OR add_op expression'''
+    '''expression : t_exp gen_operation
+                  | t_exp OR add_op expression gen_operation'''
 
 def p_t_exp(p):
-    '''t_exp : g_exp
-             | g_exp AND add_op t_exp'''
+    '''t_exp : g_exp gen_operation
+             | g_exp AND add_op t_exp gen_operation'''
 
 def p_g_exp(p):
-    '''g_exp : m_exp
-          | m_exp op g_exp
+    '''g_exp : m_exp gen_operation
+          | m_exp op g_exp gen_operation
           | '!' g_exp'''
 
 def p_op(p):
@@ -285,13 +285,13 @@ def p_op(p):
 
 def p_m_exp(p):
     '''m_exp : term
-           | m_exp '+' add_op term
-           | m_exp '-' add_op term '''
+           | m_exp '+' add_op term gen_operation
+           | m_exp '-' add_op term gen_operation '''
 
 def p_term(p):
-    '''term : factor 
-            | term '*' add_op factor
-            | term '/' add_op factor'''
+    '''term : factor gen_operation
+            | term '*' add_op factor gen_operation
+            | term '/' add_op factor gen_operation'''
 
 def p_add_op(p):
     '''
@@ -332,6 +332,10 @@ def p_add_const_to_operand_stack_char(p):
     '''add_const_to_operand_stack_char : '''
     semantics.add_constant_operand(p[-1], 'char')
 
+def p_gen_operation(p):
+    ''' gen_operation : '''
+    semantics.gen_operation_quad()
+
 # def p_add_const_to_operand_stack_bool(p):
 #     '''add_const_to_operand_stack_bool : '''
 #     semantics.add_constant_operand(p[-1], 'BOOL')
@@ -361,7 +365,6 @@ def test():
 
 if __name__ == "__main__":
     test()
-    # help(semantics)
     print(semantics.quadruples)
     print(semantics.id_stack)
     print(semantics.types_stack)
