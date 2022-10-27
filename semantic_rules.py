@@ -21,11 +21,9 @@ class SemanticRules:
 
     # TODO: Change this function when handling array types
     def set_current_type(self, type: str) -> None:
-        print(f'Setting current type {type}')
         self.current_type = type
 
     def store_ids(self) -> None:
-        print(f'Storing ids {self.id_queue}')
         while len(self.id_queue) > 0:
             name = self.id_queue.popleft()
             vars_table.add_entry(name, self.current_type)
@@ -41,6 +39,7 @@ class SemanticRules:
         variable = vars_table.lookup_entry(operand)
         self.operands_stack.append(variable.address)
         self.types_stack.append(variable.type)
+        print(f'Added id {operand} type: {variable.type} address: {variable.address}')
 
     def add_constant_operand(self, operand, type):
         # TODO: Assign memory correctly to constant values by storing them in the correct var table
@@ -54,7 +53,6 @@ class SemanticRules:
         left_type = self.types_stack.pop()
         curr_operator = self.operators_stack.pop()
         match_types = sem_cube.match_types(right_type, left_type, curr_operator)
-        print('generating operation quad')
         if match_types == 'ERROR':
             raise Exception(f'Type mismatch. \'{left_type}\' cannot be combined with \'{right_type}\' with the \'{curr_operator}\' operator')
         else:
@@ -69,15 +67,17 @@ class SemanticRules:
             self.operands_stack.append(temp_result)
 
     def gen_assignment_quad(self):
+        print('Generating assignment quad')
         assignment_operand_type = self.types_stack.pop()
         assign_result_type = self.types_stack.pop()
-        
+        print(f'Assign id type {assign_result_type}')
         match_types = sem_cube.match_types(assign_result_type, assignment_operand_type, '=')
         if match_types == 'ERROR':
             raise Exception(f'Type mismatch. \'{assignment_operand_type}\' cannot be assigned to \'{assign_result_type}')
         else:
-            expression_to_assign = self.operands_stack.pop()
             assign_result = self.operands_stack.pop()
+            expression_to_assign = self.operands_stack.pop()
+            print(f'Assigning expression result {expression_to_assign} to {assign_result}')
             quadruple = Quadruple('=', expression_to_assign, result=assign_result)
             self.quadruples.append(quadruple)
             self.quadruple_counter += 1

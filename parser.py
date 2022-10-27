@@ -187,16 +187,12 @@ def p_params(p):
               | ID ':' type'''
 
 def p_assignment(p):
-    '''assignment : ID '=' expression
+    '''assignment : ID '=' add_op expression
                   | ID array_type '=' expression '''
-
-# def p_set_assignment_id(p):
-#     '''set_assignment_id : '''
-#     semantics.set_assignment_id(p[-1])
-
-def p_gen_assignment_quad(p):
-    '''gen_assignment_quad : '''
-    semantics.gen_assignment_quad()
+    if len(p)-1 == 4:
+        print(f'Assignment rule: {p[0]} {p[1]} {p[2]} {p[3]}')
+        semantics.add_id_operand(p[1])
+        semantics.gen_assignment_quad()
 
 
 def p_array_assignment(p):
