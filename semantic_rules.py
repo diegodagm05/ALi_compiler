@@ -93,7 +93,6 @@ class SemanticRules:
         self.quadruple_counter += 1 
         self.quadruples.append(quadruple)
         false_jump = self.jump_stack.pop()
-        print(f'False jump quad {false_jump-1}')
         self.jump_stack.append(self.quadruple_counter - 1)
         self.quadruples[false_jump-1].fill_result(self.quadruple_counter)
 
@@ -101,9 +100,6 @@ class SemanticRules:
     def end_if(self):
         while len(self.jump_stack) > 0:
             pending_jump = self.jump_stack.pop()
-            print(f'Pending jump index {pending_jump - 1}')
-            print(f'quad counter {self.quadruple_counter}')
-            print(f'Quad to be filled {self.quadruples[pending_jump-1]}')
             self.quadruples[pending_jump-1].fill_result(self.quadruple_counter)
 
     def start_while(self):
