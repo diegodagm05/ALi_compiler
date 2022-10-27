@@ -5,18 +5,19 @@ from vars_table import VarsTable
 from memory import virtual_memory
 
 vars_table = VarsTable()
+const_vars_table = VarsTable()
 sem_cube = SemanticCube()
 class SemanticRules:
     operands_stack = deque()
     operators_stack = deque()
     types_stack = deque()
     jump_stack = deque()
-    id_stack = deque()
+    id_queue = deque()
     quadruples : list[Quadruple] = []
     quadruple_counter = 1
 
     def add_id(self, id: str) -> None:
-        self.id_stack.append(id)
+        self.id_queue.append(id)
 
     # TODO: Change this function when handling array types
     def set_current_type(self, type: str) -> None:
@@ -24,9 +25,9 @@ class SemanticRules:
         self.current_type = type
 
     def store_ids(self) -> None:
-        print(f'Storing ids {self.id_stack}')
-        while len(self.id_stack) > 0:
-            name = self.id_stack.pop()
+        print(f'Storing ids {self.id_queue}')
+        while len(self.id_queue) > 0:
+            name = self.id_queue.popleft()
             vars_table.add_entry(name, self.current_type)
 
     # Quadruple related modules

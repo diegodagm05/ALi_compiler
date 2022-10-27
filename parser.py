@@ -365,7 +365,7 @@ def test():
 
 if __name__ == "__main__":
     test()
-    print(semantics.id_stack)
+    print(semantics.id_queue)
     print(semantics.types_stack)
     print(semantics.operands_stack)
     print(semantics.operators_stack)
