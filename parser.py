@@ -263,15 +263,15 @@ def p_for(p):
 # EXRPESSIONS RULES 
 
 def p_expression(p):
-    '''expression : t_exp gen_operation
+    '''expression : t_exp 
                   | t_exp OR add_op expression gen_operation'''
 
 def p_t_exp(p):
-    '''t_exp : g_exp gen_operation
+    '''t_exp : g_exp 
              | g_exp AND add_op t_exp gen_operation'''
 
 def p_g_exp(p):
-    '''g_exp : m_exp gen_operation
+    '''g_exp : m_exp 
           | m_exp op g_exp gen_operation
           | '!' g_exp'''
 
@@ -289,7 +289,7 @@ def p_m_exp(p):
            | m_exp '-' add_op term gen_operation '''
 
 def p_term(p):
-    '''term : factor gen_operation
+    '''term : factor
             | term '*' add_op factor gen_operation
             | term '/' add_op factor gen_operation'''
 
@@ -365,8 +365,11 @@ def test():
 
 if __name__ == "__main__":
     test()
-    print(semantics.quadruples)
     print(semantics.id_stack)
     print(semantics.types_stack)
     print(semantics.operands_stack)
     print(semantics.operators_stack)
+    i = 1
+    for quad in semantics.quadruples:
+        print(f'{i}. {quad}')
+        i += 1

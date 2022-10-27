@@ -44,6 +44,7 @@ class SemanticRules:
     def add_constant_operand(self, operand, type):
         # TODO: Assign memory correctly to constant values by storing them in the correct var table
         address = virtual_memory.assign_mem_address('CONST', False)
+        # vars_table.add_entry(operand, type)
         self.operands_stack.append(address)
         self.types_stack.append(type)
                     

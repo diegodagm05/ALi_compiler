@@ -8,11 +8,11 @@ func main() {
     a = 20;
     j = foo(); 
     b = 23.67;
-    m = bar(a, b) / foo(); 
+    m = a / b; 
     c = 'c';
     arr = [1,2,3];
     // conditional statments
-    if (a != b && !(b == m)) {
+    if (a != j && !(b == m)) {
         print("Hello world!");
     } elif (a >= b && j > arr[1] || b < arr[3] || a <= arr[2]) {
         print("Hello universe!");
