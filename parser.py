@@ -190,7 +190,6 @@ def p_assignment(p):
     '''assignment : ID '=' add_op expression
                   | ID array_type '=' expression '''
     if len(p)-1 == 4:
-        print(f'Assignment rule: {p[0]} {p[1]} {p[2]} {p[3]}')
         semantics.add_id_operand(p[1])
         semantics.gen_assignment_quad()
 

@@ -39,7 +39,6 @@ class SemanticRules:
         variable = vars_table.lookup_entry(operand)
         self.operands_stack.append(variable.address)
         self.types_stack.append(variable.type)
-        print(f'Added id {operand} type: {variable.type} address: {variable.address}')
 
     def add_constant_operand(self, operand, type):
         # TODO: Assign memory correctly to constant values by storing them in the correct var table
@@ -60,25 +59,22 @@ class SemanticRules:
             left_operand = self.operands_stack.pop()
             temp_result = virtual_memory.assign_mem_address(match_types, is_temp=True)
             quadruple = Quadruple(curr_operator, left_operand, right_operand, temp_result)
-            print(f'generated quadruple: {quadruple}')
             self.quadruples.append(quadruple)
             self.quadruple_counter += 1
             self.types_stack.append(match_types)
             self.operands_stack.append(temp_result)
 
     def gen_assignment_quad(self):
-        print('Generating assignment quad')
         assignment_operand_type = self.types_stack.pop()
         assign_result_type = self.types_stack.pop()
-        print(f'Assign id type {assign_result_type}')
-        match_types = sem_cube.match_types(assign_result_type, assignment_operand_type, '=')
+        assignment_operator = self.operators_stack.pop()
+        match_types = sem_cube.match_types(assign_result_type, assignment_operand_type, assignment_operator)
         if match_types == 'ERROR':
             raise Exception(f'Type mismatch. \'{assignment_operand_type}\' cannot be assigned to \'{assign_result_type}')
         else:
             assign_result = self.operands_stack.pop()
             expression_to_assign = self.operands_stack.pop()
-            print(f'Assigning expression result {expression_to_assign} to {assign_result}')
-            quadruple = Quadruple('=', expression_to_assign, result=assign_result)
+            quadruple = Quadruple(assignment_operator, expression_to_assign, result=assign_result)
             self.quadruples.append(quadruple)
             self.quadruple_counter += 1
 
