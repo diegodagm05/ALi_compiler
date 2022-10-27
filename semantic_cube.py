@@ -1,8 +1,8 @@
 types = {
-    'int': 'INT',
-    'float': 'FLOAT',
-    'char': 'CHAR',
-    'bool': 'BOOL',
+    'int': 'int',
+    'float': 'float',
+    'char': 'char',
+    'bool': 'bool',
 }
 
 operations = {
@@ -282,9 +282,7 @@ class SemanticCube():
         if operator not in operations:
             raise Exception('Unknown operator used')
 
-        result = self.semantic_cube[type1][type2][operator]
-
-        if result == 'ERROR':
-            raise Exception(f'Type mismatch. \'{type1}\' cannot be combined with \'{type2}\' with the \'{operator}\' operator')
-        
+        sem_type1 = types[type1]
+        sem_type2 = types[type2]
+        result = self.semantic_cube[sem_type1][sem_type2][operator]
         return result

@@ -21,6 +21,12 @@ class Quadruple():
         self.operator2 = operator2
         self.result = result
 
+    def __str__(self) -> str:
+        return f'{self.op_code} {self.operator1} {self.operator2} {self.result}\n'
+
+    def __repr__(self) -> str:
+        return f'{self.op_code} {self.operator1} {self.operator2} {self.result}\n'
+
     def fill_result(self, result: int) -> None:
         self.result = result
     
