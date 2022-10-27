@@ -30,7 +30,6 @@ class SemanticRules:
 
     # Quadruple related modules
     def add_operator(self, operator: str) -> None:
-        print(f'adding operator {operator}')
         self.operators_stack.append(operator)
 
     def add_id_operand(self, operand) -> None:

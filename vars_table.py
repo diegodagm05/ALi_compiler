@@ -26,7 +26,6 @@ class VarsTable():
         if name in self.vars_table:
             raise Exception('Redeclaration of identifier is not allowed')
         address = virtual_memory.assign_mem_address(types[type], is_temp=False)
-        print(f'Assigning address {address} to {name}')
         self.vars_table[name] = VarsTableEntry(types[type], address)
 
     def lookup_entry(self, name: str) -> VarsTableEntry:
