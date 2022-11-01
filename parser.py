@@ -281,7 +281,25 @@ def p_end_while(p):
     semantics.end_while()
 
 def p_for(p):
-    '''for : FOR '(' assignment ';' expression ';' assignment ')' interior_block'''
+    '''for : FOR '(' assignment ';' start_for expression ';' eval_for_expression assignment ')' interior_block end_for'''
+
+def p_start_for(p):
+    '''
+    start_for :
+    '''
+    semantics.start_for()
+
+def p_eval_for_expression(p):
+    '''
+    eval_for_expression :
+    '''
+    semantics.evaluate_for_expression()
+
+def p_end_for(p):
+    '''
+    end_for :
+    '''
+    semantics.end_for()
 
 # ----------------------
 # EXRPESSIONS RULES 

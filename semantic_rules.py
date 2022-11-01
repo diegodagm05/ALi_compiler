@@ -1,3 +1,4 @@
+from ast import Expression
 from collections import deque
 from quadruple import  Quadruple
 from semantic_cube import SemanticCube, types, operations
@@ -119,6 +120,31 @@ class SemanticRules:
     def end_while(self):
         pending_jump = self.jump_stack.pop()
         return_to = self.jump_stack.pop()
+        quadruple = Quadruple('goto', return_to)
+        self.quadruples.append(quadruple)
+        self.quadruple_counter += 1
+        self.quadruples[pending_jump - 1].fill_result(self.quadruple_counter)
+
+    def start_for(self):
+        self.jump_stack.append(self.quadruple_counter)
+        print(self.quadruple_counter)
+
+    def evaluate_for_expression(self):
+        expression_type = self.types_stack.pop()
+        if expression_type != types['bool']:
+            raise Exception('Type mismatch on conditional expression')
+        else:
+            result = self.operands_stack.pop()
+            quadruple = Quadruple('gotof', result)
+            self.quadruple_counter += 1
+            self.quadruples.append(quadruple)
+            self.jump_stack.append(self.quadruple_counter - 1)
+    
+    def end_for(self):
+        pending_jump = self.jump_stack.pop()
+        return_to = self.jump_stack.pop()
+        print('pending jump: ', pending_jump)
+        print('pending jump: ', self.quadruples[pending_jump - 1])
         quadruple = Quadruple('goto', return_to)
         self.quadruples.append(quadruple)
         self.quadruple_counter += 1
