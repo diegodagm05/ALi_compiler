@@ -1,12 +1,12 @@
 from semantic_cube import operations
 
 quadruple_operations = operations | {
-    'print': 13,
-    'read': 14,
-    'write': 15,
-    'goto': 16,
-    'gotot': 17,
-    'gotof': 18
+    'print': 14,
+    'read': 15,
+    'write': 16,
+    'goto': 17,
+    'gotot': 18,
+    'gotof': 19
 }
 
 class Quadruple():
