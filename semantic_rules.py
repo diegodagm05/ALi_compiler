@@ -169,6 +169,9 @@ class SemanticRules:
             raise Exception(f'Function with name {name} has already been declared.')
         else:
             self.function_directory.create_scope(name, self.current_type)
+            # if the function returns a value, store it as a global variable
+            if self.current_type != 'void':
+                self.function_directory.get_scope_var_table('global').add_entry(name, self.current_type)
             # Change the current scope, and therefore current var table
             self.set_scope(name)
             self.current_param_count = self.current_local_var_count =  self.current_temp_count = 0
