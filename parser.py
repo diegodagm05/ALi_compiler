@@ -130,14 +130,14 @@ def p_functions(p):
                  | void_function'''
 
 def p_return_function(p):
-    '''return_function : type FUNC ID store_function '(' p ')' '{' start_function_ic function_block ';' end_function '}' '''
+    '''return_function : type FUNC ID store_function '(' p ')' '{' start_function_ic function_block end_function '}' '''
 
 def p_p(p):
     '''p : params
          | empty'''
 
 def p_void_function(p):
-    '''void_function : VOID set_current_type FUNC ID store_function '(' p ')' '{' start_function_ic function_block '}' '''
+    '''void_function : VOID set_current_type FUNC ID store_function '(' p ')' '{' start_function_ic function_block end_function '}' '''
 
 def p_store_function(p):
     '''store_function : '''
@@ -156,12 +156,12 @@ def p_statements(p):
     '''statements : assignment ';'
                   | array_assignment
                   | call_to_fun ';'
-                  | write 
+                  | write
                   | conditionals
                   | cycles
                   | read
                   | special_function_statement
-                  | RETURN expression '''
+                  | RETURN expression ';' '''
 
 def p_conditionals(p):
     '''conditionals : if_statement end_if
@@ -260,11 +260,36 @@ def p_read_p(p):
               | STRING_CONST'''
 
 def p_call_to_fun(p):
-    '''call_to_fun : ID '(' ')'
-                   | ID '(' call_p ')' '''
+    '''call_to_fun : ID verify_function '(' gen_activation_quad ')' verify_params_number end_function_call
+                   | ID verify_function '(' gen_activation_quad call_p ')' verify_params_number end_function_call '''
+
 def p_call_p(p):
-    '''call_p : expression ',' call_p
-              | expression'''
+    '''call_p : expression call_argument ',' move_to_next_param  call_p
+              | expression call_argument '''
+
+def p_verify_function(p):
+    ''' verify_function : '''
+    semantics.verify_function(p[-1])
+
+def p_gen_activation_quad(p):
+    ''' gen_activation_quad : '''
+    semantics.gen_activation_record_quad()
+
+def p_call_argument(p):
+    ''' call_argument : '''
+    semantics.call_argument()
+
+def p_move_to_next_param(p):
+    ''' move_to_next_param : '''
+    semantics.move_to_next_param()
+
+def p_verify_params_number(p):
+    ''' verify_params_number : '''
+    semantics.verify_params_number()
+
+def p_end_function_call(p):
+    ''' end_function_call : '''
+    semantics.end_function_call()
 
 def p_cycles(p):
     '''cycles : while

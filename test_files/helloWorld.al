@@ -1,8 +1,12 @@
 var PI : float;
 
-int func foo() {
+int func foo(paramX : char) {
     PI = 3.14;
     return PI;
+}
+
+void func foo2() {
+    print("Hey there from foo2");
 }
 
 float func bar(param1 : int, param2 : float) {
@@ -24,13 +28,14 @@ func main() {
     var x : char;
     // Assignment statements
     a = 20;
-    b = 10;
+    b = foo(x);
     c = 20 + 10;
     x = 'c';
     j = 3.14;
     k = 2.71;
     l = 14.14;
     // conditional statments
+    foo2();
     if (a != b && !(b > c)) {
         print("Hello world!");
     } elif (a >= b && j > k || j < l|| a <= c) {
@@ -55,6 +60,6 @@ func main() {
     }
 
     void func update() {
-        drawPlayer(20, 20+1, j, k, a);
+        drawPlayer(20, 20+1, a, b);
     }
 }

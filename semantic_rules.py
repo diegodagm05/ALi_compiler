@@ -18,7 +18,6 @@ class SemanticRules:
     function_directory = FuncDir()
     current_scopeID : str
     current_call_scopeID : str
-    current_call_param_counter : int
     call_param_ptr : str
     call_scope_params_list : list[str]
     current_var_table : str
@@ -29,6 +28,7 @@ class SemanticRules:
 
     def __init__(self) -> None:
         self.set_scope('global')
+        self.current_call_param_counter = 0
 
     def append_quad(self, quadruple: Quadruple) -> None:
         self.quadruples.append(quadruple)
@@ -195,7 +195,7 @@ class SemanticRules:
 
     # Function calling rules
     def verify_function(self, name):
-        if name not in self.function_directory:
+        if name not in self.function_directory.get_func_dir():
             raise Exception(f'Undeclared function {name}.')
         else: 
             self.current_call_scopeID = name
@@ -203,12 +203,12 @@ class SemanticRules:
     def gen_activation_record_quad(self):
         scope = self.function_directory.get_scope(self.current_call_scopeID)
         # resources needed will be stored as a tuple
-        resources = (
+        resources = [
             scope.num_vars_int * scope.num_temps_int, 
             scope.num_vars_float * scope.num_temps_float, 
             scope.num_vars_char * scope.num_temps_char,
             scope.num_vars_bool * scope.num_temps_bool
-        )
+        ]
         for param in scope.params_list:
             if param == 'i':
                 resources[0] += 1
@@ -219,25 +219,34 @@ class SemanticRules:
             elif param == 'b':
                 resources[3] += 1
         was_quad = Quadruple('was', result=resources)
-        self.append_quad()
-        self.current_call_param_counter = 0
+        self.append_quad(was_quad)
         self.call_scope_params_list = scope.params_list
-        self.set_call_param_ptr()
+        self.current_call_param_counter = 0
+        if len(self.call_scope_params_list) > 0:
+            self.set_call_param_ptr()
 
     def call_argument(self):
+        print(f'At {self.current_call_scopeID} calling call_argument rule')
         argument = self.operands_stack.pop()
         argument_type = self.types_stack.pop()
         if self.call_param_ptr != types[argument_type]:
-            raise Exception(f'Type mismatch. \n Parameter {self.current_param_count} of function {self.current_call_scopeID} is of type {self.call_param_ptr} and is being passed an expression of type {argument_type}')
+            raise Exception(f'Type mismatch. \n Parameter {self.current_call_param_counter} of function {self.current_call_scopeID} is of type {self.call_param_ptr} and is being passed an expression of type {argument_type}')
         else:
-            param_quad = Quadruple('parameter', argument, result='param' + str(self.current_param_count))
+            param_quad = Quadruple('parameter', argument, result='param' + str(self.current_call_param_counter+1))
+            print(f'Genrated param quad for function {self.current_call_scopeID}')
             self.append_quad(param_quad)
+            self.current_call_param_counter += 1
 
     def move_to_next_param(self):
-        self.current_call_param_counter += 1
-        if self.current_call_param_counter > len(self.call_scope_params_list) - 1:
-            raise Exception(f'Too many arguments for function {self.current_call_scopeID}')
         self.set_call_param_ptr()
+
+    def verify_params_number(self):
+        print(f'Veryfiying params number function {self.current_call_scopeID} param count: {self.current_call_param_counter} compared to {len(self.call_scope_params_list)}')
+        if self.current_call_param_counter > len(self.call_scope_params_list):
+            raise Exception(f'Too many arguments. Function \'{self.current_call_scopeID}\' expects {len(self.call_scope_params_list)} arguments and got {self.current_call_param_counter}.')
+        elif self.current_call_param_counter < len(self.call_scope_params_list):
+            raise Exception(f'Too few arguments. Function \'{self.current_call_scopeID}\' expects {len(self.call_scope_params_list)} arguments and got {self.current_call_param_counter}..')
+
 
     def end_function_call(self):
         call_scope = self.function_directory.get_scope(self.current_call_scopeID)
@@ -245,6 +254,7 @@ class SemanticRules:
         self.append_quad(end_function_quad)
 
     def set_call_param_ptr(self) -> str:
+        print(f'At function {self.current_call_scopeID} setting param pointer to {self.current_call_param_counter+1} of {len(self.call_scope_params_list)}  ')
         param_type = self.call_scope_params_list[self.current_call_param_counter]
         if  param_type == 'i':
             self.call_param_ptr = types['int']
