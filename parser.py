@@ -231,18 +231,30 @@ def p_write(p):
  
 def p_write_p(p):
     '''write_p : write_param ',' write_p 
-               | write_param'''
+               | write_param '''
 
 def p_write_param(p):
-    '''write_param : STRING_CONST
-                   | variable '''
+    '''write_param : STRING_CONST add_const_to_operand_stack_string print_value
+                   | variable print_value'''
+
+def p_print_value(p):
+    '''
+    print_value :
+    '''
+    semantics.print_value()
 
 def p_read(p):
     '''read : READ '(' read_p ')' ';' '''
  
 def p_read_p(p):
-    '''read_p : STRING_CONST ',' read_p
-              | STRING_CONST'''
+    '''read_p : STRING_CONST add_const_to_operand_stack_string read_constant ',' read_p
+              | STRING_CONST add_const_to_operand_stack_string read_constant '''
+
+def p_read_constant(p):
+    '''
+    read_constant :
+    '''
+    semantics.read_constant()
 
 def p_call_to_fun(p):
     '''call_to_fun : ID '(' ')'
@@ -362,6 +374,13 @@ def p_variable(p):
 def p_add_variable_to_operand_stack(p):
     '''add_variable_to_operand_stack : '''
     semantics.add_id_operand(p[-1])
+
+def p_add_const_to_operand_stack_string(p):
+    '''
+    add_const_to_operand_stack_string : 
+    '''
+    semantics.add_constant_operand(p[-1], 'string')
+
 def p_add_const_to_operand_stack_int(p):
     '''add_const_to_operand_stack_int : '''
     semantics.add_constant_operand(p[-1], 'int')

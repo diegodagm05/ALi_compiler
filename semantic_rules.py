@@ -149,3 +149,15 @@ class SemanticRules:
         self.quadruples.append(quadruple)
         self.quadruple_counter += 1
         self.quadruples[pending_jump - 1].fill_result(self.quadruple_counter)
+    
+    def print_value(self):
+        result = self.operands_stack.pop()
+        self.types_stack.pop()
+        quadruple = Quadruple('print', None, None, result)
+        self.quadruples.append(quadruple)
+
+    def read_constant(self):
+        result = self.operands_stack.pop()
+        self.types_stack.pop()
+        quadruple = Quadruple('read', None, None, result)
+        self.quadruples.append(quadruple)
