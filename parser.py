@@ -130,7 +130,7 @@ def p_functions(p):
                  | void_function'''
 
 def p_return_function(p):
-    '''return_function : type FUNC ID '(' p ')' '{' function_block RETURN expression ';' '}' '''
+    '''return_function : type FUNC ID '(' p ')' '{' function_block ';' '}' '''
 
 def p_p(p):
     '''p : params
@@ -147,7 +147,8 @@ def p_statements(p):
                   | conditionals
                   | cycles
                   | read
-                  | special_function_statement'''
+                  | special_function_statement
+                  | RETURN expression '''
 
 def p_conditionals(p):
     '''conditionals : if_statement end_if
