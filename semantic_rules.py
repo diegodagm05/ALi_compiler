@@ -226,14 +226,12 @@ class SemanticRules:
             self.set_call_param_ptr()
 
     def call_argument(self):
-        print(f'At {self.current_call_scopeID} calling call_argument rule')
         argument = self.operands_stack.pop()
         argument_type = self.types_stack.pop()
         if self.call_param_ptr != types[argument_type]:
             raise Exception(f'Type mismatch. \n Parameter {self.current_call_param_counter} of function {self.current_call_scopeID} is of type {self.call_param_ptr} and is being passed an expression of type {argument_type}')
         else:
             param_quad = Quadruple('parameter', argument, result='param' + str(self.current_call_param_counter+1))
-            print(f'Genrated param quad for function {self.current_call_scopeID}')
             self.append_quad(param_quad)
             self.current_call_param_counter += 1
 
@@ -241,7 +239,6 @@ class SemanticRules:
         self.set_call_param_ptr()
 
     def verify_params_number(self):
-        print(f'Veryfiying params number function {self.current_call_scopeID} param count: {self.current_call_param_counter} compared to {len(self.call_scope_params_list)}')
         if self.current_call_param_counter > len(self.call_scope_params_list):
             raise Exception(f'Too many arguments. Function \'{self.current_call_scopeID}\' expects {len(self.call_scope_params_list)} arguments and got {self.current_call_param_counter}.')
         elif self.current_call_param_counter < len(self.call_scope_params_list):
@@ -254,7 +251,6 @@ class SemanticRules:
         self.append_quad(end_function_quad)
 
     def set_call_param_ptr(self) -> str:
-        print(f'At function {self.current_call_scopeID} setting param pointer to {self.current_call_param_counter+1} of {len(self.call_scope_params_list)}  ')
         param_type = self.call_scope_params_list[self.current_call_param_counter]
         if  param_type == 'i':
             self.call_param_ptr = types['int']

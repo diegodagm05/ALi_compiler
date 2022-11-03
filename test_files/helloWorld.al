@@ -6,11 +6,14 @@ int func foo(paramX : char) {
 }
 
 void func foo2() {
+    var a, b, c, height, event : int;
+    var j, k, l : float;
     print("Hey there from foo2");
 }
 
 float func bar(param1 : int, param2 : float) {
     var PI_2, random_op : float;
+    var ar, me : int;
     PI_2 = 3.1416;
     random_op = 2 + PI_2 + 6 * (7 / 3) / 3;
     return param1 * param2 + random_op;
