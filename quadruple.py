@@ -2,16 +2,16 @@ from typing import Union
 from semantic_cube import operations
 
 quadruple_operations = operations | {
-    'print': 13,
-    'read': 14,
-    'write': 15,
+    'print': 14,
+    'read': 15,
     'goto': 16,
     'gotot': 17,
     'gotof': 18,
     'gosub': 19,
     'was': 20,
     'parameter': 21,
-    'endfunc': 22 
+    'endfunc': 22,
+    'return': 23, 
 }
 
 class Quadruple():
