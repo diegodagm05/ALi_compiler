@@ -65,8 +65,8 @@ class SemanticRules:
             self.operands_stack.append(temp_result)
 
     def gen_assignment_quad(self):
-        assignment_operand_type = self.types_stack.pop()
         assign_result_type = self.types_stack.pop()
+        assignment_operand_type = self.types_stack.pop()
         assignment_operator = self.operators_stack.pop()
         match_types = sem_cube.match_types(assign_result_type, assignment_operand_type, assignment_operator)
         if match_types == 'ERROR':
@@ -127,7 +127,6 @@ class SemanticRules:
 
     def start_for(self):
         self.jump_stack.append(self.quadruple_counter)
-        print(self.quadruple_counter)
 
     def evaluate_for_expression(self):
         expression_type = self.types_stack.pop()
@@ -143,8 +142,6 @@ class SemanticRules:
     def end_for(self):
         pending_jump = self.jump_stack.pop()
         return_to = self.jump_stack.pop()
-        print('pending jump: ', pending_jump)
-        print('pending jump: ', self.quadruples[pending_jump - 1])
         quadruple = Quadruple('goto', return_to)
         self.quadruples.append(quadruple)
         self.quadruple_counter += 1
