@@ -1,6 +1,5 @@
 from collections import deque
 
-from numpy import number
 from quadruple import  Quadruple
 from semantic_cube import SemanticCube, types, operations
 from vars_table import VarsTable
@@ -20,9 +19,9 @@ class SemanticRules:
     current_scopeID : str
     current_var_table : VarsTable
     const_vars_table = VarsTable()
-    current_param_count : number
-    current_local_var_count : number
-    current_temp_count : number
+    current_param_count : int
+    current_local_var_count : int
+    current_temp_count : int
 
 
     def add_id(self, id: str) -> None:
