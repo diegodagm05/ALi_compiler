@@ -192,6 +192,13 @@ class SemanticRules:
         end_func_quad = Quadruple('endfunc')
         self.append_quad(end_func_quad)
         # TODO: Check if the function's return value type matches its return typen value type matches its return type
+    
+    def found_main_function(self):
+        self.function_directory.get_scope('main').starts_at = self.quadruple_counter + 1
+        # Goto main quad
+        goto_main_quad = Quadruple('gosub', 'main', result=self.quadruple_counter + 1)
+        self.quadruples.insert(0, goto_main_quad)
+        self.set_scope('main')
 
     # Function calling rules
     def verify_function(self, name):

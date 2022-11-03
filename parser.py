@@ -23,7 +23,11 @@ def p_g_vf(p):
             | functions'''
 
 def p_main(p):
-    '''main : FUNC MAIN '(' ')' '{' main_block '}' '''
+    '''main : FUNC MAIN found_main_function '(' ')' '{' main_block '}' '''
+
+def p_found_main_function(p):
+    ''' found_main_function : '''
+    semantics.found_main_function()
 
 # ----------------------
 # MAIN FUNCTION RULES 
