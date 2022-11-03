@@ -23,11 +23,14 @@ class FuncDirEntry():
         return f'''type: {self.type} starts_at: {self.starts_at}\n 
         num_vars_int: {self.num_vars_char} num_vars_float: {self.num_vars_float} num_vars_char: {self.num_vars_char} num_vars_bool: {self.num_vars_bool}\n 
         num_temps_int: {self.num_temps_char} num_temps_float: {self.num_temps_float} num_temps_char: {self.num_temps_char} num_temps_bool: {self.num_temps_bool}\n
+        params_list : {self.params_list} \n
         vars_table: {self.vars_table}'''
+        
     def __repr__(self) -> str:
         return f'''type: {self.type} starts_at: {self.starts_at}\n 
         num_vars_int: {self.num_vars_char} num_vars_float: {self.num_vars_float} num_vars_char: {self.num_vars_char} num_vars_bool: {self.num_vars_bool}\n 
         num_temps_int: {self.num_temps_char} num_temps_float: {self.num_temps_float} num_temps_char: {self.num_temps_char} num_temps_bool: {self.num_temps_bool}\n
+        params_list : {self.params_list} \n
         vars_table: {self.vars_table}'''
 
 class FuncDir():
@@ -51,6 +54,9 @@ class FuncDir():
 
     def set_scope_num_params(self, scopeID: str, num_params: number) -> None:
         self.func_dir[scopeID].num_params = num_params
+
+    def add_to_param_list(self, scopeID: str, param_type: str) -> None:
+        self.func_dir[scopeID].params_list.append(param_type[0])
 
     def set_scope_num_vars(self, scopeID: str, num_vars: number, type: str) -> None:
         if type == types['int']:

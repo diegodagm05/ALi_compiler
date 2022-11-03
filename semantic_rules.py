@@ -159,11 +159,7 @@ class SemanticRules:
         else:
             self.current_var_table.add_entry(paramName, paramType)
             self.current_param_count += 1
-
-        
-    def store_number_of_params(self):
-        # Save the number of params for the function on the Dir Function table
-        self.function_directory.set_scope_num_params(self.current_scopeID, self.current_param_count)
+            self.function_directory.add_to_param_list(self.current_scopeID, paramType)
 
     def store_number_of_local_variables(self):
         # Save the number of local variables for the function on the Dir Function table
@@ -171,7 +167,7 @@ class SemanticRules:
 
     def start_function(self):
         # Insert into Dir Function the current quad counter to establish where the function starts
-        self.function_directory.set_scope_start(self.quadruple_counter)
+        self.function_directory.set_scope_start(self.current_scopeID, self.quadruple_counter)
 
     def end_function(self):
         # Generate an END FUNC quadruple TODO: Handle release of function memory in runtime
