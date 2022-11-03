@@ -2,21 +2,19 @@ from vars_table import VarsTable
 from semantic_cube import types
 
 class FuncDirEntry():
-    params_list : list
-    num_vars_int : int
-    num_vars_float : int
-    num_vars_char : int
-    num_vars_bool : int
-    num_temps_int : int
-    num_temps_float : int
-    num_temps_char : int
-    num_temps_bool : int
-    starts_at : int
-    vars_table : VarsTable
-    type : str
     def __init__(self, type: str) -> None:
         self.vars_table = VarsTable()
         self.type = type
+        self.params_list = []
+        self.num_vars_int = 0
+        self.num_vars_float = 0
+        self.num_vars_char = 0
+        self.num_vars_bool = 0
+        self.num_temps_int = 0
+        self.num_temps_float = 0
+        self.num_temps_char = 0
+        self.num_temps_bool = 0
+        self.starts_at = 0
 
     def __str__(self) -> str:
         return f'''type: {self.type} starts_at: {self.starts_at}\n 
@@ -33,11 +31,10 @@ class FuncDirEntry():
         vars_table: {self.vars_table}'''
 
 class FuncDir():
-    func_dir : dict[str, FuncDirEntry] = {}
-
     def __init__(self) -> None:
-        self.create_scope('global')
-        self.create_scope('main')
+        self.func_dir : dict[str, FuncDirEntry] = {}
+        self.create_scope('global', 'void')
+        self.create_scope('main', 'void')
 
     def __str__(self) -> str:
         return str(self.func_dir)

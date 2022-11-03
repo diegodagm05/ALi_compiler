@@ -17,12 +17,14 @@ class SemanticRules:
     quadruple_counter = 1
     function_directory = FuncDir()
     current_scopeID : str
-    current_var_table : VarsTable
-    const_vars_table = VarsTable()
-    current_param_count : int
-    current_local_var_count : int
-    current_temp_count : int
+    current_var_table : str
+    const_vars_table : VarsTable = VarsTable()
+    current_param_count : int = 0
+    current_local_var_count : int = 0
+    current_temp_count : int = 0
 
+    def __init__(self) -> None:
+        self.set_scope('global')
 
     def add_id(self, id: str) -> None:
         self.id_queue.append(id)
@@ -44,18 +46,26 @@ class SemanticRules:
         self.operators_stack.append(operator)
 
     def add_id_operand(self, operand) -> None:
-        # TODO: We are using a "global" vars table right now, but this lookup must be done on the current scope when
-        # we enable context switching
-        # FIX TODO: `self.current_var_table` is being changed on self.set_scope
-        variable = self.current_var_table.lookup_entry(operand)
-        self.operands_stack.append(variable.address)
-        self.types_stack.append(variable.type)
+        # First, look if the operand is the defined in the local scope
+        (is_defined, variable) = self.current_var_table.lookup_entry(operand)
+        if not is_defined:
+            # if it is not in the local scope, look it up on the global scope
+            global_var_table = self.function_directory.get_scope_var_table('global')
+            (is_defined_glbally, global_variable) = global_var_table.lookup_entry(operand)
+            if not is_defined_glbally:
+                raise Exception(f'Undeclared identifier \'{operand}\'')
+            else:
+                self.operands_stack.append(global_variable.address)
+                self.types_stack.append(global_variable.type)
+        else:
+            self.operands_stack.append(variable.address)
+            self.types_stack.append(variable.type)
 
     def add_constant_operand(self, operand, type):
         # TODO: Assign memory correctly to constant values by storing them in the correct var table
-        # First, check if the constant has already been declared, since we can reuse it
-        (exists, constant) = self.const_vars_table.lookup_entry(operand)
-        if exists:
+        # First, check if the constant has already been defined, since we can reuse it
+        (is_defined, constant) = self.const_vars_table.lookup_entry(operand)
+        if is_defined:
             self.operands_stack.append(constant.address)
             self.types_stack.append(constant.type)
         else:    
@@ -88,7 +98,7 @@ class SemanticRules:
         assignment_operator = self.operators_stack.pop()
         match_types = sem_cube.match_types(assign_result_type, assignment_operand_type, assignment_operator)
         if match_types == 'ERROR':
-            raise Exception(f'Type mismatch. \'{assignment_operand_type}\' cannot be assigned to \'{assign_result_type}')
+            raise Exception(f'Type mismatch. \'{assignment_operand_type}\' cannot be assigned to \'{assign_result_type} \n''')
         else:
             assign_result = self.operands_stack.pop()
             expression_to_assign = self.operands_stack.pop()
@@ -183,3 +193,4 @@ class SemanticRules:
         # TODO: Check if the function's return value type matches its return type
         
 
+semantics = SemanticRules()

@@ -6,9 +6,8 @@
 import ply.yacc as yacc
 
 from lexer import tokens
-from semantic_rules import SemanticRules
+from semantic_rules import semantics
 
-semantics = SemanticRules()
 # ----------------------
 # GLOBAL RULES 
 def p_program(p):
@@ -115,6 +114,7 @@ def p_type(p):
             | FLOAT set_current_type
             | CHAR set_current_type
             | BOOL set_current_type '''
+    p[0] = p[1]
 
 def p_set_current_type(p):
     '''set_current_type : '''
@@ -130,16 +130,29 @@ def p_functions(p):
                  | void_function'''
 
 def p_return_function(p):
-    '''return_function : type FUNC ID '(' p ')' '{' function_block ';' '}' '''
+    '''return_function : type FUNC ID store_function '(' p ')' '{' start_function_ic function_block ';' end_function '}' '''
 
 def p_p(p):
     '''p : params
          | empty'''
 
 def p_void_function(p):
-    '''void_function : VOID FUNC ID '(' p ')' '{' function_block '}' '''
+    '''void_function : VOID set_current_type FUNC ID store_function '(' p ')' '{' start_function_ic function_block '}' '''
+
+def p_store_function(p):
+    '''store_function : '''
+    semantics.store_function(p[-1])
+
+def p_start_function_ic(p):
+    '''start_function_ic : '''
+    semantics.start_function()
+
+def p_end_function(p):
+    '''end_function : '''
+    semantics.end_function()
 
 def p_statements(p):
+    # TODO: Handle return statement correctly
     '''statements : assignment ';'
                   | array_assignment
                   | call_to_fun ';'
@@ -197,6 +210,7 @@ def p_interior_block(p):
 def p_params(p):
     '''params : ID ':' type ',' params
               | ID ':' type'''
+    semantics.store_function_param(p[1], p[3])
 
 def p_assignment(p):
     '''assignment : ID '=' add_op expression
@@ -385,7 +399,7 @@ def test():
     file = open(filename)
     input_str = file.read()
     file.close()
-    parser.parse(input_str)
+    parser.parse(input_str) 
     print('Accepted code')
 
 if __name__ == "__main__":
@@ -394,6 +408,7 @@ if __name__ == "__main__":
     print(semantics.types_stack)
     print(semantics.operands_stack)
     print(semantics.operators_stack)
+    print(semantics.function_directory)
     i = 1
     for quad in semantics.quadruples:
         print(f'{i}. {quad}')

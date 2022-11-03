@@ -17,7 +17,8 @@ class VarsTableEntry:
     
 
 class VarsTable():
-    vars_table = {}
+    def __init__(self) -> None:
+        self.vars_table = {}
     def __str__(self) -> str:
         return str(self.vars_table)
 
