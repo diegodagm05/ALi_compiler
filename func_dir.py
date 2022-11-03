@@ -18,15 +18,15 @@ class FuncDirEntry():
 
     def __str__(self) -> str:
         return f'''type: {self.type} starts_at: {self.starts_at}\n 
-        num_vars_int: {self.num_vars_char} num_vars_float: {self.num_vars_float} num_vars_char: {self.num_vars_char} num_vars_bool: {self.num_vars_bool}\n 
-        num_temps_int: {self.num_temps_char} num_temps_float: {self.num_temps_float} num_temps_char: {self.num_temps_char} num_temps_bool: {self.num_temps_bool}\n
+        num_vars_int: {self.num_vars_int} num_vars_float: {self.num_vars_float} num_vars_char: {self.num_vars_char} num_vars_bool: {self.num_vars_bool}\n 
+        num_temps_int: {self.num_temps_int} num_temps_float: {self.num_temps_float} num_temps_char: {self.num_temps_char} num_temps_bool: {self.num_temps_bool}\n
         params_list : {self.params_list} \n
         vars_table: {self.vars_table}'''
         
     def __repr__(self) -> str:
         return f'''type: {self.type} starts_at: {self.starts_at}\n 
-        num_vars_int: {self.num_vars_char} num_vars_float: {self.num_vars_float} num_vars_char: {self.num_vars_char} num_vars_bool: {self.num_vars_bool}\n 
-        num_temps_int: {self.num_temps_char} num_temps_float: {self.num_temps_float} num_temps_char: {self.num_temps_char} num_temps_bool: {self.num_temps_bool}\n
+        num_vars_int: {self.num_vars_int} num_vars_float: {self.num_vars_float} num_vars_char: {self.num_vars_char} num_vars_bool: {self.num_vars_bool}\n 
+        num_temps_int: {self.num_temps_int} num_temps_float: {self.num_temps_float} num_temps_char: {self.num_temps_char} num_temps_bool: {self.num_temps_bool}\n
         params_list : {self.params_list} \n
         vars_table: {self.vars_table}'''
 
