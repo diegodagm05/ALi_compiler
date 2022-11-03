@@ -1,3 +1,4 @@
+from typing import Union
 from semantic_cube import operations
 
 quadruple_operations = operations | {
@@ -16,7 +17,7 @@ quadruple_operations = operations | {
 class Quadruple():
     # Note that operators and result are memory addresses
     # None on result is for quadruples that may be generated with a pending result or quadruples that have no result
-    def __init__(self, operation: str, operator1: int = -1, operator2: int = -1, result: int = None) -> None:
+    def __init__(self, operation: str, operator1: int = -1, operator2: int = -1, result: Union[int, str] = None) -> None:
         if operation not in quadruple_operations:
             raise Exception('Unkown operation on quadruple')
         self.op_code = quadruple_operations[operation]

@@ -14,7 +14,7 @@ class FuncDirEntry():
         self.num_temps_float = 0
         self.num_temps_char = 0
         self.num_temps_bool = 0
-        self.starts_at = 0
+        self.starts_at = -1
 
     def __str__(self) -> str:
         return f'''type: {self.type} starts_at: {self.starts_at}\n 
@@ -41,6 +41,12 @@ class FuncDir():
 
     def get_func_dir(self) -> dict[str, FuncDirEntry]:
         return self.func_dir
+
+    def get_scope(self, scopeID: str):
+        if scopeID not in self.func_dir:
+            raise Exception(f'Uknown scope being referenced {scopeID}')
+        else:
+            return self.func_dir[scopeID]
 
     def create_scope(self, scopeID: str, type: str) -> None:
         self.func_dir[scopeID] = FuncDirEntry(type=type)

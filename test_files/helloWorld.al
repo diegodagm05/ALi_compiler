@@ -55,6 +55,6 @@ func main() {
     }
 
     void func update() {
-        drawPlayer(20, 20+1, j, k);
+        drawPlayer(20, 20+1, j, k, a);
     }
 }

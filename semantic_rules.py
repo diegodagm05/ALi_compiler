@@ -17,6 +17,10 @@ class SemanticRules:
     quadruple_counter = 1
     function_directory = FuncDir()
     current_scopeID : str
+    current_call_scopeID : str
+    current_call_param_counter : int
+    call_param_ptr : str
+    call_scope_params_list : list[str]
     current_var_table : str
     const_vars_table : VarsTable = VarsTable()
     current_param_count : int = 0
@@ -25,6 +29,10 @@ class SemanticRules:
 
     def __init__(self) -> None:
         self.set_scope('global')
+
+    def append_quad(self, quadruple: Quadruple) -> None:
+        self.quadruples.append(quadruple)
+        self.quadruple_counter += 1
 
     def add_id(self, id: str) -> None:
         self.id_queue.append(id)
@@ -86,8 +94,7 @@ class SemanticRules:
             left_operand = self.operands_stack.pop()
             temp_result = virtual_memory.assign_mem_address(match_types, is_temp=True)
             quadruple = Quadruple(curr_operator, left_operand, right_operand, temp_result)
-            self.quadruples.append(quadruple)
-            self.quadruple_counter += 1
+            self.append_quad(quadruple)
             self.types_stack.append(match_types)
             self.operands_stack.append(temp_result)
             self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, match_types)
@@ -103,8 +110,7 @@ class SemanticRules:
             assign_result = self.operands_stack.pop()
             expression_to_assign = self.operands_stack.pop()
             quadruple = Quadruple(assignment_operator, expression_to_assign, result=assign_result)
-            self.quadruples.append(quadruple)
-            self.quadruple_counter += 1
+            self.append_quad(quadruple)
 
     def if_start(self):
         expression_type = self.types_stack.pop()
@@ -113,14 +119,12 @@ class SemanticRules:
         else:
             result = self.operands_stack.pop()
             quadruple = Quadruple('gotof', result)
-            self.quadruple_counter += 1
-            self.quadruples.append(quadruple)
+            self.append_quad(quadruple)
             self.jump_stack.append(self.quadruple_counter - 1)
 
     def else_start(self):
         quadruple = Quadruple('goto',-1)
-        self.quadruple_counter += 1 
-        self.quadruples.append(quadruple)
+        self.append_quad(quadruple)
         false_jump = self.jump_stack.pop()
         self.jump_stack.append(self.quadruple_counter - 1)
         self.quadruples[false_jump-1].fill_result(self.quadruple_counter)
@@ -141,16 +145,14 @@ class SemanticRules:
         else:
             result = self.operands_stack.pop()
             quadruple = Quadruple('gotof', result)
-            self.quadruple_counter += 1
-            self.quadruples.append(quadruple)
+            self.append_quad(quadruple)
             self.jump_stack.append(self.quadruple_counter - 1)
     
     def end_while(self):
         pending_jump = self.jump_stack.pop()
         return_to = self.jump_stack.pop()
         quadruple = Quadruple('goto', return_to)
-        self.quadruples.append(quadruple)
-        self.quadruple_counter += 1
+        self.append_quad(quadruple)
         self.quadruples[pending_jump - 1].fill_result(self.quadruple_counter)
 
     def set_scope(self, scopeID: str):
@@ -188,9 +190,72 @@ class SemanticRules:
     def end_function(self):
         # Generate an END FUNC quadruple TODO: Handle release of function memory in runtime
         end_func_quad = Quadruple('endfunc')
-        self.quadruple_counter += 1
-        self.quadruples.append(end_func_quad)
-        # TODO: Check if the function's return value type matches its return type
+        self.append_quad(end_func_quad)
+        # TODO: Check if the function's return value type matches its return typen value type matches its return type
+
+    # Function calling rules
+    def verify_function(self, name):
+        if name not in self.function_directory:
+            raise Exception(f'Undeclared function {name}.')
+        else: 
+            self.current_call_scopeID = name
+
+    def gen_activation_record_quad(self):
+        scope = self.function_directory.get_scope(self.current_call_scopeID)
+        # resources needed will be stored as a tuple
+        resources = (
+            scope.num_vars_int * scope.num_temps_int, 
+            scope.num_vars_float * scope.num_temps_float, 
+            scope.num_vars_char * scope.num_temps_char,
+            scope.num_vars_bool * scope.num_temps_bool
+        )
+        for param in scope.params_list:
+            if param == 'i':
+                resources[0] += 1
+            elif param == 'f':
+                resources[1] += 1
+            elif param == 'c':
+                resources[2] += 1
+            elif param == 'b':
+                resources[3] += 1
+        was_quad = Quadruple('was', result=resources)
+        self.append_quad()
+        self.current_call_param_counter = 0
+        self.call_scope_params_list = scope.params_list
+        self.set_call_param_ptr()
+
+    def call_argument(self):
+        argument = self.operands_stack.pop()
+        argument_type = self.types_stack.pop()
+        if self.call_param_ptr != types[argument_type]:
+            raise Exception(f'Type mismatch. \n Parameter {self.current_param_count} of function {self.current_call_scopeID} is of type {self.call_param_ptr} and is being passed an expression of type {argument_type}')
+        else:
+            param_quad = Quadruple('parameter', argument, result='param' + str(self.current_param_count))
+            self.append_quad(param_quad)
+
+    def move_to_next_param(self):
+        self.current_call_param_counter += 1
+        if self.current_call_param_counter > len(self.call_scope_params_list) - 1:
+            raise Exception(f'Too many arguments for function {self.current_call_scopeID}')
+        self.set_call_param_ptr()
+
+    def end_function_call(self):
+        call_scope = self.function_directory.get_scope(self.current_call_scopeID)
+        end_function_quad = Quadruple('gosub', self.current_call_scopeID, result=call_scope.starts_at)
+        self.append_quad(end_function_quad)
+
+    def set_call_param_ptr(self) -> str:
+        param_type = self.call_scope_params_list[self.current_call_param_counter]
+        if  param_type == 'i':
+            self.call_param_ptr = types['int']
+        elif param_type == 'f':
+            self.call_param_ptr = types['float']
+        elif param_type == 'c':
+            self.call_param_ptr = types['char']
+        elif param_type == 'b':
+            self.call_param_ptr = types['bool']
+
+
         
 
 semantics = SemanticRules()
