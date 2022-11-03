@@ -7,7 +7,6 @@ from vars_table import VarsTable
 from memory import virtual_memory
 from func_dir import FuncDir
 
-const_vars_table = VarsTable()
 sem_cube = SemanticCube()
 class SemanticRules:
     operands_stack = deque()
@@ -20,6 +19,7 @@ class SemanticRules:
     function_directory = FuncDir()
     current_scopeID : str
     current_var_table : VarsTable
+    const_vars_table = VarsTable()
     current_param_count : number
     current_local_var_count : number
     current_temp_count : number
@@ -38,6 +38,7 @@ class SemanticRules:
             name = self.id_queue.popleft()
             self.current_var_table.add_entry(name, self.current_type)
             self.current_local_var_count += 1
+        self.store_number_of_local_variables()
 
     # Quadruple related modules
     def add_operator(self, operator: str) -> None:
@@ -53,10 +54,16 @@ class SemanticRules:
 
     def add_constant_operand(self, operand, type):
         # TODO: Assign memory correctly to constant values by storing them in the correct var table
-        address = virtual_memory.assign_mem_address('CONST', False)
-        # vars_table.add_entry(operand, type)
-        self.operands_stack.append(address)
-        self.types_stack.append(type)
+        # First, check if the constant has already been declared, since we can reuse it
+        (exists, constant) = self.const_vars_table.lookup_entry(operand)
+        if exists:
+            self.operands_stack.append(constant.address)
+            self.types_stack.append(constant.type)
+        else:    
+            address = virtual_memory.assign_mem_address('CONST', False)
+            self.const_vars_table.add_entry(operand, type)
+            self.operands_stack.append(address)
+            self.types_stack.append(type)
                     
     def gen_operation_quad(self) -> None:
         right_type = self.types_stack.pop()
