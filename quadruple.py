@@ -6,14 +6,17 @@ quadruple_operations = operations | {
     'write': 15,
     'goto': 16,
     'gotot': 17,
-    'gotof': 18
+    'gotof': 18,
+    'gosub': 19,
+    'was': 20,
+    'parameter': 21,
+    'endfunc': 22 
 }
 
 class Quadruple():
     # Note that operators and result are memory addresses
-    # -1 on operator2 is for operators such as assignment
-    # None on result is for quadruples that may be generated with a pending result
-    def __init__(self, operation: str, operator1: int, operator2: int = -1, result: int = None) -> None:
+    # None on result is for quadruples that may be generated with a pending result or quadruples that have no result
+    def __init__(self, operation: str, operator1: int = -1, operator2: int = -1, result: int = None) -> None:
         if operation not in quadruple_operations:
             raise Exception('Unkown operation on quadruple')
         self.op_code = quadruple_operations[operation]

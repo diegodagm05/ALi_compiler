@@ -1,10 +1,12 @@
 from collections import deque
+
+from numpy import number
 from quadruple import  Quadruple
 from semantic_cube import SemanticCube, types, operations
 from vars_table import VarsTable
 from memory import virtual_memory
+from func_dir import FuncDir
 
-vars_table = VarsTable()
 const_vars_table = VarsTable()
 sem_cube = SemanticCube()
 class SemanticRules:
@@ -15,6 +17,13 @@ class SemanticRules:
     id_queue = deque()
     quadruples : list[Quadruple] = []
     quadruple_counter = 1
+    function_directory = FuncDir()
+    current_scopeID : str
+    current_var_table : VarsTable
+    current_param_count : number
+    current_local_var_count : number
+    current_temp_count : number
+
 
     def add_id(self, id: str) -> None:
         self.id_queue.append(id)
@@ -24,9 +33,11 @@ class SemanticRules:
         self.current_type = type
 
     def store_ids(self) -> None:
+        self.current_local_var_count = 0
         while len(self.id_queue) > 0:
             name = self.id_queue.popleft()
-            vars_table.add_entry(name, self.current_type)
+            self.current_var_table.add_entry(name, self.current_type)
+            self.current_local_var_count += 1
 
     # Quadruple related modules
     def add_operator(self, operator: str) -> None:
@@ -35,7 +46,8 @@ class SemanticRules:
     def add_id_operand(self, operand) -> None:
         # TODO: We are using a "global" vars table right now, but this lookup must be done on the current scope when
         # we enable context switching
-        variable = vars_table.lookup_entry(operand)
+        # FIX TODO: `self.current_var_table` is being changed on self.set_scope
+        variable = self.current_var_table.lookup_entry(operand)
         self.operands_stack.append(variable.address)
         self.types_stack.append(variable.type)
 
@@ -62,6 +74,7 @@ class SemanticRules:
             self.quadruple_counter += 1
             self.types_stack.append(match_types)
             self.operands_stack.append(temp_result)
+            self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, match_types)
 
     def gen_assignment_quad(self):
         assignment_operand_type = self.types_stack.pop()
@@ -123,3 +136,48 @@ class SemanticRules:
         self.quadruples.append(quadruple)
         self.quadruple_counter += 1
         self.quadruples[pending_jump - 1].fill_result(self.quadruple_counter)
+
+    def set_scope(self, scopeID: str):
+        self.current_var_table = self.function_directory.get_scope_var_table(scopeID)
+        self.current_scopeID = scopeID
+
+    # Function declaration rules
+    def store_function(self, name: str):
+        # Insert function name into dir function table, add its type, while veryfing that there is no other function with the same name
+        if name in self.function_directory.get_func_dir():
+            raise Exception(f'Function with name {name} has already been declared.')
+        else:
+            self.function_directory.create_scope(name, self.current_type)
+            # Change the current scope, and therefore current var table
+            self.set_scope(name)
+            self.current_param_count = self.current_local_var_count =  self.current_temp_count = 0
+
+    def store_function_param(self, paramName: str, paramType: str):
+        # Insert parameter into the current var table (local scope) with type
+        if paramType not in types:
+            raise Exception(f'Unknown parameter type {paramType} for {paramName}')
+        else:
+            self.current_var_table.add_entry(paramName, paramType)
+            self.current_param_count += 1
+
+        
+    def store_number_of_params(self):
+        # Save the number of params for the function on the Dir Function table
+        self.function_directory.set_scope_num_params(self.current_scopeID, self.current_param_count)
+
+    def store_number_of_local_variables(self):
+        # Save the number of local variables for the function on the Dir Function table
+        self.function_directory.set_scope_num_vars(self.current_scopeID, self.current_local_var_count, self.current_type)
+
+    def start_function(self):
+        # Insert into Dir Function the current quad counter to establish where the function starts
+        self.function_directory.set_scope_start(self.quadruple_counter)
+
+    def end_function(self):
+        # Generate an END FUNC quadruple TODO: Handle release of function memory in runtime
+        end_func_quad = Quadruple('endfunc')
+        self.quadruple_counter += 1
+        self.quadruples.append(end_func_quad)
+        # TODO: Check if the function's return value type matches its return type
+        
+
