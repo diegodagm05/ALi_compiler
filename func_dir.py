@@ -1,18 +1,17 @@
-from numpy import number
 from vars_table import VarsTable
 from semantic_cube import types
 
 class FuncDirEntry():
     params_list : list
-    num_vars_int : number
-    num_vars_float : number
-    num_vars_char : number
-    num_vars_bool : number
-    num_temps_int : number
-    num_temps_float : number
-    num_temps_char : number
-    num_temps_bool : number
-    starts_at : number
+    num_vars_int : int
+    num_vars_float : int
+    num_vars_char : int
+    num_vars_bool : int
+    num_temps_int : int
+    num_temps_float : int
+    num_temps_char : int
+    num_temps_bool : int
+    starts_at : int
     vars_table : VarsTable
     type : str
     def __init__(self, type: str) -> None:
@@ -52,13 +51,13 @@ class FuncDir():
     def get_scope_var_table(self, scopeID: str) -> VarsTable:
         return self.func_dir[scopeID].vars_table
 
-    def set_scope_num_params(self, scopeID: str, num_params: number) -> None:
+    def set_scope_num_params(self, scopeID: str, num_params: int) -> None:
         self.func_dir[scopeID].num_params = num_params
 
     def add_to_param_list(self, scopeID: str, param_type: str) -> None:
         self.func_dir[scopeID].params_list.append(param_type[0])
 
-    def set_scope_num_vars(self, scopeID: str, num_vars: number, type: str) -> None:
+    def set_scope_num_vars(self, scopeID: str, num_vars: int, type: str) -> None:
         if type == types['int']:
             self.func_dir[scopeID].num_vars_int = num_vars
         elif type == types['float']:
@@ -78,9 +77,9 @@ class FuncDir():
         elif type == types['bool']:
             self.func_dir[scopeID].num_temps_bool += 1
 
-    def set_scope_num_temps(self, scopeID: str, num_temps: number) -> None:
+    def set_scope_num_temps(self, scopeID: str, num_temps: int) -> None:
         self.func_dir[scopeID].num_temps = num_temps
 
-    def set_scope_start(self, scopeID, start: number) -> None:
+    def set_scope_start(self, scopeID, start: int) -> None:
         self.func_dir[scopeID].starts_at = start
 
