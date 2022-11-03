@@ -52,7 +52,7 @@ class FuncDir():
         self.func_dir[scopeID].num_params = num_params
 
     def add_to_param_list(self, scopeID: str, param_type: str) -> None:
-        self.func_dir[scopeID].params_list.append(param_type[0])
+        self.func_dir[scopeID].params_list.insert(0, param_type[0])
 
     def set_scope_num_vars(self, scopeID: str, num_vars: int, type: str) -> None:
         if type == types['int']:
