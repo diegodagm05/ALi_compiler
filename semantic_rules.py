@@ -3,7 +3,7 @@ from collections import deque
 
 from quadruple import  Quadruple
 from semantic_cube import SemanticCube, types, operations
-from vars_table import VarsTable
+from vars_table import VarsTable, ConstVarsTable
 from memory import virtual_memory
 from func_dir import FuncDir
 
@@ -22,7 +22,7 @@ class SemanticRules:
     call_param_ptr : str
     call_scope_params_list : list[str]
     current_var_table : str
-    const_vars_table : VarsTable = VarsTable()
+    const_vars_table : ConstVarsTable = ConstVarsTable()
     current_param_count : int = 0
     current_local_var_count : int = 0
     current_temp_count : int = 0

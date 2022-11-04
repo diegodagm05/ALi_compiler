@@ -66,7 +66,8 @@ class Memory():
                 else:
                     address = self.bool_counter
                     self.bool_counter += 1
-        elif type == 'CONST':
+        # Strings will be handled same as constants
+        elif type == 'CONST' or type == 'string':
             if self.const_counter > 35000:
                 raise Exception("Too many constants")
             else:
