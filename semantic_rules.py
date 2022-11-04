@@ -8,7 +8,9 @@ from memory import virtual_memory
 from func_dir import FuncDir
 
 sem_cube = SemanticCube()
+
 class SemanticRules:
+
     operands_stack = deque()
     operators_stack = deque()
     types_stack = deque()
@@ -124,8 +126,7 @@ class SemanticRules:
         operand = self.operands_stack.pop()
         temp_result = virtual_memory.assign_mem_address(operand_type, is_temp=True)
         quadruple = Quadruple(not_operator, operand, result= temp_result)
-        self.quadruples.append(quadruple)
-        self.quadruple_counter += 1
+        self.append_quad(quadruple)
         self.types_stack.append(operand_type)
         self.operands_stack.append(temp_result)        
 
@@ -182,16 +183,14 @@ class SemanticRules:
         else:
             result = self.operands_stack.pop()
             quadruple = Quadruple('gotof', result)
-            self.quadruple_counter += 1
-            self.quadruples.append(quadruple)
+            self.append_quad(quadruple)
             self.jump_stack.append(self.quadruple_counter - 1)
     
     def end_for(self):
         pending_jump = self.jump_stack.pop()
         return_to = self.jump_stack.pop()
         quadruple = Quadruple('goto', return_to)
-        self.quadruples.append(quadruple)
-        self.quadruple_counter += 1
+        self.append_quad(quadruple)
         self.quadruples[pending_jump - 1].fill_result(self.quadruple_counter)
     
     def print_value(self):
@@ -249,7 +248,6 @@ class SemanticRules:
         # Generate an END FUNC quadruple TODO: Handle release of function memory in runtime
         end_func_quad = Quadruple('endfunc')
         self.append_quad(end_func_quad)
-
     
     def found_main_function(self):
         self.function_directory.get_scope('main').starts_at = self.quadruple_counter
@@ -324,7 +322,6 @@ class SemanticRules:
         elif self.current_call_param_counter < len(self.call_scope_params_list):
             raise Exception(f'Too few arguments. Function \'{self.current_call_scopeID}\' expects {len(self.call_scope_params_list)} arguments and got {self.current_call_param_counter}..')
 
-
     def end_function_call(self):
         call_scope = self.function_directory.get_scope(self.current_call_scopeID)
         end_function_quad = Quadruple('gosub', self.current_call_scopeID, result=call_scope.starts_at)
@@ -334,7 +331,6 @@ class SemanticRules:
             assign_call_result_quad = Quadruple('=', self.current_call_scopeID, result=temp_result)
             self.append_quad(assign_call_result_quad)
             self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, call_scope.type)
-
 
     def set_call_param_ptr(self) -> str:
         param_type = self.call_scope_params_list[self.current_call_param_counter]
@@ -346,8 +342,6 @@ class SemanticRules:
             self.call_param_ptr = types['char']
         elif param_type == 'b':
             self.call_param_ptr = types['bool']
-
-
-        
+      
 
 semantics = SemanticRules()
