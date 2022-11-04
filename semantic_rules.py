@@ -194,15 +194,36 @@ class SemanticRules:
         self.function_directory.set_scope_start(self.current_scopeID, self.quadruple_counter)
 
     def end_function(self):
+        # Check if the function's return value type matches its return typen value type matches its return type
+        current_scope = self.function_directory.get_scope(self.current_scopeID)
+        if current_scope.type != 'void' and not current_scope.is_returning_value:
+            raise Exception(f'Function \'{self.current_scopeID}()\' defined with a \'{current_scope.type}\' return type but there are no return statements in the function definition.')
         # Generate an END FUNC quadruple TODO: Handle release of function memory in runtime
         end_func_quad = Quadruple('endfunc')
         self.append_quad(end_func_quad)
-        # TODO: Check if the function's return value type matches its return typen value type matches its return type
+
     
     def found_main_function(self):
         self.function_directory.get_scope('main').starts_at = self.quadruple_counter
         self.quadruples[0].fill_result(self.quadruple_counter)
         self.set_scope('main')
+
+    def handle_return_statement(self):
+        current_scope = self.function_directory.get_scope(self.current_scopeID)
+        if self.current_scopeID == 'main':
+            raise Exception('Return statement not allowed in main function.')
+        elif current_scope.type == 'void':
+            raise Exception('Void function is not allowed to return a value.')
+        else:
+            return_type = self.types_stack.pop()
+            if return_type != current_scope.type:
+                raise Exception(f'Returning a \'{return_type}\' expression in \'{self.current_scopeID}()\' which is signed as \'{current_scope.type}\' function.')
+            else:
+                return_value = self.operands_stack.pop()
+                return_quad = Quadruple('return', result=return_value)
+                self.append_quad(return_quad)
+                self.function_directory.set_is_returning_value(self.current_scopeID, True)
+
 
     # Function calling rules
     def verify_function(self, name):
@@ -260,6 +281,13 @@ class SemanticRules:
         call_scope = self.function_directory.get_scope(self.current_call_scopeID)
         end_function_quad = Quadruple('gosub', self.current_call_scopeID, result=call_scope.starts_at)
         self.append_quad(end_function_quad)
+        if call_scope.type != 'void':
+            temp_result = virtual_memory.assign_mem_address(call_scope.type, is_temp=True)
+            assign_call_result_quad = Quadruple('=', self.current_call_scopeID, result=temp_result)
+            print(f'Generated assign quad for function {self.current_call_scopeID}: {assign_call_result_quad}')
+            self.append_quad(assign_call_result_quad)
+            self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, call_scope.type)
+
 
     def set_call_param_ptr(self) -> str:
         param_type = self.call_scope_params_list[self.current_call_param_counter]

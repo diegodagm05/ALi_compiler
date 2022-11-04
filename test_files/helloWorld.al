@@ -3,7 +3,8 @@ var VAR : int;
 
 int func foo(paramX : char) {
     PI = 3.14;
-    return PI;
+    VAR = 7 + 7 + 12;
+    return VAR * 12;
 }
 
 void func foo2() {

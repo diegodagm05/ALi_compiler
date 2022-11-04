@@ -165,7 +165,13 @@ def p_statements(p):
                   | cycles
                   | read
                   | special_function_statement
-                  | RETURN expression ';' '''
+                  | RETURN expression ';' handle_return_statement '''
+
+def p_handle_return_statement(p):
+    '''
+    handle_return_statement : 
+    '''
+    semantics.handle_return_statement()
 
 def p_conditionals(p):
     '''conditionals : if_statement end_if

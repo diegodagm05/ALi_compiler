@@ -15,6 +15,7 @@ class FuncDirEntry():
         self.num_temps_char = 0
         self.num_temps_bool = 0
         self.starts_at = -1
+        self.is_returning_value = False
 
     def __str__(self) -> str:
         return f'''type: {self.type} starts_at: {self.starts_at}\n 
@@ -85,4 +86,7 @@ class FuncDir():
 
     def set_scope_start(self, scopeID, start: int) -> None:
         self.func_dir[scopeID].starts_at = start
+
+    def set_is_returning_value(self, scopeID: str, is_returning_val: bool) -> None:
+        self.func_dir[scopeID].is_returning_value = is_returning_val
 
