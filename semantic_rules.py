@@ -77,6 +77,19 @@ class SemanticRules:
             quadruple = Quadruple(assignment_operator, expression_to_assign, result=assign_result)
             self.quadruples.append(quadruple)
             self.quadruple_counter += 1
+    
+    def not_quad(self):
+        not_operator = self.operators_stack.pop()
+        operand_type = self.types_stack.pop()
+        if operand_type != types['bool']:
+            raise Exception('Type Mismatch. Not operator expects boolean type')
+        operand = self.operands_stack.pop()
+        temp_result = virtual_memory.assign_mem_address(operand_type, is_temp=True)
+        quadruple = Quadruple(not_operator, operand, result= temp_result)
+        self.quadruples.append(quadruple)
+        self.quadruple_counter += 1
+        self.types_stack.append(operand_type)
+        self.operands_stack.append(temp_result)
 
     def if_start(self):
         expression_type = self.types_stack.pop()

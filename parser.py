@@ -327,7 +327,13 @@ def p_t_exp(p):
 def p_g_exp(p):
     '''g_exp : m_exp 
           | m_exp op g_exp gen_operation
-          | '!' g_exp'''
+          | '!' add_op g_exp not_action'''
+
+def p_not_action(p):
+    '''
+    not_action : 
+    '''
+    semantics.not_quad()
 
 def p_op(p):
     '''op : '>' add_op
