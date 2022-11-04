@@ -284,7 +284,6 @@ class SemanticRules:
         if call_scope.type != 'void':
             temp_result = virtual_memory.assign_mem_address(call_scope.type, is_temp=True)
             assign_call_result_quad = Quadruple('=', self.current_call_scopeID, result=temp_result)
-            print(f'Generated assign quad for function {self.current_call_scopeID}: {assign_call_result_quad}')
             self.append_quad(assign_call_result_quad)
             self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, call_scope.type)
 
