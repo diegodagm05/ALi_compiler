@@ -1,3 +1,4 @@
+from typing import Union
 from semantic_cube import types
 from memory import virtual_memory
 
@@ -16,7 +17,8 @@ class VarsTableEntry:
     
 
 class VarsTable():
-    vars_table = {}
+    def __init__(self) -> None:
+        self.vars_table = {}
     def __str__(self) -> str:
         return str(self.vars_table)
 
@@ -28,8 +30,7 @@ class VarsTable():
         address = virtual_memory.assign_mem_address(types[type], is_temp=False)
         self.vars_table[name] = VarsTableEntry(types[type], address)
 
-    def lookup_entry(self, name: str) -> VarsTableEntry:
+    def lookup_entry(self, name: str) -> tuple[bool, Union[VarsTableEntry, None]]:
         if name not in self.vars_table:
-            raise Exception(f'Undeclared identifier {name}')
-
-        return self.vars_table[name]
+            return (False, None)
+        return (True, self.vars_table[name])

@@ -73,7 +73,7 @@ class Memory():
                 address = self.const_counter
                 self.const_counter += 1
         else:
-            raise Exception('Unrecognized type on memory assignment')        
+            raise Exception(f'Unrecognized type on memory assignment. Got a {type}')        
         return address
 
     def get_mem_content(self, address: int):

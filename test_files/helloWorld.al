@@ -1,49 +1,61 @@
 var PI : float;
+var VAR : int; 
 
-int func foo() {
-    // PI = 3.14;
-    print("Hello");
-    return PI;
+int func foo(paramX : char) {
+    PI = 3.14;
+    VAR = 7 + 7 + 12;
+    return VAR * 12;
+}
+
+void func foo2() {
+    var j, k, l : float;
+    var a, b, c, height, event : int;
+    print("Hey there from foo2");
 }
 
 float func bar(param1 : int, param2 : float) {
-    var PI_2 : float;
+    var PI_2, random_op : float;
+    var ar, me : int;
+    var xe, ke : char;
     PI_2 = 3.1416;
     random_op = 2 + PI_2 + 6 * (7 / 3) / 3;
     return param1 * param2 + random_op;
 }
 
 void func drawPlayer(xpos : int, ypos: int, xsize: int, ysize : int) {
+    var isActive : bool;
     drawGameObject(xpos, ypos, xsize*2, ysize*2, "blue");
 }
 
 func main() {
     // First, declare your variables
-    var a, k, width, height, event : int;
-    var b, m : float;
-    var c : char;
-    var arr : array<int>[3]; 
+    var a, b, c, height, event : int;
+    var j, k, l : float;
+    var x : char;
     // Assignment statements
     a = 20;
-    j = foo(); 
-    b = 23.67;
-    m = bar(a, b) / foo(); 
-    c = 'c';
-    arr = [1,2,3];
+    b = foo(x);
+    c = 20 + 10;
+    x = 'c';
+    j = 3.14;
+    k = 2.71;
+    l = 14.14;
     // conditional statments
-    if (a != b && !(b == m)) {
+    foo2();
+    if (a != b && !(b > c)) {
         print("Hello world!");
-    } elif (a >= b && j > arr[1] || b < arr[3] || a <= arr[2]) {
+    } elif (a >= b && j > k || j < l|| a <= c) {
         print("Hello universe!");
     } else {
         read("myFile.txt");
+        l = k;
     }
     // Foor loop
-    for (k = 0; k < 3; k = k + 1) {
-        print("Arr[k]() :", arr[k]);
+    for (a = 0; a < 3; a = a + 1) {
+        print("Arr[a]() :", arr[a]);
     }
     // While loop
-    while (k < 6) {
+    while (a < 6) {
         print("Hello all!");
     }
 
@@ -54,11 +66,6 @@ func main() {
     }
 
     void func update() {
-        if (getWindowHeight() > 500) {
-            height = getWindowHeight();
-            event = getGameEvent();
-            width = getWindowWidth() / 2;
-        }
-        drawPlayer(20, 20+1, k, height);
+        drawPlayer(20, 20+1, a, b);
     }
 }
