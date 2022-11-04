@@ -1,8 +1,9 @@
+from ast import Expression
 from collections import deque
 
 from quadruple import  Quadruple
 from semantic_cube import SemanticCube, types, operations
-from vars_table import VarsTable
+from vars_table import VarsTable, ConstVarsTable
 from memory import virtual_memory
 from func_dir import FuncDir
 
@@ -21,7 +22,7 @@ class SemanticRules:
     call_param_ptr : str
     call_scope_params_list : list[str]
     current_var_table : str
-    const_vars_table : VarsTable = VarsTable()
+    const_vars_table : ConstVarsTable = ConstVarsTable()
     current_param_count : int = 0
     current_local_var_count : int = 0
     current_temp_count : int = 0
@@ -103,8 +104,8 @@ class SemanticRules:
             self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, match_types)
 
     def gen_assignment_quad(self):
-        assignment_operand_type = self.types_stack.pop()
         assign_result_type = self.types_stack.pop()
+        assignment_operand_type = self.types_stack.pop()
         assignment_operator = self.operators_stack.pop()
         match_types = sem_cube.match_types(assign_result_type, assignment_operand_type, assignment_operator)
         if match_types == 'ERROR':
@@ -114,6 +115,19 @@ class SemanticRules:
             expression_to_assign = self.operands_stack.pop()
             quadruple = Quadruple(assignment_operator, expression_to_assign, result=assign_result)
             self.append_quad(quadruple)
+    
+    def not_quad(self):
+        not_operator = self.operators_stack.pop()
+        operand_type = self.types_stack.pop()
+        if operand_type != types['bool']:
+            raise Exception('Type Mismatch. Not operator expects boolean type')
+        operand = self.operands_stack.pop()
+        temp_result = virtual_memory.assign_mem_address(operand_type, is_temp=True)
+        quadruple = Quadruple(not_operator, operand, result= temp_result)
+        self.quadruples.append(quadruple)
+        self.quadruple_counter += 1
+        self.types_stack.append(operand_type)
+        self.operands_stack.append(temp_result)        
 
     def if_start(self):
         expression_type = self.types_stack.pop()
@@ -157,6 +171,40 @@ class SemanticRules:
         quadruple = Quadruple('goto', return_to)
         self.append_quad(quadruple)
         self.quadruples[pending_jump - 1].fill_result(self.quadruple_counter)
+
+    def start_for(self):
+        self.jump_stack.append(self.quadruple_counter)
+
+    def evaluate_for_expression(self):
+        expression_type = self.types_stack.pop()
+        if expression_type != types['bool']:
+            raise Exception('Type mismatch on conditional expression')
+        else:
+            result = self.operands_stack.pop()
+            quadruple = Quadruple('gotof', result)
+            self.quadruple_counter += 1
+            self.quadruples.append(quadruple)
+            self.jump_stack.append(self.quadruple_counter - 1)
+    
+    def end_for(self):
+        pending_jump = self.jump_stack.pop()
+        return_to = self.jump_stack.pop()
+        quadruple = Quadruple('goto', return_to)
+        self.quadruples.append(quadruple)
+        self.quadruple_counter += 1
+        self.quadruples[pending_jump - 1].fill_result(self.quadruple_counter)
+    
+    def print_value(self):
+        result = self.operands_stack.pop()
+        self.types_stack.pop()
+        quadruple = Quadruple('print', None, None, result)
+        self.quadruples.append(quadruple)
+
+    def read_constant(self):
+        result = self.operands_stack.pop()
+        self.types_stack.pop()
+        quadruple = Quadruple('read', None, None, result)
+        self.quadruples.append(quadruple)
 
     def set_scope(self, scopeID: str):
         self.current_var_table = self.function_directory.get_scope_var_table(scopeID)

@@ -34,3 +34,22 @@ class VarsTable():
         if name not in self.vars_table:
             return (False, None)
         return (True, self.vars_table[name])
+
+class ConstVarsTable():
+    def __init__(self) -> None:
+        self.const_vars_table = {}
+    def __str__(self) -> str:
+        return str(self.const_vars_table)
+
+    def add_entry(self, name: str, type: str) -> None:
+        if type not in types and type != 'string':
+            raise Exception(f'Unknown type used {type}')
+        if name in self.const_vars_table:
+            raise Exception('Redeclaration of identifier is not allowed')
+        address = virtual_memory.assign_mem_address('CONST', is_temp=False)
+        self.const_vars_table[name] = VarsTableEntry(type, address)
+
+    def lookup_entry(self, name: str) -> tuple[bool, Union[VarsTableEntry, None]]:
+        if name not in self.const_vars_table:
+            return (False, None)
+        return (True, self.const_vars_table[name])

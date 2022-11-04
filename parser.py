@@ -256,18 +256,30 @@ def p_write(p):
  
 def p_write_p(p):
     '''write_p : write_param ',' write_p 
-               | write_param'''
+               | write_param '''
 
 def p_write_param(p):
-    '''write_param : STRING_CONST
-                   | variable '''
+    '''write_param : STRING_CONST add_const_to_operand_stack_string print_value
+                   | variable print_value'''
+
+def p_print_value(p):
+    '''
+    print_value :
+    '''
+    semantics.print_value()
 
 def p_read(p):
     '''read : READ '(' read_p ')' ';' '''
  
 def p_read_p(p):
-    '''read_p : STRING_CONST ',' read_p
-              | STRING_CONST'''
+    '''read_p : STRING_CONST add_const_to_operand_stack_string read_constant ',' read_p
+              | STRING_CONST add_const_to_operand_stack_string read_constant '''
+
+def p_read_constant(p):
+    '''
+    read_constant :
+    '''
+    semantics.read_constant()
 
 def p_call_to_fun(p):
     '''call_to_fun : ID verify_function '(' gen_activation_quad ')' verify_params_number end_function_call
@@ -331,7 +343,25 @@ def p_end_while(p):
     semantics.end_while()
 
 def p_for(p):
-    '''for : FOR '(' assignment ';' expression ';' assignment ')' interior_block'''
+    '''for : FOR '(' assignment ';' start_for expression ';' eval_for_expression assignment ')' interior_block end_for'''
+
+def p_start_for(p):
+    '''
+    start_for :
+    '''
+    semantics.start_for()
+
+def p_eval_for_expression(p):
+    '''
+    eval_for_expression :
+    '''
+    semantics.evaluate_for_expression()
+
+def p_end_for(p):
+    '''
+    end_for :
+    '''
+    semantics.end_for()
 
 # ----------------------
 # EXRPESSIONS RULES 
@@ -347,7 +377,13 @@ def p_t_exp(p):
 def p_g_exp(p):
     '''g_exp : m_exp 
           | m_exp op g_exp gen_operation
-          | '!' g_exp'''
+          | '!' add_op g_exp not_action'''
+
+def p_not_action(p):
+    '''
+    not_action : 
+    '''
+    semantics.not_quad()
 
 def p_op(p):
     '''op : '>' add_op
@@ -394,6 +430,13 @@ def p_variable(p):
 def p_add_variable_to_operand_stack(p):
     '''add_variable_to_operand_stack : '''
     semantics.add_id_operand(p[-1])
+
+def p_add_const_to_operand_stack_string(p):
+    '''
+    add_const_to_operand_stack_string : 
+    '''
+    semantics.add_constant_operand(p[-1], 'string')
+
 def p_add_const_to_operand_stack_int(p):
     '''add_const_to_operand_stack_int : '''
     semantics.add_constant_operand(p[-1], 'int')
