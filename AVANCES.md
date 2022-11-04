@@ -56,6 +56,20 @@
         
 <br>
 
+## Avance 4
+---
+- **Fecha:** 04/Nov/2022
+
+- **Descripción:**Generación de códgo intermedio para estatutos condicionales y cíclicos.
+
+- **Estado:**
+    Reglas semánticas y generación de código intermedio:
+        - Expresiones - COMPLETO
+        - Condiciones - COMPLETO
+        - Ciclos - COMPLETO
+        
+<br>
+
 ## Avance num
 ---
 - **Fecha:** 00/month/0000
