@@ -6,9 +6,8 @@
 import ply.yacc as yacc
 
 from lexer import tokens
-from semantic_rules import SemanticRules
+from semantic_rules import semantics
 
-semantics = SemanticRules()
 # ----------------------
 # GLOBAL RULES 
 def p_program(p):
@@ -24,7 +23,11 @@ def p_g_vf(p):
             | functions'''
 
 def p_main(p):
-    '''main : FUNC MAIN '(' ')' '{' main_block '}' '''
+    '''main : FUNC MAIN found_main_function '(' ')' '{' main_block '}' '''
+
+def p_found_main_function(p):
+    ''' found_main_function : '''
+    semantics.found_main_function()
 
 # ----------------------
 # MAIN FUNCTION RULES 
@@ -115,6 +118,7 @@ def p_type(p):
             | FLOAT set_current_type
             | CHAR set_current_type
             | BOOL set_current_type '''
+    p[0] = p[1]
 
 def p_set_current_type(p):
     '''set_current_type : '''
@@ -130,24 +134,44 @@ def p_functions(p):
                  | void_function'''
 
 def p_return_function(p):
-    '''return_function : type FUNC ID '(' p ')' '{' function_block RETURN expression ';' '}' '''
+    '''return_function : type FUNC ID store_function '(' p ')' '{' start_function_ic function_block end_function '}' '''
 
 def p_p(p):
     '''p : params
          | empty'''
 
 def p_void_function(p):
-    '''void_function : VOID FUNC ID '(' p ')' '{' function_block '}' '''
+    '''void_function : VOID set_current_type FUNC ID store_function '(' p ')' '{' start_function_ic function_block end_function '}' '''
+
+def p_store_function(p):
+    '''store_function : '''
+    semantics.store_function(p[-1])
+
+def p_start_function_ic(p):
+    '''start_function_ic : '''
+    semantics.start_function()
+
+def p_end_function(p):
+    '''end_function : '''
+    semantics.end_function()
 
 def p_statements(p):
+    # TODO: Handle return statement correctly
     '''statements : assignment ';'
                   | array_assignment
                   | call_to_fun ';'
-                  | write 
+                  | write
                   | conditionals
                   | cycles
                   | read
-                  | special_function_statement'''
+                  | special_function_statement
+                  | RETURN expression ';' handle_return_statement '''
+
+def p_handle_return_statement(p):
+    '''
+    handle_return_statement : 
+    '''
+    semantics.handle_return_statement()
 
 def p_conditionals(p):
     '''conditionals : if_statement end_if
@@ -196,6 +220,7 @@ def p_interior_block(p):
 def p_params(p):
     '''params : ID ':' type ',' params
               | ID ':' type'''
+    semantics.store_function_param(p[1], p[3])
 
 def p_assignment(p):
     '''assignment : ID '=' add_op expression
@@ -231,25 +256,62 @@ def p_write(p):
  
 def p_write_p(p):
     '''write_p : write_param ',' write_p 
-               | write_param'''
+               | write_param '''
 
 def p_write_param(p):
-    '''write_param : STRING_CONST
-                   | variable '''
+    '''write_param : STRING_CONST add_const_to_operand_stack_string print_value
+                   | variable print_value'''
+
+def p_print_value(p):
+    '''
+    print_value :
+    '''
+    semantics.print_value()
 
 def p_read(p):
     '''read : READ '(' read_p ')' ';' '''
  
 def p_read_p(p):
-    '''read_p : STRING_CONST ',' read_p
-              | STRING_CONST'''
+    '''read_p : STRING_CONST add_const_to_operand_stack_string read_constant ',' read_p
+              | STRING_CONST add_const_to_operand_stack_string read_constant '''
+
+def p_read_constant(p):
+    '''
+    read_constant :
+    '''
+    semantics.read_constant()
 
 def p_call_to_fun(p):
-    '''call_to_fun : ID '(' ')'
-                   | ID '(' call_p ')' '''
+    '''call_to_fun : ID verify_function '(' gen_activation_quad ')' verify_params_number end_function_call
+                   | ID verify_function '(' gen_activation_quad call_p ')' verify_params_number end_function_call '''
+
 def p_call_p(p):
-    '''call_p : expression ',' call_p
-              | expression'''
+    '''call_p : expression call_argument ',' move_to_next_param  call_p
+              | expression call_argument '''
+
+def p_verify_function(p):
+    ''' verify_function : '''
+    semantics.verify_function(p[-1])
+
+def p_gen_activation_quad(p):
+    ''' gen_activation_quad : '''
+    semantics.gen_activation_record_quad()
+
+def p_call_argument(p):
+    ''' call_argument : '''
+    semantics.call_argument()
+
+def p_move_to_next_param(p):
+    ''' move_to_next_param : '''
+    semantics.move_to_next_param()
+
+def p_verify_params_number(p):
+    ''' verify_params_number : '''
+    semantics.verify_params_number()
+
+def p_end_function_call(p):
+    ''' end_function_call : '''
+    semantics.end_function_call()
 
 def p_cycles(p):
     '''cycles : while
@@ -281,7 +343,25 @@ def p_end_while(p):
     semantics.end_while()
 
 def p_for(p):
-    '''for : FOR '(' assignment ';' expression ';' assignment ')' interior_block'''
+    '''for : FOR '(' assignment ';' start_for expression ';' eval_for_expression assignment ')' interior_block end_for'''
+
+def p_start_for(p):
+    '''
+    start_for :
+    '''
+    semantics.start_for()
+
+def p_eval_for_expression(p):
+    '''
+    eval_for_expression :
+    '''
+    semantics.evaluate_for_expression()
+
+def p_end_for(p):
+    '''
+    end_for :
+    '''
+    semantics.end_for()
 
 # ----------------------
 # EXRPESSIONS RULES 
@@ -297,7 +377,13 @@ def p_t_exp(p):
 def p_g_exp(p):
     '''g_exp : m_exp 
           | m_exp op g_exp gen_operation
-          | '!' g_exp'''
+          | '!' add_op g_exp not_action'''
+
+def p_not_action(p):
+    '''
+    not_action : 
+    '''
+    semantics.not_quad()
 
 def p_op(p):
     '''op : '>' add_op
@@ -344,6 +430,13 @@ def p_variable(p):
 def p_add_variable_to_operand_stack(p):
     '''add_variable_to_operand_stack : '''
     semantics.add_id_operand(p[-1])
+
+def p_add_const_to_operand_stack_string(p):
+    '''
+    add_const_to_operand_stack_string : 
+    '''
+    semantics.add_constant_operand(p[-1], 'string')
+
 def p_add_const_to_operand_stack_int(p):
     '''add_const_to_operand_stack_int : '''
     semantics.add_constant_operand(p[-1], 'int')
@@ -384,7 +477,7 @@ def test():
     file = open(filename)
     input_str = file.read()
     file.close()
-    parser.parse(input_str)
+    parser.parse(input_str) 
     print('Accepted code')
 
 if __name__ == "__main__":
@@ -393,6 +486,7 @@ if __name__ == "__main__":
     print(semantics.types_stack)
     print(semantics.operands_stack)
     print(semantics.operators_stack)
+    print(semantics.function_directory)
     i = 1
     for quad in semantics.quadruples:
         print(f'{i}. {quad}')
