@@ -56,14 +56,13 @@ t_GREATER_EQ = r'\>\='
 t_LESS_EQ = r'\<\='
 
 #  Complex tokens
-# TODO: Add boolean literals 'true' and 'false'
 def t_F_CONST(t):
-    r'\d+\.\d+'
+    r'-?\d+\.\d+'
     t.value = float(t.value)
     return t
     
 def t_I_CONST(t):
-    r'\d+'
+    r'-?\d+'
     t.value = int(t.value)
     return t
 

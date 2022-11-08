@@ -43,6 +43,8 @@ func main() {
     l = 14.14;
     is_temp = true;
     is_temp = false;
+    a = -20;
+    j = a + -3.14;
     // conditional statments
     foo2();
     if (a != b && !(b > c)) {
