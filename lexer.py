@@ -24,6 +24,8 @@ reserved = {
     'for': 'FOR',
     'while': 'WHILE',
     'read': 'READ',
+    'true': 'TRUE',
+    'false': 'FALSE',
     # Game Engine specific tokens
     'start': 'START',
     'update': 'UPDATE',

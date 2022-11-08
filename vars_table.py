@@ -37,7 +37,13 @@ class VarsTable():
 
 class ConstVarsTable():
     def __init__(self) -> None:
-        self.const_vars_table = {}
+        # Our first constants will be boolean literals true and false
+        address1 = virtual_memory.assign_mem_address('CONST', is_temp=False)
+        address2 = virtual_memory.assign_mem_address('CONST', is_temp=False)
+        self.const_vars_table = {
+            'true': VarsTableEntry(types['bool'], address1),
+            'false': VarsTableEntry(types['bool'], address2)
+        }
     def __str__(self) -> str:
         return str(self.const_vars_table)
 

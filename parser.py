@@ -417,6 +417,8 @@ def p_constants(p):
     '''constants : I_CONST add_const_to_operand_stack_int
                  | F_CONST add_const_to_operand_stack_float
                  | C_CONST add_const_to_operand_stack_char
+                 | TRUE add_const_to_operand_stack_bool
+                 | FALSE add_const_to_operand_stack_bool
                  | variable
                  | call_to_fun
                  | get_window_h
@@ -453,9 +455,9 @@ def p_gen_operation(p):
     ''' gen_operation : '''
     semantics.gen_operation_quad()
 
-# def p_add_const_to_operand_stack_bool(p):
-#     '''add_const_to_operand_stack_bool : '''
-#     semantics.add_constant_operand(p[-1], 'BOOL')
+def p_add_const_to_operand_stack_bool(p):
+    '''add_const_to_operand_stack_bool : '''
+    semantics.add_constant_operand(p[-1], 'bool')
 
 
 # ----------------------
