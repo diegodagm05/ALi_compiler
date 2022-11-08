@@ -32,6 +32,7 @@ func main() {
     var a, b, c, height, event : int;
     var j, k, l : float;
     var x : char;
+    var is_temp : bool;
     // Assignment statements
     a = 20;
     b = foo(x);
@@ -40,6 +41,8 @@ func main() {
     j = 3.14;
     k = 2.71;
     l = 14.14;
+    is_temp = true;
+    is_temp = false;
     // conditional statments
     foo2();
     if (a != b && !(b > c)) {

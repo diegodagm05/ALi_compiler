@@ -1,4 +1,3 @@
-from ast import Expression
 from collections import deque
 
 from quadruple import  Quadruple
