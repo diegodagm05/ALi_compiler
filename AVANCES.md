@@ -48,7 +48,7 @@
 ---
 - **Fecha:** 17/Oct/2022
 
-- **Descripción:** Añadición de puntos neurales iniciales, para expresiones y estatutos lineales
+- **Descripción:** Añadimiento de puntos neurales iniciales, para expresiones y estatutos lineales
 
 - **Estado:**
     
@@ -60,17 +60,33 @@
 ---
 - **Fecha:** 04/Nov/2022
 
-- **Descripción:**Generación de códgo intermedio para estatutos condicionales y cíclicos.
+- **Descripción:** Generación de códgo intermedio para estatutos condicionales y cíclicos.
 
 - **Estado:**
     Reglas semánticas y generación de código intermedio:
-        - Expresiones - COMPLETO
-        - Condiciones - COMPLETO
-        - Ciclos - COMPLETO
+    - Expresiones - COMPLETO
+    - Condiciones - COMPLETO
+    - Ciclos - COMPLETO
         
 <br>
 
-## Avance num
+## Avance 5
+---
+- **Fecha:** 07/Nov/2022
+
+- **Descripción:** Creación de directorio de funciones con sus correspondientes datos almacenados (id, recursos, parametros).
+\
+Se identificaron Issues.
+
+- **Estado:**
+    - Issue 10 (Terminado): Añadimiento de tokens *`true`* y *`false`*
+    - Issue 11 (Por hacer): Memoria Virtual no maneja rango para variables globales
+    - Issue 12 (Por hacer): Sintaxis de expresiones no permite manejar negativos
+    - Issue 14 (En progreso): La sintaxis forza a tener estatutos en la función main, fuera de las funciones especiales _**start**_ y _**update**_.
+        
+<br>
+
+## Avance #.
 ---
 - **Fecha:** 00/month/0000
 
