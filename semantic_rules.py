@@ -3,7 +3,7 @@ from collections import deque
 from quadruple import  Quadruple
 from semantic_cube import SemanticCube, types, operations
 from vars_table import VarsTable, ConstVarsTable
-from memory import virtual_memory
+from virtual_memory import virtual_memory
 from func_dir import FuncDir
 
 sem_cube = SemanticCube()
@@ -75,15 +75,13 @@ class SemanticRules:
             self.types_stack.append(variable.type)
 
     def add_constant_operand(self, operand, type):
-        # TODO: Assign memory correctly to constant values by storing them in the correct var table
         # First, check if the constant has already been defined, since we can reuse it
         (is_defined, constant) = self.const_vars_table.lookup_entry(operand)
         if is_defined:
             self.operands_stack.append(constant.address)
             self.types_stack.append(constant.type)
         else:    
-            address = virtual_memory.assign_mem_address('CONST', False)
-            self.const_vars_table.add_entry(operand, type)
+            address = self.const_vars_table.add_entry(operand, type)
             self.operands_stack.append(address)
             self.types_stack.append(type)
                     
