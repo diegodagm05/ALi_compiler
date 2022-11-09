@@ -32,7 +32,12 @@ def p_found_main_function(p):
 # ----------------------
 # MAIN FUNCTION RULES 
 def p_main_block(p):
-    '''main_block : function_block start_function update_function'''
+    '''main_block : main_block_p start_function update_function'''
+
+# This adds the possibility of having a main function that goes straight to the start and update functions
+def p_main_block_p(p):
+    '''main_block_p : vars stm
+                    | vars '''
 
 def p_start_function(p):
     '''start_function : VOID FUNC START '(' ')' '{' sft '}' '''

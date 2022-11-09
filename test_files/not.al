@@ -4,12 +4,13 @@ func main(){
     var b, c : bool;
     var d : float;
 
-    if(!c){
-        c = !b;
-    }
     
     void func start() {
-        a = 0;    
+        a = 0;
+        c = a == 1;    
+        if(!c){
+            c = !b;
+        }
     }
 
     void func update() {}
