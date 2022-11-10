@@ -1,63 +1,60 @@
 from semantic_cube import types
 
+DATATYPE_SIZES = 16000
+DATATYPE_KIND_SIZE = DATATYPE_SIZES // 4 # We use 4 because we have global, constant, local and temporal datatypes that we need to track
+INT_START = 0
+FLOAT_START = INT_START + DATATYPE_SIZES
+CHAR_START = FLOAT_START + DATATYPE_SIZES
+BOOL_START = CHAR_START + DATATYPE_SIZES
+STRING_START = BOOL_START + DATATYPE_SIZES
+
 class VirtualMemory():
-    # Global ranges
-    # Global ints range from 0 to 3999
-    global_int_range = [0, 3999]
+    # Int ranges
+    global_int_range = [INT_START, INT_START + DATATYPE_KIND_SIZE - 1]
     global_int_counter = global_int_range[0] 
-    # Global floats range from 4000 to 7999
-    global_float_range = [4000, 7999]
-    global_float_counter = global_float_range[0]
-    # Global chars range from 8000 to 11999
-    global_char_range = [8000, 11999]
-    global_char_counter = global_char_range[0] 
-    # Global bools range from 12000 to 15999
-    global_bool_range = [12000, 15999]
-    global_bool_counter = global_bool_range[0] 
-
-    # Constant ranges
-    # Constant ints range from 16000 to 19999
-    constant_int_range = [16000, 19999]
+    constant_int_range = [INT_START + DATATYPE_KIND_SIZE, INT_START + (DATATYPE_KIND_SIZE * 2) - 1]
     constant_int_counter = constant_int_range[0] 
-    # Constant floats range from 20000 to 23999
-    constant_float_range = [20000, 23999]
-    constant_float_counter = constant_float_range[0]
-    # Constant chars range from 24000 to 27999
-    constant_char_range = [24000, 27999]
-    constant_char_counter = constant_char_range[0] 
-    # Constant bools range from 28000 to 31999
-    constant_bool_range = [28000, 31999]
-    constant_bool_counter = constant_bool_range[0] 
-    # String constants range from 60000 to 63999
-    constant_string_range = [60000, 63999]
-    constant_string_counter = constant_string_range[0] 
-
-    # local ranges
-    # local ints range from 32000 to 35999
-    local_int_range = [32000, 35999]
+    local_int_range = [INT_START + (DATATYPE_KIND_SIZE * 2), INT_START + (DATATYPE_KIND_SIZE * 3) - 1]
     local_int_counter = local_int_range[0]
-    # temp ints range from 36000 to 39999
-    temp_int_range = [36000, 39999]
+    temp_int_range = [INT_START + (DATATYPE_KIND_SIZE * 3), INT_START + (DATATYPE_KIND_SIZE * 4) - 1]
     temp_int_counter = temp_int_range[0]
-    # local floats range from 40000 to 43999
-    local_float_range = [40000, 43999]
+
+
+    # Float ranges
+    global_float_range = [FLOAT_START, FLOAT_START + DATATYPE_KIND_SIZE - 1]
+    global_float_counter = global_float_range[0]
+    constant_float_range = [FLOAT_START + DATATYPE_KIND_SIZE, FLOAT_START + (DATATYPE_KIND_SIZE * 2) - 1]
+    constant_float_counter = constant_float_range[0]
+    local_float_range = [FLOAT_START + (DATATYPE_KIND_SIZE * 2), FLOAT_START + (DATATYPE_KIND_SIZE * 3) - 1]
     local_float_counter = local_float_range[0]
-    # temp floats range from 44000 to 47999
-    temp_float_range = [44000, 47999]
+    temp_float_range = [FLOAT_START + (DATATYPE_KIND_SIZE * 3), FLOAT_START + (DATATYPE_KIND_SIZE * 4) - 1]
     temp_float_counter = temp_float_range[0] 
-    # local chars range from 48000 to 49999
-    local_char_range = [48000, 49999]
+
+    # Global chars range from 8000 to 11999
+    global_char_range = [CHAR_START, CHAR_START + DATATYPE_KIND_SIZE - 1]
+    global_char_counter = global_char_range[0] 
+    constant_char_range = [CHAR_START + DATATYPE_KIND_SIZE, CHAR_START + (DATATYPE_KIND_SIZE * 2) - 1]
+    constant_char_counter = constant_char_range[0] 
+    local_char_range = [CHAR_START + (DATATYPE_KIND_SIZE * 2), CHAR_START + (DATATYPE_KIND_SIZE * 3) - 1]
     local_char_counter = local_char_range[0] 
-    # temp chars range from 50000 to 50999
-    temp_char_range = [50000, 50999]
-    temp_char_counter = temp_char_range[0] 
-    # local bools range from 52000 to 53999
-    local_bool_range = [52000, 53999]
+    temp_char_range = [CHAR_START + (DATATYPE_KIND_SIZE * 3), CHAR_START + (DATATYPE_KIND_SIZE * 4) - 1]
+    temp_char_counter = temp_char_range[0]
+
+    global_bool_range = [BOOL_START, BOOL_START + DATATYPE_KIND_SIZE - 1]
+    global_bool_counter = global_bool_range[0] 
+    constant_bool_range = [BOOL_START + DATATYPE_KIND_SIZE, BOOL_START + (DATATYPE_KIND_SIZE * 2) - 1]
+    constant_bool_counter = constant_bool_range[0] 
+    local_bool_range = [BOOL_START + (DATATYPE_KIND_SIZE * 2), BOOL_START + (DATATYPE_KIND_SIZE * 3) - 1]
     local_bool_counter = local_bool_range[0] 
-    # temp bools range from 54000 to 55999
-    temp_bool_range = [54000, 55999]
+    temp_bool_range = [ BOOL_START + (DATATYPE_KIND_SIZE * 3),  BOOL_START + (DATATYPE_KIND_SIZE * 4) - 1]
     temp_bool_counter = temp_bool_range[0] 
 
+    # String constants
+    constant_string_range = [STRING_START, STRING_START + DATATYPE_KIND_SIZE - 1]
+    constant_string_counter = constant_string_range[0] 
+
+
+     
     # Assign global addresses
     def assign_global_address_int(self):
         if self.global_int_counter == self.global_int_range[1]:
