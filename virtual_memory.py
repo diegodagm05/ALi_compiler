@@ -53,8 +53,6 @@ class VirtualMemory():
     constant_string_range = [STRING_START, STRING_START + DATATYPE_KIND_SIZE - 1]
     constant_string_counter = constant_string_range[0] 
 
-
-     
     # Assign global addresses
     def assign_global_address_int(self):
         if self.global_int_counter == self.global_int_range[1]:
