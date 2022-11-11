@@ -476,7 +476,7 @@ def p_error(p):
     err_string = f"Syntax error in input at line {p.lineno} at character {p.lexpos} unexpected \'{p.value}\' "
     raise Exception(err_string)
 
-parser = yacc.yacc(debug=True)
+ali_parser = yacc.yacc(debug=True)
 
 def test():
     print('Enter file name to be tested (with .al extension)')
@@ -484,7 +484,7 @@ def test():
     file = open(filename)
     input_str = file.read()
     file.close()
-    parser.parse(input_str) 
+    ali_parser.parse(input_str) 
     print('Accepted code')
 
 if __name__ == "__main__":

@@ -8,6 +8,12 @@ from func_dir import FuncDir
 
 sem_cube = SemanticCube()
 
+class CompilationResults:
+    def __init__(self, func_dir: FuncDir, consts_table: ConstVarsTable, quadruples: list[Quadruple]) -> None:
+        self.func_dir : FuncDir = func_dir
+        self.consts_table : ConstVarsTable = consts_table
+        self.quadruples : list[Quadruple] = quadruples
+
 class SemanticRules:
 
     operands_stack = deque()
@@ -342,6 +348,10 @@ class SemanticRules:
             self.call_param_ptr = types['char']
         elif param_type == 'b':
             self.call_param_ptr = types['bool']
+
+    def get_compilation_results(self) -> CompilationResults:
+        results = CompilationResults(self.function_directory, self.const_vars_table, self.quadruples)
+        return results
       
 
 semantics = SemanticRules()
