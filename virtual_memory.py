@@ -178,6 +178,15 @@ class VirtualMemory():
         self.temp_bool_counter += 1
         return address
 
+    def reset_scope_counters(self) -> None:
+        self.local_int_counter = self.local_int_range[0]
+        self.local_float_counter = self.local_float_range[0]
+        self.local_char_counter = self.local_char_range[0]
+        self.local_bool_counter = self.local_bool_range[0]
+        self.temp_int_counter = self.temp_int_range[0]
+        self.temp_float_counter = self.temp_float_range[0]
+        self.temp_char_counter = self.temp_char_range[0]
+        self.temp_bool_counter = self.temp_bool_range[0]
     
     def assign_mem_address(self, type: str, is_temp: bool = False, is_const: bool = False) -> int:
         if type == types['int']:

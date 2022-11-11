@@ -22,14 +22,24 @@ class FuncDirEntry():
         num_vars_int: {self.num_vars_int} num_vars_float: {self.num_vars_float} num_vars_char: {self.num_vars_char} num_vars_bool: {self.num_vars_bool}\n 
         num_temps_int: {self.num_temps_int} num_temps_float: {self.num_temps_float} num_temps_char: {self.num_temps_char} num_temps_bool: {self.num_temps_bool}\n
         params_list : {self.params_list} \n
-        vars_table: {self.vars_table}'''
+        vars_table: {self.check_for_vars_table()}'''
         
     def __repr__(self) -> str:
         return f'''type: {self.type} starts_at: {self.starts_at}\n 
         num_vars_int: {self.num_vars_int} num_vars_float: {self.num_vars_float} num_vars_char: {self.num_vars_char} num_vars_bool: {self.num_vars_bool}\n 
         num_temps_int: {self.num_temps_int} num_temps_float: {self.num_temps_float} num_temps_char: {self.num_temps_char} num_temps_bool: {self.num_temps_bool}\n
         params_list : {self.params_list} \n
-        vars_table: {self.vars_table}'''
+        vars_table: {self.check_for_vars_table()} \n'''
+
+    # helper for printing this class
+    def check_for_vars_table(self):
+        if hasattr(self, 'vars_table'):
+            return self.vars_table
+        else:
+            return ''
+
+    def release_scope_vars_table(self):
+        del self.vars_table
 
 class FuncDir():
     def __init__(self) -> None:
@@ -89,4 +99,3 @@ class FuncDir():
 
     def set_is_returning_value(self, scopeID: str, is_returning_val: bool) -> None:
         self.func_dir[scopeID].is_returning_value = is_returning_val
-

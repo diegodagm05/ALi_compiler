@@ -245,6 +245,9 @@ class SemanticRules:
         # Generate an END FUNC quadruple TODO: Handle release of function memory in runtime
         end_func_quad = Quadruple('endfunc')
         self.append_quad(end_func_quad)
+        # Release scope vars table and reset virtual memory
+        current_scope.release_scope_vars_table()
+        virtual_memory.reset_scope_counters()
     
     def found_main_function(self):
         self.function_directory.get_scope('main').starts_at = self.quadruple_counter
