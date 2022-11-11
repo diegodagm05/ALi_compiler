@@ -36,6 +36,18 @@ class VarsTable():
         return (True, self.vars_table[name])
 
 class ConstVarsTable():
+    types_counter = {
+        'int': 0,
+        'float': 0,
+        'char': 0,
+        'bool': 2,
+        'string': 0,
+    }
+    int_counter = 0
+    float_counter = 0
+    char_counter = 0
+    bool_counter = 0
+    string_counter = 0
     def __init__(self) -> None:
         # Our first constants will be boolean literals true and false
         address1 = virtual_memory.assign_mem_address(types['bool'], is_const=True)
@@ -57,9 +69,17 @@ class ConstVarsTable():
                 raise Exception('Redeclaration of identifier is not allowed')
             address = virtual_memory.assign_mem_address(types[type], is_const=True)
             self.const_vars_table[name] = VarsTableEntry(types[type], address)
+        # Increase the types counter
+        self.types_counter[type] += 1
         return address
 
     def lookup_entry(self, name: str) -> tuple[bool, Union[VarsTableEntry, None]]:
         if name not in self.const_vars_table:
             return (False, None)
         return (True, self.const_vars_table[name])
+    
+    def __repr__(self) -> str:
+        return str(self.const_vars_table | self.types_counter)
+
+    def __str__(self) -> str:
+        return str(self.const_vars_table | {'types_counter': self.types_counter})
