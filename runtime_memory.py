@@ -3,7 +3,11 @@ from typing import Any, Union
 from quadruple import Quadruple, quadruple_operations
 from virtual_memory import VirtualMemory
 
-class RunttimeMemory():
+class RuntimeMemory():
+    '''
+    Instantiating a RuntimeMemory object, we should now how many spaces we need for each datatype segment. We also need to now if the
+    object instantiated will be used to store constants, and therefero we need a segment for string constants.
+    '''
     def __init__(self, num_ints: int, num_floats: int, num_chars: int, num_bools: int, is_const_data_segment: bool = False) -> None:
         super().__init__()
         self.ints_mem : list[Union[int, None]] = self.generate_mem_segment(num_ints)
@@ -14,6 +18,7 @@ class RunttimeMemory():
             # TODO: Figure out how we can allocate specific memory for strings
             self.strings_mem : list[Union[str, None]] = self.generate_mem_segment(100)
 
+    # This is a helper function to assign a memory segment of size list_size, where our underlying implementation of a memory segment is a list
     def generate_mem_segment(self, list_size: int):
         return [None] * list_size
 
@@ -54,6 +59,12 @@ class RunttimeMemory():
             self.strings_mem[string_index] = value
         else:
             raise RuntimeError(f'Unable to access specified virtual address \'{virtual_address}\'')
+
+    '''
+    The following four methods (get_datatype_index) test whether the virtual address given is part of the range for the datatype and kind of address. 
+    If it is, it returns the index by substracting the starting point of the virtual address for its specific datype and kind.
+    If not, it returns None so that we know that the given virtual address is not part of the range
+    '''
 
     def get_int_index(self, virtual_address: int) -> Union[int, None]:
         # Check if the address belongs to global ints
@@ -126,6 +137,7 @@ class RunttimeMemory():
         else: 
             return None
             
+    # Helper function to test for a range
     def in_virtual_range(self, virtual_address: int, range_start: int, range_end: int):
         return virtual_address > range_start and virtual_address < range_end
 
