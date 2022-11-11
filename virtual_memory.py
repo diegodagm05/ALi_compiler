@@ -42,7 +42,7 @@ class VirtualMemory():
 
     global_bool_range = [BOOL_START, BOOL_START + DATATYPE_KIND_SIZE - 1]
     global_bool_counter = global_bool_range[0] 
-    constant_bool_range = [BOOL_START + DATATYPE_KIND_SIZE, BOOL_START + (DATATYPE_KIND_SIZE * 2) - 1]
+    constant_bool_range = [BOOL_START + DATATYPE_KIND_SIZE, BOOL_START + DATATYPE_KIND_SIZE + 2] # SPECIAL CASE: Boolean constants are only two: true or false. We use the same constants every time
     constant_bool_counter = constant_bool_range[0] 
     local_bool_range = [BOOL_START + (DATATYPE_KIND_SIZE * 2), BOOL_START + (DATATYPE_KIND_SIZE * 3) - 1]
     local_bool_counter = local_bool_range[0] 
