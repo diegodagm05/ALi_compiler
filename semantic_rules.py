@@ -222,6 +222,7 @@ class SemanticRules:
             # if the function returns a value, store it as a global variable
             if self.current_type != 'void':
                 self.function_directory.get_scope_var_table('global').add_entry(name, self.current_type)
+                self.function_directory.increment_scope_num_vars('global', 1, self.current_type)
             # Change the current scope, and therefore current var table
             self.set_scope(name)
             self.current_param_count = self.current_local_var_count =  self.current_temp_count = 0
@@ -237,7 +238,7 @@ class SemanticRules:
 
     def store_number_of_local_variables(self):
         # Save the number of local variables for the function on the Dir Function table
-        self.function_directory.set_scope_num_vars(self.current_scopeID, self.current_local_var_count, self.current_type)
+        self.function_directory.increment_scope_num_vars(self.current_scopeID, self.current_local_var_count, self.current_type)
 
     def start_function(self):
         # Insert into Dir Function the current quad counter to establish where the function starts

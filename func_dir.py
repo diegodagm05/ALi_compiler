@@ -71,15 +71,15 @@ class FuncDir():
     def add_to_param_list(self, scopeID: str, param_type: str) -> None:
         self.func_dir[scopeID].params_list.insert(0, param_type[0])
 
-    def set_scope_num_vars(self, scopeID: str, num_vars: int, type: str) -> None:
+    def increment_scope_num_vars(self, scopeID: str, num_vars: int, type: str) -> None:
         if type == types['int']:
-            self.func_dir[scopeID].num_vars_int = num_vars
+            self.func_dir[scopeID].num_vars_int += num_vars
         elif type == types['float']:
-            self.func_dir[scopeID].num_vars_float = num_vars
+            self.func_dir[scopeID].num_vars_float += num_vars
         elif type == types['char']:
-            self.func_dir[scopeID].num_vars_char = num_vars
+            self.func_dir[scopeID].num_vars_char += num_vars
         elif type == types['bool']:
-            self.func_dir[scopeID].num_vars_bool = num_vars
+            self.func_dir[scopeID].num_vars_bool += num_vars
     
     def increment_scope_num_temp_vars(self, scopeID: str, type: str) -> None:
         if type == types['int']:
