@@ -276,7 +276,10 @@ class SemanticRules:
                 raise Exception(f'Returning a \'{return_type}\' expression in \'{self.current_scopeID}()\' which is signed as \'{current_scope.type}\' function.')
             else:
                 return_value = self.operands_stack.pop()
-                return_quad = Quadruple('return', result=return_value)
+                (current_scope_global_var_exists,  current_scope_global_var) = self.function_directory.get_scope('global').vars_table.lookup_entry(self.current_scopeID)
+                if not current_scope_global_var_exists: 
+                    raise Exception(f'Unable to find a return address for function \'{self.current_scopeID}()\'')
+                return_quad = Quadruple('return',return_value, result=current_scope_global_var.address)
                 self.append_quad(return_quad)
                 self.function_directory.set_is_returning_value(self.current_scopeID, True)
 
