@@ -216,6 +216,7 @@ def p_start_else(p):
 
 def p_end_if(p):
     '''end_if : '''
+    print(p);
     semantics.end_if()
 
 def p_interior_block(p):
@@ -494,7 +495,7 @@ if __name__ == "__main__":
     print(semantics.operands_stack)
     print(semantics.operators_stack)
     print(semantics.function_directory)
-    i = 1
+    i = 0
     for quad in semantics.quadruples:
         print(f'{i}. {quad}')
         i += 1
