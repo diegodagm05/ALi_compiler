@@ -318,8 +318,8 @@ class SemanticRules:
                 resources[2] += 1
             elif param == 'b':
                 resources[3] += 1
-        was_quad = Quadruple('was', result=resources)
-        self.append_quad(was_quad)
+        era_quad = Quadruple('era', result=resources)
+        self.append_quad(era_quad)
         self.call_scope_params_list = scope.params_list
         self.current_call_param_counter = 0
         if len(self.call_scope_params_list) > 0:

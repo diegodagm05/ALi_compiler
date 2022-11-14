@@ -1,22 +1,23 @@
 from collections import deque
 from typing import Any, Union
+from func_dir import FuncDir
 from quadruple import Quadruple, quadruple_operations
+from vars_table import ConstVarsTable
 from virtual_memory import VirtualMemory
 
-class RuntimeMemory():
+class MemorySegment():
     '''
-    Instantiating a RuntimeMemory object, we should now how many spaces we need for each datatype segment. We also need to now if the
+    Instantiating a MemorySegment object, we should now how many spaces we need for each datatype segment. We also need to now if the
     object instantiated will be used to store constants, and therefero we need a segment for string constants.
     '''
-    def __init__(self, num_ints: int, num_floats: int, num_chars: int, num_bools: int, is_const_data_segment: bool = False) -> None:
+    def __init__(self, num_ints: int, num_floats: int, num_chars: int, num_bools: int, num_strings: int = 0) -> None:
         super().__init__()
         self.ints_mem : list[Union[int, None]] = self.generate_mem_segment(num_ints)
         self.floats_mem : list[Union[float, None]] = self.generate_mem_segment(num_floats)
         self.chars_mem : list[ Union[str, None]] = self.generate_mem_segment(num_chars)
         self.bools_mem : list[Union[bool, None]] = self.generate_mem_segment(num_bools)
-        if is_const_data_segment:
-            # TODO: Figure out how we can allocate specific memory for strings
-            self.strings_mem : list[Union[str, None]] = self.generate_mem_segment(100)
+        if num_strings > 0: # TODO: This same check may make all memory segments more efficient, as we may not need to search through segments that do not exist!
+            self.strings_mem : list[Union[str, None]] = self.generate_mem_segment(num_strings)
 
     def __repr__(self) -> str:
         return 'Ints memory: ' + str(self.ints_mem) + '\n Floats mem: ' + str(self.floats_mem) + ' \n Chars mem: ' + str(self.chars_mem) + ' \n Bools mem: ' + str(self.bools_mem)
@@ -42,7 +43,7 @@ class RuntimeMemory():
         elif string_index != None: 
             return self.strings_mem[string_index]
         else:
-            raise RuntimeError(f'Unable to access specified virtual address \'{virtual_address}\'')
+            return None
 
     def assign_content(self, virtual_address: int, value: Any) -> None:
         int_index = self.get_int_index(virtual_address)
@@ -146,4 +147,84 @@ class RuntimeMemory():
 
 
 
-# class MemoryStack():
+class RuntimeMemory():
+    def __init__(self, consts_table: ConstVarsTable, func_dir: FuncDir) -> None:
+        self.constant_memory_segment : MemorySegment = self.generate_constant_memory_segment(consts_table)
+        global_scope = func_dir.get_scope('global')
+        self.global_memory_segment : MemorySegment = MemorySegment(
+            global_scope.num_vars_int,
+            global_scope.num_vars_float,
+            global_scope.num_vars_char,
+            global_scope.num_vars_bool
+        )
+        self.mem_stack : deque[MemorySegment] = deque()
+        self.current_mem_segment : MemorySegment = self.generate_main_memory_segment(func_dir)
+        self.activation_record : MemorySegment = None
+
+    def generate_constant_memory_segment(consts_table: ConstVarsTable) -> MemorySegment:
+        mem_segment = MemorySegment(
+            consts_table.types_counter['int'], 
+            consts_table.types_counter['float'], 
+            consts_table.types_counter['char'],
+            consts_table.types_counter['bool'],
+            consts_table.types_counter['string']
+        )
+        for value, const_entry in consts_table.const_vars_table.items():
+            mem_segment.assign_content(const_entry.address, value)
+        return mem_segment
+
+    def generate_main_memory_segment(func_dir: FuncDir) -> MemorySegment:
+        main_scope = func_dir.get_scope('main')
+        mem_segment = MemorySegment(
+            main_scope.num_vars_int * main_scope.num_temps_int,
+            main_scope.num_vars_float * main_scope.num_temps_float,
+            main_scope.num_vars_char * main_scope.num_temps_char,
+            main_scope.num_vars_bool * main_scope.num_temps_bool
+        )
+        return mem_segment
+
+    def create_mem_segment(self, resources: list[int]) -> None:
+        new_mem_segment = MemorySegment(resources[0], resources[1], resources[2], resources[3])
+        self.activation_record = new_mem_segment
+
+    def sleep_current_memory(self):
+        self.mem_stack.append(self.current_mem_segment)
+        self.current_mem_segment = self.activation_record
+    
+    def destroy_current_mem_segment(self) -> None:
+        # When we are finished with a memory segment, we dispose of it and reset to what we had waiting in the stack
+        del self.current_mem_segment
+        self.current_mem_segment = self.mem_stack.pop()
+
+    def retrieve_content(self, virtual_address: int):
+        # see if we will retrieve it from the global memory segment
+        if self.check_for_global_segment(virtual_address):
+            return self.global_memory_segment.retrieve_content(virtual_address)
+        elif self.check_for_constant_segment(virtual_address):
+            return self.global_memory_segment.retrieve_content(virtual_address)
+        else:
+            return self.current_mem_segment.retrieve_content(virtual_address)
+    
+    def assign_content(self, virtual_address: int, value: Any):
+        # see if we will assign it to the global memory segment
+        if self.check_for_global_segment(virtual_address):
+            return self.global_memory_segment.assign_content(virtual_address)
+        elif self.check_for_constant_segment(virtual_address):
+            return self.global_memory_segment.assign_content(virtual_address)
+        else:
+            return self.current_mem_segment.retrieve_content(virtual_address)
+
+    def check_for_global_segment(self, virtual_address: int) -> bool:
+        if ((virtual_address >= VirtualMemory.global_int_range[0] and virtual_address <= VirtualMemory.global_int_range[1])
+            or (virtual_address >= VirtualMemory.global_float_range[0] and virtual_address <= VirtualMemory.global_float_range[1])
+            or (virtual_address >= VirtualMemory.global_char_range[0] and virtual_address <= VirtualMemory.global_char_range[1])
+            or (virtual_address >= VirtualMemory.global_bool_range[0] and virtual_address <= VirtualMemory.global_bool_range[1])):
+            return True
+    
+    def check_for_constant_segment(self, virtual_address: int) -> bool:
+        if ((virtual_address >= VirtualMemory.constant_int_range[0] and virtual_address <= VirtualMemory.constant_int_range[1])
+            or (virtual_address >= VirtualMemory.constant_float_range[0] and virtual_address <= VirtualMemory.constant_float_range[1])
+            or (virtual_address >= VirtualMemory.constant_char_range[0] and virtual_address <= VirtualMemory.constant_char_range[1])
+            or (virtual_address >= VirtualMemory.constant_bool_range[0] and virtual_address <= VirtualMemory.constant_bool_range[1])
+            or (virtual_address >= VirtualMemory.constant_string_range[0] and virtual_address <= VirtualMemory.constant_string_range[1])):
+            return True
