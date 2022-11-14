@@ -16,7 +16,7 @@ class SemanticRules:
     jump_stack = deque()
     id_queue = deque()
     quadruples : list[Quadruple] = []
-    quadruple_counter = 1
+    quadruple_counter = 0
     function_directory = FuncDir()
     current_scopeID : str
     current_call_scopeID : str
@@ -133,22 +133,25 @@ class SemanticRules:
             raise Exception('Type mismatch on conditional expression')
         else:
             result = self.operands_stack.pop()
+            # Apend the gotof quad we are about to create
+            self.jump_stack.append(self.quadruple_counter)
             quadruple = Quadruple('gotof', result)
             self.append_quad(quadruple)
-            self.jump_stack.append(self.quadruple_counter - 1)
 
     def else_start(self):
+        false_jump = self.jump_stack.pop()
+        # Append the goto quad we are about to create
+        self.jump_stack.append(self.quadruple_counter)
         quadruple = Quadruple('goto',-1)
         self.append_quad(quadruple)
-        false_jump = self.jump_stack.pop()
-        self.jump_stack.append(self.quadruple_counter - 1)
-        self.quadruples[false_jump-1].fill_result(self.quadruple_counter)
+        # Fill the result of the false jump with the next quadruple we will create
+        self.quadruples[false_jump].fill_result(self.quadruple_counter)
 
 
     def end_if(self):
         while len(self.jump_stack) > 0:
             pending_jump = self.jump_stack.pop()
-            self.quadruples[pending_jump-1].fill_result(self.quadruple_counter)
+            self.quadruples[pending_jump].fill_result(self.quadruple_counter)
 
     def start_while(self):
         self.jump_stack.append(self.quadruple_counter)
@@ -159,16 +162,16 @@ class SemanticRules:
             raise Exception('Type mismatch on conditional expression')
         else:
             result = self.operands_stack.pop()
+            self.jump_stack.append(self.quadruple_counter)
             quadruple = Quadruple('gotof', result)
             self.append_quad(quadruple)
-            self.jump_stack.append(self.quadruple_counter - 1)
     
     def end_while(self):
         pending_jump = self.jump_stack.pop()
         return_to = self.jump_stack.pop()
-        quadruple = Quadruple('goto', return_to)
+        quadruple = Quadruple('goto', result=return_to)
         self.append_quad(quadruple)
-        self.quadruples[pending_jump - 1].fill_result(self.quadruple_counter)
+        self.quadruples[pending_jump].fill_result(self.quadruple_counter)
 
     def start_for(self):
         self.jump_stack.append(self.quadruple_counter)
@@ -179,22 +182,22 @@ class SemanticRules:
             raise Exception('Type mismatch on conditional expression')
         else:
             result = self.operands_stack.pop()
+            self.jump_stack.append(self.quadruple_counter)
             quadruple = Quadruple('gotof', result)
             self.append_quad(quadruple)
-            self.jump_stack.append(self.quadruple_counter - 1)
     
     def end_for(self):
         pending_jump = self.jump_stack.pop()
         return_to = self.jump_stack.pop()
-        quadruple = Quadruple('goto', return_to)
+        quadruple = Quadruple('goto', result=return_to)
         self.append_quad(quadruple)
-        self.quadruples[pending_jump - 1].fill_result(self.quadruple_counter)
+        self.quadruples[pending_jump].fill_result(self.quadruple_counter)
     
     def print_value(self):
         result = self.operands_stack.pop()
         self.types_stack.pop()
         quadruple = Quadruple('print', None, None, result)
-        self.quadruples.append(quadruple)
+        self.append_quad(quadruple)
 
     def read_constant(self):
         result = self.operands_stack.pop()
