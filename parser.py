@@ -104,7 +104,8 @@ def p_vars_p(p):
               | empty'''
 
 def p_ids(p):
-    '''ids : ID store_id ids_p'''
+    '''ids : ID store_id ids_p
+            | ID array_indexing_decl '''
 
 def p_store_id(p):
     '''store_id : '''
@@ -326,6 +327,10 @@ def p_cycles(p):
 def p_array_indexing(p):
     '''array_indexing : '[' expression ']' 
                       | '[' expression ']'  '[' expression ']' '''
+
+def p_array_indexing_decl(p):
+    '''array_indexing : '[' I_CONST ']' 
+                      | '[' I_CONST ']'  '[' I_CONST ']' '''
 
 def p_while(p):
     '''while : WHILE start_while '(' expression ')' evaluate_while_expression interior_block end_while'''
