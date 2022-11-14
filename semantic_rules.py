@@ -268,6 +268,11 @@ class SemanticRules:
         self.quadruples[0].fill_result(self.quadruple_counter)
         self.set_scope('main')
 
+    def end_main_function(self):
+        self.function_directory.get_scope('main').release_scope_vars_table()
+        end_program_quad = Quadruple('endprogram')
+        self.append_quad(end_program_quad)
+
     def handle_return_statement(self):
         current_scope = self.function_directory.get_scope(self.current_scopeID)
         if self.current_scopeID == 'main':

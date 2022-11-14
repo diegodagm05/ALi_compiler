@@ -12,6 +12,7 @@ quadruple_operations = operations | {
     'parameter': 21,
     'endfunc': 22,
     'return': 23, 
+    'endprogram': 24,
 }
 
 class Quadruple():
