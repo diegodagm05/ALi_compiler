@@ -22,12 +22,12 @@ class VarsTable():
     def __str__(self) -> str:
         return str(self.vars_table)
 
-    def add_entry(self, name: str, type: str) -> None:
+    def add_entry(self, name: str, type: str, is_global_entry: bool = False) -> None:
         if type not in types:
             raise Exception(f'Unknown type used {type}')
         if name in self.vars_table:
             raise Exception('Redeclaration of identifier is not allowed')
-        address = virtual_memory.assign_mem_address(types[type])
+        address = virtual_memory.assign_mem_address(types[type],is_global=is_global_entry)
         self.vars_table[name] = VarsTableEntry(types[type], address)
 
     def lookup_entry(self, name: str) -> tuple[bool, Union[VarsTableEntry, None]]:

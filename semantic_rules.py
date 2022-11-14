@@ -28,10 +28,10 @@ class SemanticRules:
     current_call_scopeID : str
     call_param_ptr : str
     call_scope_params_list : list[str]
-    current_var_table : str
+    current_var_table : VarsTable
     const_vars_table : ConstVarsTable = ConstVarsTable()
     current_param_count : int = 0
-    current_local_var_count : int = 0
+    current_scope_var_count : int = 0
     current_temp_count : int = 0
 
     def __init__(self) -> None:
@@ -53,11 +53,14 @@ class SemanticRules:
         self.current_type = type
 
     def store_ids(self) -> None:
-        self.current_local_var_count = 0
+        self.current_scope_var_count = 0
         while len(self.id_queue) > 0:
             name = self.id_queue.popleft()
-            self.current_var_table.add_entry(name, self.current_type)
-            self.current_local_var_count += 1
+            if self.current_scopeID == 'global':
+                self.current_var_table.add_entry(name, self.current_type, is_global_entry=True)
+            else:
+                self.current_var_table.add_entry(name, self.current_type)
+            self.current_scope_var_count += 1
         self.store_number_of_local_variables()
 
     # Quadruple related modules
@@ -224,11 +227,12 @@ class SemanticRules:
             self.function_directory.create_scope(name, self.current_type)
             # if the function returns a value, store it as a global variable
             if self.current_type != 'void':
-                self.function_directory.get_scope_var_table('global').add_entry(name, self.current_type)
+                self.set_scope('global')
+                self.current_var_table.add_entry(name, self.current_type, is_global_entry=True)
                 self.function_directory.increment_scope_num_vars('global', 1, self.current_type)
             # Change the current scope, and therefore current var table
             self.set_scope(name)
-            self.current_param_count = self.current_local_var_count =  self.current_temp_count = 0
+            self.current_param_count = self.current_scope_var_count =  self.current_temp_count = 0
 
     def store_function_param(self, paramName: str, paramType: str):
         # Insert parameter into the current var table (local scope) with type
@@ -241,7 +245,7 @@ class SemanticRules:
 
     def store_number_of_local_variables(self):
         # Save the number of local variables for the function on the Dir Function table
-        self.function_directory.increment_scope_num_vars(self.current_scopeID, self.current_local_var_count, self.current_type)
+        self.function_directory.increment_scope_num_vars(self.current_scopeID, self.current_scope_var_count, self.current_type)
 
     def start_function(self):
         # Insert into Dir Function the current quad counter to establish where the function starts
@@ -341,7 +345,10 @@ class SemanticRules:
         self.append_quad(end_function_quad)
         if call_scope.type != 'void':
             temp_result = virtual_memory.assign_mem_address(call_scope.type, is_temp=True)
-            assign_call_result_quad = Quadruple('=', self.current_call_scopeID, result=temp_result)
+            (call_scope_exists, current_call_scope_global_entry) = self.function_directory.get_scope_var_table('global').lookup_entry(self.current_call_scopeID)
+            if not call_scope_exists:
+                raise Exception(f'\'{self.current_call_scopeID}\' is unable to return a value')
+            assign_call_result_quad = Quadruple('=', current_call_scope_global_entry.address, result=temp_result)
             self.append_quad(assign_call_result_quad)
             self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, call_scope.type)
 

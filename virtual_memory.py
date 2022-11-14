@@ -186,12 +186,14 @@ class VirtualMemory():
         self.temp_char_counter = self.temp_char_range[0]
         self.temp_bool_counter = self.temp_bool_range[0]
     
-    def assign_mem_address(self, type: str, is_temp: bool = False, is_const: bool = False) -> int:
+    def assign_mem_address(self, type: str, is_global: bool = False, is_temp: bool = False, is_const: bool = False) -> int:
         if type == types['int']:
             if is_const:
                 return self.assign_constant_address_int()
             elif is_temp:
                 return self.assign_temp_address_int()
+            elif is_global:
+                return self.assign_global_address_int()
             else:
                 return self.assign_local_address_int()
         elif type == types['float']:
@@ -199,6 +201,8 @@ class VirtualMemory():
                 return self.assign_constant_address_float()
             elif is_temp:
                 return self.assign_temp_address_float()
+            elif is_global:
+                return self.assign_global_address_float()
             else:
                 return self.assign_local_address_float()
         elif type == types['char']:
@@ -206,6 +210,8 @@ class VirtualMemory():
                 return self.assign_constant_address_char()
             elif is_temp:
                 return self.assign_temp_address_char()
+            elif is_global:
+                return self.assign_global_address_char()
             else:
                 return self.assign_local_address_char()
         elif type == types['bool']:
@@ -213,6 +219,8 @@ class VirtualMemory():
                 return self.assign_constant_address_bool()
             elif is_temp:
                 return self.assign_temp_address_bool()
+            elif is_global:
+                return self.assign_global_address_bool()
             else:
                 return self.assign_local_address_bool()
         else:
