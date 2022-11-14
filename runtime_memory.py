@@ -18,6 +18,9 @@ class RuntimeMemory():
             # TODO: Figure out how we can allocate specific memory for strings
             self.strings_mem : list[Union[str, None]] = self.generate_mem_segment(100)
 
+    def __repr__(self) -> str:
+        return 'Ints memory: ' + str(self.ints_mem) + '\n Floats mem: ' + str(self.floats_mem) + ' \n Chars mem: ' + str(self.chars_mem) + ' \n Bools mem: ' + str(self.bools_mem)
+
     # This is a helper function to assign a memory segment of size list_size, where our underlying implementation of a memory segment is a list
     def generate_mem_segment(self, list_size: int):
         return [None] * list_size
@@ -139,7 +142,8 @@ class RuntimeMemory():
             
     # Helper function to test for a range
     def in_virtual_range(self, virtual_address: int, range_start: int, range_end: int):
-        return virtual_address > range_start and virtual_address < range_end
+        return virtual_address >= range_start and virtual_address <= range_end
 
 
 
+# class MemoryStack():

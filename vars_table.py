@@ -43,11 +43,6 @@ class ConstVarsTable():
         'bool': 2,
         'string': 0,
     }
-    int_counter = 0
-    float_counter = 0
-    char_counter = 0
-    bool_counter = 0
-    string_counter = 0
     def __init__(self) -> None:
         # Our first constants will be boolean literals true and false
         address1 = virtual_memory.assign_mem_address(types['bool'], is_const=True)
