@@ -16,7 +16,7 @@ class SemanticRules:
     jump_stack = deque()
     id_queue = deque()
     quadruples : list[Quadruple] = []
-    quadruple_counter = 1
+    quadruple_counter = 0
     function_directory = FuncDir()
     current_scopeID : str
     current_call_scopeID : str
@@ -135,20 +135,25 @@ class SemanticRules:
             result = self.operands_stack.pop()
             quadruple = Quadruple('gotof', result)
             self.append_quad(quadruple)
-            self.jump_stack.append(self.quadruple_counter - 1)
+            self.jump_stack.append(self.quadruple_counter)
+            print(f'Added {self.quadruple_counter-1} to jump stack')
 
     def else_start(self):
+        false_jump = self.jump_stack.pop()
+        print(f'Popped from jump stack {false_jump}')
         quadruple = Quadruple('goto',-1)
         self.append_quad(quadruple)
-        false_jump = self.jump_stack.pop()
-        self.jump_stack.append(self.quadruple_counter - 1)
-        self.quadruples[false_jump-1].fill_result(self.quadruple_counter)
+        self.jump_stack.append(self.quadruple_counter)
+        print(f'Added {self.quadruple_counter} to jump stack on else start')
+        self.quadruples[false_jump].fill_result(self.quadruple_counter+1)
 
 
     def end_if(self):
+        print(self.jump_stack)
         while len(self.jump_stack) > 0:
             pending_jump = self.jump_stack.pop()
-            self.quadruples[pending_jump-1].fill_result(self.quadruple_counter)
+            print(f'Filling quad # {pending_jump} with {self.quadruple_counter}')
+            self.quadruples[pending_jump].fill_result(self.quadruple_counter)
 
     def start_while(self):
         self.jump_stack.append(self.quadruple_counter)
