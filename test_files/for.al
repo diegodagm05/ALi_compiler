@@ -4,17 +4,17 @@ func main(){
     
     if (i == 0) {
         print("Hello");
-    } elif (i > 1) {
-        print("World", "Universe");
+    } else {
+        print("PRINT");
     }
 
-    // for (i = 0; i < 5; i = i + 1) {
-       // a = b + 10;
-    // }
+    for (i = 0; i < 5; i = i + 1) {
+       a = b + 10;
+    }
 
-    // while (a < b) {
-       // a = a + 1;
-    // }
+    while (a < b) {
+       a = a + 1;
+    }
 
     void func start() {
         b = a;
