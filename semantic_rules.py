@@ -8,6 +8,12 @@ from func_dir import FuncDir
 
 sem_cube = SemanticCube()
 
+class CompilationResults:
+    def __init__(self, func_dir: FuncDir, consts_table: ConstVarsTable, quadruples: list[Quadruple]) -> None:
+        self.func_dir : FuncDir = func_dir
+        self.consts_table : ConstVarsTable = consts_table
+        self.quadruples : list[Quadruple] = quadruples
+
 class SemanticRules:
 
     operands_stack = deque()
@@ -22,10 +28,10 @@ class SemanticRules:
     current_call_scopeID : str
     call_param_ptr : str
     call_scope_params_list : list[str]
-    current_var_table : str
+    current_var_table : VarsTable
     const_vars_table : ConstVarsTable = ConstVarsTable()
     current_param_count : int = 0
-    current_local_var_count : int = 0
+    current_scope_var_count : int = 0
     current_temp_count : int = 0
 
     def __init__(self) -> None:
@@ -47,11 +53,14 @@ class SemanticRules:
         self.current_type = type
 
     def store_ids(self) -> None:
-        self.current_local_var_count = 0
+        self.current_scope_var_count = 0
         while len(self.id_queue) > 0:
             name = self.id_queue.popleft()
-            self.current_var_table.add_entry(name, self.current_type)
-            self.current_local_var_count += 1
+            if self.current_scopeID == 'global':
+                self.current_var_table.add_entry(name, self.current_type, is_global_entry=True)
+            else:
+                self.current_var_table.add_entry(name, self.current_type)
+            self.current_scope_var_count += 1
         self.store_number_of_local_variables()
 
     # Quadruple related modules
@@ -107,11 +116,11 @@ class SemanticRules:
         assignment_operand_type = self.types_stack.pop()
         assignment_operator = self.operators_stack.pop()
         match_types = sem_cube.match_types(assign_result_type, assignment_operand_type, assignment_operator)
+        assign_result = self.operands_stack.pop()
+        expression_to_assign = self.operands_stack.pop()
         if match_types == 'ERROR':
-            raise Exception(f'Type mismatch. \'{assignment_operand_type}\' cannot be assigned to \'{assign_result_type} \n''')
+            raise Exception(f'Type mismatch. \'{assignment_operand_type}\' \' {expression_to_assign} \' cannot be assigned to \'{assign_result_type} \'{assign_result}\' \n''')
         else:
-            assign_result = self.operands_stack.pop()
-            expression_to_assign = self.operands_stack.pop()
             quadruple = Quadruple(assignment_operator, expression_to_assign, result=assign_result)
             self.append_quad(quadruple)
     
@@ -119,13 +128,15 @@ class SemanticRules:
         not_operator = self.operators_stack.pop()
         operand_type = self.types_stack.pop()
         if operand_type != types['bool']:
-            raise Exception('Type Mismatch. Not operator expects boolean type')
+            raise Exception('Type Mismatch. \'!\' operator expects boolean type')
         operand = self.operands_stack.pop()
         temp_result = virtual_memory.assign_mem_address(operand_type, is_temp=True)
         quadruple = Quadruple(not_operator, operand, result= temp_result)
         self.append_quad(quadruple)
         self.types_stack.append(operand_type)
-        self.operands_stack.append(temp_result)        
+        self.operands_stack.append(temp_result)            
+        self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, operand_type)
+     
 
     def if_start(self):
         expression_type = self.types_stack.pop()
@@ -218,10 +229,12 @@ class SemanticRules:
             self.function_directory.create_scope(name, self.current_type)
             # if the function returns a value, store it as a global variable
             if self.current_type != 'void':
-                self.function_directory.get_scope_var_table('global').add_entry(name, self.current_type)
+                self.set_scope('global')
+                self.current_var_table.add_entry(name, self.current_type, is_global_entry=True)
+                self.function_directory.increment_scope_num_vars('global', 1, self.current_type)
             # Change the current scope, and therefore current var table
             self.set_scope(name)
-            self.current_param_count = self.current_local_var_count =  self.current_temp_count = 0
+            self.current_param_count = self.current_scope_var_count =  self.current_temp_count = 0
 
     def store_function_param(self, paramName: str, paramType: str):
         # Insert parameter into the current var table (local scope) with type
@@ -234,7 +247,7 @@ class SemanticRules:
 
     def store_number_of_local_variables(self):
         # Save the number of local variables for the function on the Dir Function table
-        self.function_directory.set_scope_num_vars(self.current_scopeID, self.current_local_var_count, self.current_type)
+        self.function_directory.increment_scope_num_vars(self.current_scopeID, self.current_scope_var_count, self.current_type)
 
     def start_function(self):
         # Insert into Dir Function the current quad counter to establish where the function starts
@@ -257,6 +270,11 @@ class SemanticRules:
         self.quadruples[0].fill_result(self.quadruple_counter)
         self.set_scope('main')
 
+    def end_main_function(self):
+        self.function_directory.get_scope('main').release_scope_vars_table()
+        end_program_quad = Quadruple('endprogram')
+        self.append_quad(end_program_quad)
+
     def handle_return_statement(self):
         current_scope = self.function_directory.get_scope(self.current_scopeID)
         if self.current_scopeID == 'main':
@@ -269,7 +287,10 @@ class SemanticRules:
                 raise Exception(f'Returning a \'{return_type}\' expression in \'{self.current_scopeID}()\' which is signed as \'{current_scope.type}\' function.')
             else:
                 return_value = self.operands_stack.pop()
-                return_quad = Quadruple('return', result=return_value)
+                (current_scope_global_var_exists,  current_scope_global_var) = self.function_directory.get_scope('global').vars_table.lookup_entry(self.current_scopeID)
+                if not current_scope_global_var_exists: 
+                    raise Exception(f'Unable to find a return address for function \'{self.current_scopeID}()\'')
+                return_quad = Quadruple('return',return_value, result=current_scope_global_var.address)
                 self.append_quad(return_quad)
                 self.function_directory.set_is_returning_value(self.current_scopeID, True)
 
@@ -280,27 +301,31 @@ class SemanticRules:
             raise Exception(f'Undeclared function {name}.')
         else: 
             self.current_call_scopeID = name
+            global_scope_var_table = self.function_directory.get_scope_var_table('global')
+            (does_function_return_value, func_as_var) = global_scope_var_table.lookup_entry(name)
+            if does_function_return_value:
+                self.operands_stack.append(func_as_var.address)
+                self.types_stack.append(func_as_var.type)
+
 
     def gen_activation_record_quad(self):
         scope = self.function_directory.get_scope(self.current_call_scopeID)
         # resources needed will be stored as a list
         resources = [
-            scope.num_vars_int + scope.num_temps_int, 
-            scope.num_vars_float + scope.num_temps_float, 
-            scope.num_vars_char + scope.num_temps_char,
-            scope.num_vars_bool + scope.num_temps_bool
+            [scope.num_vars_int, scope.num_vars_float, scope.num_vars_char, scope.num_vars_bool],
+            [scope.num_temps_int, scope.num_temps_float, scope.num_temps_char, scope.num_temps_bool]
         ]
         for param in scope.params_list:
             if param == 'i':
-                resources[0] += 1
+                resources[0][0] += 1
             elif param == 'f':
-                resources[1] += 1
+                resources[0][1] += 1
             elif param == 'c':
-                resources[2] += 1
+                resources[0][2] += 1
             elif param == 'b':
-                resources[3] += 1
-        was_quad = Quadruple('was', result=resources)
-        self.append_quad(was_quad)
+                resources[0][3] += 1
+        era_quad = Quadruple('era', result=resources)
+        self.append_quad(era_quad)
         self.call_scope_params_list = scope.params_list
         self.current_call_param_counter = 0
         if len(self.call_scope_params_list) > 0:
@@ -312,7 +337,18 @@ class SemanticRules:
         if self.call_param_ptr != types[argument_type]:
             raise Exception(f'Type mismatch. \n Parameter {self.current_call_param_counter} of function {self.current_call_scopeID} is of type {self.call_param_ptr} and is being passed an expression of type {argument_type}')
         else:
-            param_quad = Quadruple('parameter', argument, result='param' + str(self.current_call_param_counter+1))
+            # Reverse engineer the virtual address that was given to the parameter on its local var table
+            # This will make generating an activation record with the params a whole lot easier
+            current_call_scope = self.function_directory.get_scope(self.current_call_scopeID)
+            curent_param_type_indicator = current_call_scope.params_list[self.current_call_param_counter]
+            param_vaddr = self.current_call_param_counter
+            if curent_param_type_indicator == 'i':
+                param_vaddr += virtual_memory.local_int_range[0]
+            elif curent_param_type_indicator == 'f':
+                param_vaddr += virtual_memory.local_float_range[0]
+            elif curent_param_type_indicator == 'c':
+                param_vaddr += virtual_memory.local_char_range[0]
+            param_quad = Quadruple('parameter', argument, 'param' + str(self.current_call_param_counter), result=param_vaddr)
             self.append_quad(param_quad)
             self.current_call_param_counter += 1
 
@@ -331,8 +367,13 @@ class SemanticRules:
         self.append_quad(end_function_quad)
         if call_scope.type != 'void':
             temp_result = virtual_memory.assign_mem_address(call_scope.type, is_temp=True)
-            assign_call_result_quad = Quadruple('=', self.current_call_scopeID, result=temp_result)
+            (call_scope_exists, current_call_scope_global_entry) = self.function_directory.get_scope_var_table('global').lookup_entry(self.current_call_scopeID)
+            if not call_scope_exists:
+                raise Exception(f'\'{self.current_call_scopeID}\' is unable to return a value')
+            assign_call_result_quad = Quadruple('=', current_call_scope_global_entry.address, result=temp_result)
             self.append_quad(assign_call_result_quad)
+            self.operands_stack.append(temp_result)
+            self.types_stack.append(call_scope.type)
             self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, call_scope.type)
 
     def set_call_param_ptr(self) -> str:
@@ -345,6 +386,10 @@ class SemanticRules:
             self.call_param_ptr = types['char']
         elif param_type == 'b':
             self.call_param_ptr = types['bool']
+
+    def get_compilation_results(self) -> CompilationResults:
+        results = CompilationResults(self.function_directory, self.const_vars_table, self.quadruples)
+        return results
       
 
 semantics = SemanticRules()

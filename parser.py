@@ -23,11 +23,15 @@ def p_g_vf(p):
             | functions'''
 
 def p_main(p):
-    '''main : FUNC MAIN found_main_function '(' ')' '{' main_block '}' '''
+    '''main : FUNC MAIN found_main_function '(' ')' '{' main_block '}'  end_main_func'''
 
 def p_found_main_function(p):
     ''' found_main_function : '''
     semantics.found_main_function()
+
+def p_end_main_func(p):
+    '''end_main_func : '''
+    semantics.end_main_function()
 
 # ----------------------
 # MAIN FUNCTION RULES 
@@ -482,7 +486,7 @@ def p_error(p):
     err_string = f"Syntax error in input at line {p.lineno} at character {p.lexpos} unexpected \'{p.value}\' "
     raise Exception(err_string)
 
-parser = yacc.yacc(debug=True)
+ali_parser = yacc.yacc(debug=True)
 
 def test():
     print('Enter file name to be tested (with .al extension)')
@@ -490,7 +494,7 @@ def test():
     file = open(filename)
     input_str = file.read()
     file.close()
-    parser.parse(input_str) 
+    ali_parser.parse(input_str) 
     print('Accepted code')
 
 if __name__ == "__main__":
