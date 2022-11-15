@@ -8,10 +8,7 @@ from vars_table import ConstVarsTable
 
 
 def virtual_machine(compilation_results: CompilationResults) -> None:
-    print(compilation_results.func_dir)
-    print(compilation_results.consts_table)
-    print(compilation_results.quadruples)
-    print('--OUTPUT--')
+    print('--ALi CONSOLE OUTPUT--')
     runtime_memory = RuntimeMemory(compilation_results.consts_table, compilation_results.func_dir)
     quadruples : list[Quadruple] = compilation_results.quadruples
     ip = 0
