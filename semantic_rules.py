@@ -128,13 +128,15 @@ class SemanticRules:
         not_operator = self.operators_stack.pop()
         operand_type = self.types_stack.pop()
         if operand_type != types['bool']:
-            raise Exception('Type Mismatch. Not operator expects boolean type')
+            raise Exception('Type Mismatch. \'!\' operator expects boolean type')
         operand = self.operands_stack.pop()
         temp_result = virtual_memory.assign_mem_address(operand_type, is_temp=True)
         quadruple = Quadruple(not_operator, operand, result= temp_result)
         self.append_quad(quadruple)
         self.types_stack.append(operand_type)
-        self.operands_stack.append(temp_result)        
+        self.operands_stack.append(temp_result)            
+        self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, operand_type)
+     
 
     def if_start(self):
         expression_type = self.types_stack.pop()
@@ -299,6 +301,12 @@ class SemanticRules:
             raise Exception(f'Undeclared function {name}.')
         else: 
             self.current_call_scopeID = name
+            global_scope_var_table = self.function_directory.get_scope_var_table('global')
+            (does_function_return_value, func_as_var) = global_scope_var_table.lookup_entry(name)
+            if does_function_return_value:
+                self.operands_stack.append(func_as_var.address)
+                self.types_stack.append(func_as_var.type)
+
 
     def gen_activation_record_quad(self):
         scope = self.function_directory.get_scope(self.current_call_scopeID)
@@ -309,13 +317,13 @@ class SemanticRules:
         ]
         for param in scope.params_list:
             if param == 'i':
-                resources[0] += 1
+                resources[0][0] += 1
             elif param == 'f':
-                resources[1] += 1
+                resources[0][1] += 1
             elif param == 'c':
-                resources[2] += 1
+                resources[0][2] += 1
             elif param == 'b':
-                resources[3] += 1
+                resources[0][3] += 1
         era_quad = Quadruple('era', result=resources)
         self.append_quad(era_quad)
         self.call_scope_params_list = scope.params_list
@@ -364,6 +372,8 @@ class SemanticRules:
                 raise Exception(f'\'{self.current_call_scopeID}\' is unable to return a value')
             assign_call_result_quad = Quadruple('=', current_call_scope_global_entry.address, result=temp_result)
             self.append_quad(assign_call_result_quad)
+            self.operands_stack.append(temp_result)
+            self.types_stack.append(call_scope.type)
             self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, call_scope.type)
 
     def set_call_param_ptr(self) -> str:

@@ -71,25 +71,29 @@ class MemorySegment():
         bool_temp_index = self.get_bool_temp_index(virtual_address)
         string_index = self.get_string_index(virtual_address)
         if int_index != None: 
-            return self.ints_mem[int_index]
+            value = self.ints_mem[int_index]
         elif int_temp_index != None:
-            return self.ints_mem_temp[int_temp_index]
+            value = self.ints_mem_temp[int_temp_index]
         elif float_index != None: 
-            return self.floats_mem[float_index]
+            value = self.floats_mem[float_index]
         elif float_temp_index != None:
-            return self.floats_mem_temp[float_temp_index]
+            value = self.floats_mem_temp[float_temp_index]
         elif char_index != None: 
-            return self.chars_mem[char_index]
+            value = self.chars_mem[char_index]
         elif char_temp_index != None: 
-            return self.chars_mem_temp[char_temp_index]
+            value = self.chars_mem_temp[char_temp_index]
         elif bool_index != None: 
-            return self.bools_mem[bool_index]
+            value = self.bools_mem[bool_index]
         elif bool_temp_index != None: 
-            return self.bools_mem_temp[bool_temp_index]
+            value = self.bools_mem_temp[bool_temp_index]
         elif string_index != None: 
-            return self.strings_mem[string_index]
+            value = self.strings_mem[string_index]
         else:
-            return None
+            value = None
+        if value is None:
+            raise RuntimeError('Cannot use uninitialized variable.')
+        else:
+            return value
 
     def assign_content(self, virtual_address: int, value: Any) -> None:
         int_index = self.get_int_index(virtual_address)
@@ -131,7 +135,7 @@ class MemorySegment():
     def get_int_index(self, virtual_address: int) -> Union[int, None]:
         # Check if the address belongs to global ints
         if self.in_virtual_range(virtual_address, VirtualMemory.global_int_range[0], VirtualMemory.global_int_range[1]): 
-            return virtual_address - VirtualMemory.global_bool_range[0]
+            return virtual_address - VirtualMemory.global_int_range[0]
         # Check if the address belongs to constant ints
         elif self.in_virtual_range(virtual_address, VirtualMemory.constant_int_range[0], VirtualMemory.constant_int_range[1]): 
             return virtual_address - VirtualMemory.constant_int_range[0]
@@ -149,7 +153,7 @@ class MemorySegment():
     def get_float_index(self, virtual_address: int) -> Union[float, None]:
         # Check if the address belongs to global floats
         if self.in_virtual_range(virtual_address, VirtualMemory.global_float_range[0], VirtualMemory.global_float_range[1]): 
-            return virtual_address - VirtualMemory.global_bool_range[0]
+            return virtual_address - VirtualMemory.global_float_range[0]
         # Check if the address belongs to constant floats
         elif self.in_virtual_range(virtual_address, VirtualMemory.constant_float_range[0], VirtualMemory.constant_float_range[1]): 
             return virtual_address - VirtualMemory.constant_float_range[0]
@@ -169,7 +173,7 @@ class MemorySegment():
     def get_char_index(self, virtual_address: int) -> Union[str, None]:
         # Check if the address belongs to global ints
         if self.in_virtual_range(virtual_address, VirtualMemory.global_char_range[0], VirtualMemory.global_char_range[1]): 
-            return virtual_address - VirtualMemory.global_bool_range[0]
+            return virtual_address - VirtualMemory.global_char_range[0]
         # Check if the address belongs to constant chars
         elif self.in_virtual_range(virtual_address, VirtualMemory.constant_char_range[0], VirtualMemory.constant_char_range[1]): 
             return virtual_address - VirtualMemory.constant_char_range[0]

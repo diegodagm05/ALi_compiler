@@ -1,13 +1,13 @@
 from collections import deque
-from func_dir import FuncDir
 from runtime_memory import RuntimeMemory
 from quadruple import Quadruple, quadruple_operations
 from semantic_rules import semantics, CompilationResults
 from parser import ali_parser
-from vars_table import ConstVarsTable
 
 
 def virtual_machine(compilation_results: CompilationResults) -> None:
+    # print(compilation_results.func_dir)
+    # print(compilation_results.consts_table)
     print('--ALi CONSOLE OUTPUT--')
     runtime_memory = RuntimeMemory(compilation_results.consts_table, compilation_results.func_dir)
     quadruples : list[Quadruple] = compilation_results.quadruples
@@ -15,9 +15,9 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
     call_stack = deque()
     while True:
         current_quad = quadruples[ip]
-        #print("-----------------------------------------")
-        #print(f"Quad # {ip} \n Processing {current_quad}  ")
-        #print(f'current memory -> \n{runtime_memory.current_mem_segment}')
+        # print("-----------------------------------------")
+        # print(f"Quad # {ip} \n Processing {current_quad}  ")
+        # print(f'current memory -> \n{runtime_memory.current_mem_segment}')
         if current_quad.op_code == quadruple_operations['endprogram']:
             break 
         elif current_quad.op_code == quadruple_operations['+']:
@@ -62,7 +62,7 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
             result = (left_operand == right_operand)
             runtime_memory.assign_content(current_quad.result, result)
             ip += 1
-        elif current_quad.op_code == quadruple_operations['==']:
+        elif current_quad.op_code == quadruple_operations['!=']:
             left_operand = runtime_memory.retrieve_content(current_quad.operator1)
             right_operand = runtime_memory.retrieve_content(current_quad.operator2)
             result = left_operand != right_operand
@@ -129,7 +129,7 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
             else:
                 ip += 1
         elif current_quad.op_code == quadruple_operations['gosub']:
-            call_stack.append(ip)
+            call_stack.append(ip+1)
             runtime_memory.sleep_current_memory()
             ip = current_quad.result
         elif current_quad.op_code == quadruple_operations['era']:

@@ -7,6 +7,7 @@ func main(){
     var a, b : float;
     b = 1.5;
     a = b - b;
+    foo();
     if (a < 0) {
         print("Hello");
     } else {
