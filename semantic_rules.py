@@ -304,10 +304,8 @@ class SemanticRules:
         scope = self.function_directory.get_scope(self.current_call_scopeID)
         # resources needed will be stored as a list
         resources = [
-            scope.num_vars_int + scope.num_temps_int, 
-            scope.num_vars_float + scope.num_temps_float, 
-            scope.num_vars_char + scope.num_temps_char,
-            scope.num_vars_bool + scope.num_temps_bool
+            [scope.num_vars_int, scope.num_vars_float, scope.num_vars_char, scope.num_vars_bool],
+            [scope.num_temps_int, scope.num_temps_float, scope.num_temps_char, scope.num_temps_bool]
         ]
         for param in scope.params_list:
             if param == 'i':

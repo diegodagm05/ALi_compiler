@@ -7,18 +7,18 @@ func main(){
     var a, b : float;
     b = 1.5;
     a = b - b;
-    i = 0;
-    if (i < 0) {
+    if (a < 0) {
         print("Hello");
     } else {
         print("PRINT");
     }
 
-    // for (k = 0; k < 5; k = k + 1) {
-       // print(i);
-       // print(k);
-       // i = i + k;
-    // }
+    for (k = 0; k < 5; k = k + 1) {
+        print("Inside for loop");
+        i = k;
+        print("i = ", i);
+        print("k = ", k);
+    }
 
     while (a < b) {
        a = a + 0.1;

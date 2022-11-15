@@ -10,20 +10,50 @@ class MemorySegment():
     Instantiating a MemorySegment object, we should now how many spaces we need for each datatype segment. We also need to now if the
     object instantiated will be used to store constants, and therefero we need a segment for string constants.
     '''
-    def __init__(self, num_ints: int, num_floats: int, num_chars: int, num_bools: int, num_strings: int = 0) -> None:
-        super().__init__()
-        self.ints_mem : list[Union[int, None]] = self.generate_mem_segment(num_ints)
-        self.floats_mem : list[Union[float, None]] = self.generate_mem_segment(num_floats)
-        self.chars_mem : list[ Union[str, None]] = self.generate_mem_segment(num_chars)
-        self.bools_mem : list[Union[bool, None]] = self.generate_mem_segment(num_bools)
-        if num_strings > 0: # TODO: This same check may make all memory segments more efficient, as we may not need to search through segments that do not exist!
+    def __init__(self, num_ints: int = 0, num_floats: int = 0, num_chars: int = 0, num_bools: int = 0, 
+                num_ints_temp: int = 0, num_floats_temp: int = 0, num_chars_temp: int = 0, num_bools_temp: int = 0,
+                num_strings: int = 0) -> None:
+        # We check if we actually need to create the segment of memory for a given type
+        if num_ints > 0:
+            self.ints_mem : list[Union[int, None]] = self.generate_mem_segment(num_ints)
+        if num_floats > 0:
+            self.floats_mem : list[Union[float, None]] = self.generate_mem_segment(num_floats)
+        if num_chars > 0:
+            self.chars_mem : list[ Union[str, None]] = self.generate_mem_segment(num_chars)
+        if num_bools > 0:
+            self.bools_mem : list[Union[bool, None]] = self.generate_mem_segment(num_bools)
+        if num_ints_temp > 0:
+            self.ints_mem_temp : list[Union[int, None]] = self.generate_mem_segment(num_ints_temp)
+        if num_floats_temp > 0:
+            self.floats_mem_temp : list[Union[float, None]] = self.generate_mem_segment(num_floats_temp)
+        if num_chars_temp > 0:
+            self.chars_mem_temp : list[ Union[str, None]] = self.generate_mem_segment(num_chars_temp)
+        if num_bools_temp > 0:
+            self.bools_mem_temp : list[Union[bool, None]] = self.generate_mem_segment(num_bools_temp)
+        if num_strings > 0:
             self.strings_mem : list[Union[str, None]] = self.generate_mem_segment(num_strings)
 
     def __repr__(self) -> str:
+        result = ""
+        if hasattr(self, 'ints_mem'):
+            result += '\n Ints mem: ' + str(self.ints_mem)
+        if hasattr(self, 'floats_mem'):
+            result += '\n floats mem: ' + str(self.floats_mem)
+        if hasattr(self, 'chars_mem'):
+            result += '\n chars mem: ' + str(self.chars_mem)
+        if hasattr(self, 'bools_mem'):
+            result += '\n bools mem: ' + str(self.bools_mem)
+        if hasattr(self, 'ints_mem_temp'):
+            result += '\n Ints mem_temp: ' + str(self.ints_mem_temp)
+        if hasattr(self, 'floats_mem_temp'):
+            result += '\n floats mem_temp: ' + str(self.floats_mem_temp)
+        if hasattr(self, 'chars_mem_temp'):
+            result += '\n chars mem_temp: ' + str(self.chars_mem_temp)
+        if hasattr(self, 'bools_mem_temp'):
+            result += '\n bools mem_temp: ' + str(self.bools_mem_temp)
         if hasattr(self, 'strings_mem'):
-            return 'Ints memory: ' + str(self.ints_mem) + '\n Floats mem: ' + str(self.floats_mem) + ' \n Chars mem: ' + str(self.chars_mem) + ' \n Bools mem: ' + str(self.bools_mem) + ' \n Strings mem: ' +  str(self.strings_mem)
-        else:
-            return 'Ints memory: ' + str(self.ints_mem) + '\n Floats mem: ' + str(self.floats_mem) + ' \n Chars mem: ' + str(self.chars_mem) + ' \n Bools mem: ' + str(self.bools_mem)
+            result += ' \n Strings mem: ' +  str(self.strings_mem)
+        return result
             
 
     # This is a helper function to assign a memory segment of size list_size, where our underlying implementation of a memory segment is a list
@@ -32,18 +62,30 @@ class MemorySegment():
 
     def retrieve_content(self, virtual_address: int) -> Any:
         int_index = self.get_int_index(virtual_address)
+        int_temp_index = self.get_int_temp_index(virtual_address)
         float_index = self.get_float_index(virtual_address)
+        float_temp_index = self.get_float_temp_index(virtual_address)
         char_index = self.get_char_index(virtual_address)
+        char_temp_index = self.get_char_temp_index(virtual_address)
         bool_index = self.get_bool_index(virtual_address)
+        bool_temp_index = self.get_bool_temp_index(virtual_address)
         string_index = self.get_string_index(virtual_address)
         if int_index != None: 
             return self.ints_mem[int_index]
+        elif int_temp_index != None:
+            return self.ints_mem_temp[int_temp_index]
         elif float_index != None: 
             return self.floats_mem[float_index]
+        elif float_temp_index != None:
+            return self.floats_mem_temp[float_temp_index]
         elif char_index != None: 
             return self.chars_mem[char_index]
+        elif char_temp_index != None: 
+            return self.chars_mem_temp[char_temp_index]
         elif bool_index != None: 
             return self.bools_mem[bool_index]
+        elif bool_temp_index != None: 
+            return self.bools_mem_temp[bool_temp_index]
         elif string_index != None: 
             return self.strings_mem[string_index]
         else:
@@ -51,19 +93,31 @@ class MemorySegment():
 
     def assign_content(self, virtual_address: int, value: Any) -> None:
         int_index = self.get_int_index(virtual_address)
+        int_temp_index = self.get_int_temp_index(virtual_address)
         float_index = self.get_float_index(virtual_address)
+        float_temp_index = self.get_float_temp_index(virtual_address)
         char_index = self.get_char_index(virtual_address)
+        char_temp_index = self.get_char_temp_index(virtual_address)
         bool_index = self.get_bool_index(virtual_address)
+        bool_temp_index = self.get_bool_temp_index(virtual_address)
         string_index = self.get_string_index(virtual_address)
-        if int_index != None:
+        if int_index != None: 
             self.ints_mem[int_index] = value
+        elif int_temp_index != None:
+            self.ints_mem_temp[int_temp_index] = value
         elif float_index != None: 
             self.floats_mem[float_index] = value
+        elif float_temp_index != None:
+            self.floats_mem_temp[float_temp_index] = value
         elif char_index != None: 
             self.chars_mem[char_index] = value
+        elif char_temp_index != None: 
+            self.chars_mem_temp[char_temp_index] = value
         elif bool_index != None: 
             self.bools_mem[bool_index] = value
-        elif string_index != None:
+        elif bool_temp_index != None: 
+            self.bools_mem_temp[bool_temp_index] = value
+        elif string_index != None: 
             self.strings_mem[string_index] = value
         else:
             raise RuntimeError(f'Unable to access specified virtual address \'{virtual_address}\'')
@@ -84,8 +138,10 @@ class MemorySegment():
         # Check if the address belongs to local ints
         elif self.in_virtual_range(virtual_address, VirtualMemory.local_int_range[0], VirtualMemory.local_int_range[1]): 
             return virtual_address - VirtualMemory.local_int_range[0]
-        # Check if the address belongs to temporal ints
-        elif self.in_virtual_range(virtual_address, VirtualMemory.temp_int_range[0], VirtualMemory.temp_int_range[1]):
+        else: 
+            return None
+    def get_int_temp_index(self, virtual_address: int) -> Union[int, None]:
+        if self.in_virtual_range(virtual_address, VirtualMemory.temp_int_range[0], VirtualMemory.temp_int_range[1]):
             return virtual_address - VirtualMemory.temp_int_range[0]
         else: 
             return None
@@ -100,8 +156,12 @@ class MemorySegment():
         # Check if the address belongs to local floats
         elif self.in_virtual_range(virtual_address, VirtualMemory.local_float_range[0], VirtualMemory.local_float_range[1]): 
             return virtual_address - VirtualMemory.local_float_range[0]
+        else: 
+            return None
+
+    def get_float_temp_index(self, virtual_address: int) -> Union[float, None]:
         # Check if the address belongs to temporal floats
-        elif self.in_virtual_range(virtual_address, VirtualMemory.temp_float_range[0], VirtualMemory.temp_float_range[1]):
+        if self.in_virtual_range(virtual_address, VirtualMemory.temp_float_range[0], VirtualMemory.temp_float_range[1]):
             return virtual_address - VirtualMemory.temp_float_range[0]
         else: 
             return None
@@ -116,8 +176,12 @@ class MemorySegment():
         # Check if the address belongs to local chars
         elif self.in_virtual_range(virtual_address, VirtualMemory.local_char_range[0], VirtualMemory.local_char_range[1]): 
             return virtual_address - VirtualMemory.local_char_range[0]
+        else: 
+            return None
+    
+    def get_char_temp_index(self, virtual_address: int) -> Union[str, None]:
         # Check if the address belongs to temporal chars
-        elif self.in_virtual_range(virtual_address, VirtualMemory.temp_char_range[0], VirtualMemory.temp_char_range[1]):
+        if self.in_virtual_range(virtual_address, VirtualMemory.temp_char_range[0], VirtualMemory.temp_char_range[1]):
             return virtual_address - VirtualMemory.temp_char_range[0]
         else: 
             return None
@@ -132,8 +196,12 @@ class MemorySegment():
         # Check if the address belongs to local bools
         elif self.in_virtual_range(virtual_address, VirtualMemory.local_bool_range[0], VirtualMemory.local_bool_range[1]): 
             return virtual_address - VirtualMemory.local_bool_range[0]
+        else: 
+            return None
+    
+    def get_bool_temp_index(self, virtual_address: int) -> Union[bool, None]:
         # Check if the address belongs to temporal bools
-        elif self.in_virtual_range(virtual_address, VirtualMemory.temp_bool_range[0], VirtualMemory.temp_bool_range[1]):
+        if self.in_virtual_range(virtual_address, VirtualMemory.temp_bool_range[0], VirtualMemory.temp_bool_range[1]):
             return virtual_address - VirtualMemory.temp_bool_range[0]
         else: 
             return None
@@ -148,8 +216,6 @@ class MemorySegment():
     # Helper function to test for a range
     def in_virtual_range(self, virtual_address: int, range_start: int, range_end: int):
         return virtual_address >= range_start and virtual_address <= range_end
-
-
 
 class RuntimeMemory():
     def __init__(self, consts_table: ConstVarsTable, func_dir: FuncDir) -> None:
@@ -171,7 +237,7 @@ class RuntimeMemory():
             consts_table.types_counter['float'], 
             consts_table.types_counter['char'],
             consts_table.types_counter['bool'],
-            consts_table.types_counter['string']
+            num_strings=consts_table.types_counter['string']
         )
         for value, const_entry in consts_table.const_vars_table.items():
             mem_segment.assign_content(const_entry.address, value)
@@ -180,15 +246,21 @@ class RuntimeMemory():
     def generate_main_memory_segment(self, func_dir: FuncDir) -> MemorySegment:
         main_scope = func_dir.get_scope('main')
         mem_segment = MemorySegment(
-            main_scope.num_vars_int + main_scope.num_temps_int,
-            main_scope.num_vars_float + main_scope.num_temps_float,
-            main_scope.num_vars_char + main_scope.num_temps_char,
-            main_scope.num_vars_bool + main_scope.num_temps_bool
+            main_scope.num_vars_int,
+            main_scope.num_vars_float,
+            main_scope.num_vars_char,
+            main_scope.num_vars_bool,
+            main_scope.num_temps_int,
+            main_scope.num_temps_float,
+            main_scope.num_temps_char,
+            main_scope.num_temps_bool
         )
         return mem_segment
 
-    def create_mem_segment(self, resources: list[int]) -> None:
-        new_mem_segment = MemorySegment(resources[0], resources[1], resources[2], resources[3])
+    def create_mem_segment(self, resources: list[list[int]]) -> None:
+        local_resources = resources[0]
+        temp_resources = resources[1]
+        new_mem_segment = MemorySegment(local_resources[0], local_resources[1], local_resources[2], local_resources[3],temp_resources[0], temp_resources[1], temp_resources[2], temp_resources[3])
         self.activation_record = new_mem_segment
 
     def sleep_current_memory(self):
