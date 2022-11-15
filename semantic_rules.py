@@ -116,11 +116,11 @@ class SemanticRules:
         assignment_operand_type = self.types_stack.pop()
         assignment_operator = self.operators_stack.pop()
         match_types = sem_cube.match_types(assign_result_type, assignment_operand_type, assignment_operator)
+        assign_result = self.operands_stack.pop()
+        expression_to_assign = self.operands_stack.pop()
         if match_types == 'ERROR':
-            raise Exception(f'Type mismatch. \'{assignment_operand_type}\' cannot be assigned to \'{assign_result_type} \n''')
+            raise Exception(f'Type mismatch. \'{assignment_operand_type}\' \' {expression_to_assign} \' cannot be assigned to \'{assign_result_type} \'{assign_result}\' \n''')
         else:
-            assign_result = self.operands_stack.pop()
-            expression_to_assign = self.operands_stack.pop()
             quadruple = Quadruple(assignment_operator, expression_to_assign, result=assign_result)
             self.append_quad(quadruple)
     

@@ -20,7 +20,11 @@ class MemorySegment():
             self.strings_mem : list[Union[str, None]] = self.generate_mem_segment(num_strings)
 
     def __repr__(self) -> str:
-        return 'Ints memory: ' + str(self.ints_mem) + '\n Floats mem: ' + str(self.floats_mem) + ' \n Chars mem: ' + str(self.chars_mem) + ' \n Bools mem: ' + str(self.bools_mem)
+        if hasattr(self, 'strings_mem'):
+            return 'Ints memory: ' + str(self.ints_mem) + '\n Floats mem: ' + str(self.floats_mem) + ' \n Chars mem: ' + str(self.chars_mem) + ' \n Bools mem: ' + str(self.bools_mem) + ' \n Strings mem: ' +  str(self.strings_mem)
+        else:
+            return 'Ints memory: ' + str(self.ints_mem) + '\n Floats mem: ' + str(self.floats_mem) + ' \n Chars mem: ' + str(self.chars_mem) + ' \n Bools mem: ' + str(self.bools_mem)
+            
 
     # This is a helper function to assign a memory segment of size list_size, where our underlying implementation of a memory segment is a list
     def generate_mem_segment(self, list_size: int):
@@ -81,7 +85,7 @@ class MemorySegment():
         elif self.in_virtual_range(virtual_address, VirtualMemory.local_int_range[0], VirtualMemory.local_int_range[1]): 
             return virtual_address - VirtualMemory.local_int_range[0]
         # Check if the address belongs to temporal ints
-        elif self.in_virtual_range(virtual_address, VirtualMemory.local_int_range[0], VirtualMemory.local_int_range[1]):
+        elif self.in_virtual_range(virtual_address, VirtualMemory.temp_int_range[0], VirtualMemory.temp_int_range[1]):
             return virtual_address - VirtualMemory.temp_int_range[0]
         else: 
             return None
@@ -97,7 +101,7 @@ class MemorySegment():
         elif self.in_virtual_range(virtual_address, VirtualMemory.local_float_range[0], VirtualMemory.local_float_range[1]): 
             return virtual_address - VirtualMemory.local_float_range[0]
         # Check if the address belongs to temporal floats
-        elif self.in_virtual_range(virtual_address, VirtualMemory.local_float_range[0], VirtualMemory.local_float_range[1]):
+        elif self.in_virtual_range(virtual_address, VirtualMemory.temp_float_range[0], VirtualMemory.temp_float_range[1]):
             return virtual_address - VirtualMemory.temp_float_range[0]
         else: 
             return None
@@ -113,7 +117,7 @@ class MemorySegment():
         elif self.in_virtual_range(virtual_address, VirtualMemory.local_char_range[0], VirtualMemory.local_char_range[1]): 
             return virtual_address - VirtualMemory.local_char_range[0]
         # Check if the address belongs to temporal chars
-        elif self.in_virtual_range(virtual_address, VirtualMemory.local_char_range[0], VirtualMemory.local_char_range[1]):
+        elif self.in_virtual_range(virtual_address, VirtualMemory.temp_char_range[0], VirtualMemory.temp_char_range[1]):
             return virtual_address - VirtualMemory.temp_char_range[0]
         else: 
             return None
@@ -129,7 +133,7 @@ class MemorySegment():
         elif self.in_virtual_range(virtual_address, VirtualMemory.local_bool_range[0], VirtualMemory.local_bool_range[1]): 
             return virtual_address - VirtualMemory.local_bool_range[0]
         # Check if the address belongs to temporal bools
-        elif self.in_virtual_range(virtual_address, VirtualMemory.local_bool_range[0], VirtualMemory.local_bool_range[1]):
+        elif self.in_virtual_range(virtual_address, VirtualMemory.temp_bool_range[0], VirtualMemory.temp_bool_range[1]):
             return virtual_address - VirtualMemory.temp_bool_range[0]
         else: 
             return None
@@ -161,7 +165,7 @@ class RuntimeMemory():
         self.current_mem_segment : MemorySegment = self.generate_main_memory_segment(func_dir)
         self.activation_record : MemorySegment = None
 
-    def generate_constant_memory_segment(consts_table: ConstVarsTable) -> MemorySegment:
+    def generate_constant_memory_segment(self, consts_table: ConstVarsTable) -> MemorySegment:
         mem_segment = MemorySegment(
             consts_table.types_counter['int'], 
             consts_table.types_counter['float'], 
@@ -173,13 +177,13 @@ class RuntimeMemory():
             mem_segment.assign_content(const_entry.address, value)
         return mem_segment
 
-    def generate_main_memory_segment(func_dir: FuncDir) -> MemorySegment:
+    def generate_main_memory_segment(self, func_dir: FuncDir) -> MemorySegment:
         main_scope = func_dir.get_scope('main')
         mem_segment = MemorySegment(
-            main_scope.num_vars_int * main_scope.num_temps_int,
-            main_scope.num_vars_float * main_scope.num_temps_float,
-            main_scope.num_vars_char * main_scope.num_temps_char,
-            main_scope.num_vars_bool * main_scope.num_temps_bool
+            main_scope.num_vars_int + main_scope.num_temps_int,
+            main_scope.num_vars_float + main_scope.num_temps_float,
+            main_scope.num_vars_char + main_scope.num_temps_char,
+            main_scope.num_vars_bool + main_scope.num_temps_bool
         )
         return mem_segment
 
@@ -201,18 +205,18 @@ class RuntimeMemory():
         if self.check_for_global_segment(virtual_address):
             return self.global_memory_segment.retrieve_content(virtual_address)
         elif self.check_for_constant_segment(virtual_address):
-            return self.global_memory_segment.retrieve_content(virtual_address)
+            return self.constant_memory_segment.retrieve_content(virtual_address)
         else:
             return self.current_mem_segment.retrieve_content(virtual_address)
     
     def assign_content(self, virtual_address: int, value: Any):
         # see if we will assign it to the global memory segment
         if self.check_for_global_segment(virtual_address):
-            return self.global_memory_segment.assign_content(virtual_address)
+            return self.global_memory_segment.assign_content(virtual_address, value)
         elif self.check_for_constant_segment(virtual_address):
-            return self.global_memory_segment.assign_content(virtual_address)
+            return self.constant_memory_segment.assign_content(virtual_address, value)
         else:
-            return self.current_mem_segment.retrieve_content(virtual_address)
+            return self.current_mem_segment.assign_content(virtual_address, value)
 
     def check_for_global_segment(self, virtual_address: int) -> bool:
         if ((virtual_address >= VirtualMemory.global_int_range[0] and virtual_address <= VirtualMemory.global_int_range[1])

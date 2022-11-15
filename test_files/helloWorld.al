@@ -64,7 +64,7 @@ func main() {
     }
     // Foor loop
     for (a = 0; a < 3; a = a + 1) {
-        print("Arr[a]() :", arr[a]);
+        print("Arr[a] :", arr[a]);
     }
     // While loop
     while (a < 6) {

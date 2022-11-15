@@ -57,6 +57,7 @@ class ConstVarsTable():
     def add_entry(self, name: str, type: str) -> int:
         if type == 'string':
             address = virtual_memory.assign_constant_address_string()
+            self.const_vars_table[name] = VarsTableEntry('string', address)
         else:
             if type not in types:
                 raise Exception(f'Unknown type used {type}')
