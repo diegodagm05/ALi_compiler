@@ -331,7 +331,18 @@ class SemanticRules:
         if self.call_param_ptr != types[argument_type]:
             raise Exception(f'Type mismatch. \n Parameter {self.current_call_param_counter} of function {self.current_call_scopeID} is of type {self.call_param_ptr} and is being passed an expression of type {argument_type}')
         else:
-            param_quad = Quadruple('parameter', argument, result='param' + str(self.current_call_param_counter+1))
+            # Reverse engineer the virtual address that was given to the parameter on its local var table
+            # This will make generating an activation record with the params a whole lot easier
+            current_call_scope = self.function_directory.get_scope(self.current_call_scopeID)
+            curent_param_type_indicator = current_call_scope.params_list[self.current_call_param_counter]
+            param_vaddr = self.current_call_param_counter
+            if curent_param_type_indicator == 'i':
+                param_vaddr += virtual_memory.local_int_range[0]
+            elif curent_param_type_indicator == 'f':
+                param_vaddr += virtual_memory.local_float_range[0]
+            elif curent_param_type_indicator == 'c':
+                param_vaddr += virtual_memory.local_char_range[0]
+            param_quad = Quadruple('parameter', argument, 'param' + str(self.current_call_param_counter), result=param_vaddr)
             self.append_quad(param_quad)
             self.current_call_param_counter += 1
 
