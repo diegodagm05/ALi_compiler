@@ -15,6 +15,8 @@ class SemanticRules:
     types_stack = deque()
     jump_stack = deque()
     id_queue = deque()
+    is_array_queue = deque()
+    dim_queue = deque()
     quadruples : list[Quadruple] = []
     quadruple_counter = 0
     function_directory = FuncDir()
@@ -39,18 +41,34 @@ class SemanticRules:
         self.quadruples.append(quadruple)
         self.quadruple_counter += 1
 
-    def add_id(self, id: str) -> None:
+    def add_id(self, id: str, is_array: bool) -> None:
         self.id_queue.append(id)
+        self.is_array_queue.append(is_array)
+        # print(f'id_queue rn: {self.id_queue}')
 
     # TODO: Change this function when handling array types
     def set_current_type(self, type: str) -> None:
         self.current_type = type
 
-    def store_ids(self) -> None:
+    def set_dim1_size(self, dim: int):
+        self.dim_queue.append(dim)
+        self.dim_queue.append(1)
+    
+    def set_dim2_size(self, dim: int):
+        self.dim_queue.pop()
+        self.dim_queue.append(dim)        
+
+    def store_ids(self) -> None:     
         self.current_local_var_count = 0
+        dim1, dim2, total_size = 1,1,1
         while len(self.id_queue) > 0:
             name = self.id_queue.popleft()
-            self.current_var_table.add_entry(name, self.current_type)
+            is_array = self.is_array_queue.popleft()
+            if len(self.dim_queue) > 0:
+                dim1 = self.dim_queue.popleft()
+                dim2 = self.dim_queue.popleft()
+                total_size = dim1 * dim2
+            self.current_var_table.add_entry(name, self.current_type, is_array, dim1, dim2, total_size)
             self.current_local_var_count += 1
         self.store_number_of_local_variables()
 
