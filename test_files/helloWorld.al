@@ -1,6 +1,12 @@
 var PI : float;
 var VAR : int; 
 
+
+void func init_global_vars() {
+    PI = 3.14;
+    VAR = 78;
+}
+
 int func foo(paramX : char) {
     PI = 3.14;
     VAR = 7 + 7 + 12;
@@ -33,6 +39,7 @@ func main() {
     var j, k, l : float;
     var x : char;
     var is_temp : bool;
+    init_global_vars();
     // Assignment statements
     a = 20;
     b = foo(x);
@@ -57,7 +64,7 @@ func main() {
     }
     // Foor loop
     for (a = 0; a < 3; a = a + 1) {
-        print("Arr[a]() :", arr[a]);
+        print("Arr[a] :", arr[a]);
     }
     // While loop
     while (a < 6) {
