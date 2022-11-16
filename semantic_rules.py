@@ -156,7 +156,7 @@ class SemanticRules:
         self.operands_stack.append(temp_result)            
         self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, operand_type)
      
-
+    # Conditionals rules
     def if_start(self):
         expression_type = self.types_stack.pop()
         if expression_type != types['bool']:
@@ -183,6 +183,7 @@ class SemanticRules:
             pending_jump = self.jump_stack.pop()
             self.quadruples[pending_jump].fill_result(self.quadruple_counter)
 
+    # Loops rules
     def start_while(self):
         self.jump_stack.append(self.quadruple_counter)
 
@@ -290,7 +291,6 @@ class SemanticRules:
         self.set_scope('main')
 
     def end_main_function(self):
-        # TODO: Remove comments when finished with arrays
         # self.function_directory.get_scope('main').release_scope_vars_table()
         end_program_quad = Quadruple('endprogram')
         self.append_quad(end_program_quad)
@@ -406,6 +406,61 @@ class SemanticRules:
             self.call_param_ptr = types['char']
         elif param_type == 'b':
             self.call_param_ptr = types['bool']
+
+    def gen_array_indexing_quads(self, array_id, dim):
+        # First, look if the array is the defined in the local scope
+        (is_defined, array) = self.current_var_table.lookup_entry(array_id)
+        is_array = array.is_array
+        if not is_defined:
+            # if it is not in the local scope, look it up on the global scope
+            global_var_table = self.function_directory.get_scope_var_table('global')
+            (is_defined_glbally, array) = global_var_table.lookup_entry(array_id)
+            is_array = array.is_array
+            if not is_defined_glbally:
+                raise Exception(f'Undeclared identifier \'{array_id}\'')
+            else:
+                if not is_array:
+                    raise Exception(f'The identifier \'{array_id}\' is not an array')
+        else:
+            if not is_array:
+                raise Exception(f'The identifier \'{array_id}\' is not an array')
+        if dim == 1:
+            array_index = self.operands_stack.pop()
+            type_array_range = self.types_stack.pop()
+            if type_array_range != types['int']:
+                raise Exception('Type Mismatch. Array indexing expects int')
+            else:
+                verify_quad = Quadruple('verify', array_index, 0, array.dim1)
+                # TODO Temp Pointer
+                temp_pointer = -4000
+                add_base_addr_quad = Quadruple('+', array_index, array.address, temp_pointer)
+                self.append_quad(verify_quad)
+                self.append_quad(add_base_addr_quad)
+        else:
+            array_index2 = self.operands_stack.pop()
+            array_index1 = self.operands_stack.pop()
+            type_array_range2 = self.types_stack.pop()
+            type_array_range1 = self.types_stack.pop()
+            if type_array_range1 != types['int'] or type_array_range2 != types['int']:
+                raise Exception('Type Mismatch. Array indexing expects int')
+            else:
+                verify_quad1 = Quadruple('verify', array_index1, 0, array.dim1)
+                # 2a) 3. Multiplica s1 * dim2 y dejalo en tx
+                temp_result = virtual_memory.assign_mem_address('int', is_temp=True)
+                multiply_s1_d2 = Quadruple('*', array_index1, array.dim2, temp_result)
+                self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, 'int')
+                # 2a) 4. Verifica pop1 contra 0 y dim2
+                verify_quad2 = Quadruple('verify', array_index2, 0, array.dim2)
+                # 2a) 5. Suma tx con pop1 y dejalo en ty
+                temp_result2 = virtual_memory.assign_mem_address('int', is_temp=True)
+                add_s2 = Quadruple('+', temp_result, array_index2, temp_result2)
+                self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, 'int')
+                # 2a) 6. Suma ty con dirB(id) y dejalo en TEMP POINTER
+                # TODO Temp Pointer
+                temp_pointer = -4001
+                add_base_addr_quad = Quadruple('+', array.address, temp_result2, temp_pointer)
+        self.operands_stack.append(temp_pointer)
+        self.types_stack.append(array.type)
 
     def get_compilation_results(self) -> CompilationResults:
         results = CompilationResults(self.function_directory, self.const_vars_table, self.quadruples)

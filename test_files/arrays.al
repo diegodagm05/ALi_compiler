@@ -10,7 +10,7 @@ func main(){
     var b1 : bool;
 
     void func start() {
-        i = j;
+        A[4] = 5;
     }
 
     void func update() {

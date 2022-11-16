@@ -239,10 +239,11 @@ def p_params(p):
 
 def p_assignment(p):
     '''assignment : ID '=' add_op expression
-                  | ID array_indexing '=' expression '''
-    if len(p)-1 == 4:
+                  | array_indexing '=' add_op expression '''
+    # array_indexing rule does not return a value, therefore that rule adds the id to the stack
+    if p[1] is not None:
         semantics.add_id_operand(p[1])
-        semantics.gen_assignment_quad()
+    semantics.gen_assignment_quad()
 
 def p_array_init(p):
     '''array_init : ID '=' array_init_type ';' '''
@@ -332,8 +333,12 @@ def p_cycles(p):
                 | for'''
 
 def p_array_indexing(p):
-    '''array_indexing : '[' expression ']' 
-                      | '[' expression ']'  '[' expression ']' '''
+    '''array_indexing : ID '[' expression ']'
+                      | ID '[' expression ']'  '[' expression ']' '''
+    if len(p)-1 == 4:
+        semantics.gen_array_indexing_quads(p[1], 1)
+    else:
+        semantics.gen_array_indexing_quads(p[1], 2)
 
 def p_array_indexing_init(p):
     '''array_indexing_init : '[' I_CONST set_dim1_size ']'
