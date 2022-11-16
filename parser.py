@@ -172,7 +172,7 @@ def p_end_function(p):
 def p_statements(p):
     # TODO: Handle return statement correctly
     '''statements : assignment ';'
-                  | array_assignment
+                  | array_init
                   | call_to_fun ';'
                   | write
                   | conditionals
@@ -239,16 +239,16 @@ def p_params(p):
 
 def p_assignment(p):
     '''assignment : ID '=' add_op expression
-                  | ID array_type '=' expression '''
+                  | ID array_indexing '=' expression '''
     if len(p)-1 == 4:
         semantics.add_id_operand(p[1])
         semantics.gen_assignment_quad()
 
-def p_array_assignment(p):
-    '''array_assignment : ID '=' array_assign_type ';' '''
+def p_array_init(p):
+    '''array_init : ID '=' array_init_type ';' '''
  
-def p_array_assign_type(p): 
-    '''array_assign_type : 1d_array_init
+def p_array_init_type(p): 
+    '''array_init_type : 1d_array_init
                          | 2d_array_init'''
 
 def p_1d_array_init(p):
