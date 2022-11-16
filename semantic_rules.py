@@ -76,9 +76,9 @@ class SemanticRules:
                 dim2 = self.dim_queue.popleft()
                 total_size = dim1 * dim2
             if self.current_scopeID == 'global':
-              self.current_var_table.add_entry(name, self.current_type, is_global_entry=True, is_array, dim1, dim2, total_size)
+              self.current_var_table.add_entry(name, self.current_type, True, is_array, dim1, dim2, total_size)
             else:
-              self.current_var_table.add_entry(name, self.current_type, is_global_entry=False, is_array, dim1, dim2, total_size)
+              self.current_var_table.add_entry(name, self.current_type, False, is_array, dim1, dim2, total_size)
             self.current_scope_var_count += 1
         self.store_number_of_local_variables()
 
@@ -290,7 +290,8 @@ class SemanticRules:
         self.set_scope('main')
 
     def end_main_function(self):
-        self.function_directory.get_scope('main').release_scope_vars_table()
+        # TODO: Remove comments when finished with arrays
+        # self.function_directory.get_scope('main').release_scope_vars_table()
         end_program_quad = Quadruple('endprogram')
         self.append_quad(end_program_quad)
 
