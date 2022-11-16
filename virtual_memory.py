@@ -176,6 +176,72 @@ class VirtualMemory():
         self.temp_bool_counter += 1
         return address
 
+    # Assign local array addresses
+    def assign_local_array_address_int(self, array_size: int) -> int:
+        if self.local_int_counter > self.local_int_range[1]:
+            raise Exception(f'Too many variables of type int')
+        else:
+            address = self.local_int_counter
+            self.local_int_counter += array_size
+            return address
+
+    def assign_local_array_address_float(self, array_size: int) -> int:
+        if self.local_float_counter > self.local_float_range[1]:
+            raise Exception(f'Too many variables of type float')
+        else:
+            address = self.local_float_counter
+            self.local_float_counter += array_size
+            return address
+
+    def assign_local_array_address_char(self, array_size: int) -> int:
+        if self.local_char_counter > self.local_char_range[1]:
+            raise Exception(f'Too many variables of type char')
+        else:
+            address = self.local_char_counter
+            self.local_char_counter += array_size
+            return address
+
+    def assign_local_array_address_bool(self, array_size: int) -> int:
+        if self.local_bool_counter > self.local_bool_range[1]:
+            raise Exception(f'Too many variables of type bool')
+        else:
+            address = self.local_bool_counter
+            self.local_bool_counter += array_size
+            return address
+
+    # Assign global array addresses
+    def assign_global_array_address_int(self, array_size: int) -> int:
+        if self.global_int_counter > self.global_int_range[1]:
+            raise Exception(f'Too many variables of type int')
+        else:
+            address = self.global_int_counter
+            self.global_int_counter += array_size
+            return address
+
+    def assign_global_array_address_float(self, array_size: int) -> int:
+        if self.global_float_counter > self.global_float_range[1]:
+            raise Exception(f'Too many variables of type float')
+        else:
+            address = self.global_float_counter
+            self.global_float_counter += array_size
+            return address
+
+    def assign_global_array_address_char(self, array_size: int) -> int:
+        if self.global_char_counter > self.global_char_range[1]:
+            raise Exception(f'Too many variables of type char')
+        else:
+            address = self.global_char_counter
+            self.global_char_counter += array_size
+            return address
+
+    def assign_global_array_address_bool(self, array_size: int) -> int:
+        if self.global_bool_counter > self.global_bool_range[1]:
+            raise Exception(f'Too many variables of type bool')
+        else:
+            address = self.global_bool_counter
+            self.global_bool_counter += array_size
+            return address
+
     def reset_scope_counters(self) -> None:
         self.local_int_counter = self.local_int_range[0]
         self.local_float_counter = self.local_float_range[0]
@@ -225,6 +291,28 @@ class VirtualMemory():
                 return self.assign_local_address_bool()
         else:
             raise Exception(f'Unrecognized type on memory assignment. Got a {type}')        
+
+    def assign_array_address(self, type: str, array_size: int, is_global: bool = False ) -> int:
+        if type == types['int']:
+            if is_global:
+                return self.assign_global_array_address_int(array_size)
+            else:
+                return self.assign_local_array_address_int(array_size)
+        elif type == types['float']:
+            if is_global:
+                return self.assign_global_array_address_float(array_size)
+            else:
+                return self.assign_local_array_address_float(array_size)
+        elif type == types['char']:
+            if is_global:
+                return self.assign_global_array_address_char(array_size)
+            else:
+                return self.assign_local_array_address_char(array_size)
+        elif type == types['bool']:            
+            if is_global:
+                return self.assign_global_array_address_bool(array_size)
+            else:
+                return self.assign_local_array_address_bool(array_size)
 
 virtual_memory = VirtualMemory()
     
