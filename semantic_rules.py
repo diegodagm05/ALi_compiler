@@ -334,6 +334,7 @@ class SemanticRules:
         resources = [
             [scope.num_vars_int, scope.num_vars_float, scope.num_vars_char, scope.num_vars_bool],
             [scope.num_temps_int, scope.num_temps_float, scope.num_temps_char, scope.num_temps_bool]
+            [scope.num_pointer_temps]
         ]
         for param in scope.params_list:
             if param == 'i':
@@ -407,6 +408,7 @@ class SemanticRules:
         elif param_type == 'b':
             self.call_param_ptr = types['bool']
 
+    # Generates array indexing quadruples
     def gen_array_indexing_quads(self, array_id, dim):
         # First, look if the array is the defined in the local scope
         (is_defined, array) = self.current_var_table.lookup_entry(array_id)
@@ -432,8 +434,9 @@ class SemanticRules:
             else:
                 verify_quad = Quadruple('verify', array_index, 0, array.dim1)
                 # TODO Temp Pointer
-                temp_pointer = -4000
-                add_base_addr_quad = Quadruple('+', array_index, array.address, temp_pointer)
+                temp_pointer = virtual_memory.assign_temp_pointer_address()
+                self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, 'pointer')
+                add_base_addr_quad = Quadruple('+', array.address, array_index, temp_pointer)
                 self.append_quad(verify_quad)
                 self.append_quad(add_base_addr_quad)
         else:
@@ -456,9 +459,14 @@ class SemanticRules:
                 add_s2 = Quadruple('+', temp_result, array_index2, temp_result2)
                 self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, 'int')
                 # 2a) 6. Suma ty con dirB(id) y dejalo en TEMP POINTER
-                # TODO Temp Pointer
-                temp_pointer = -4001
+                temp_pointer = virtual_memory.assign_temp_pointer_address()
+                self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, 'pointer')
                 add_base_addr_quad = Quadruple('+', array.address, temp_result2, temp_pointer)
+                self.append_quad(verify_quad1)
+                self.append_quad(verify_quad2)
+                self.append_quad(multiply_s1_d2)
+                self.append_quad(add_s2)
+                self.append_quad(add_base_addr_quad)
         self.operands_stack.append(temp_pointer)
         self.types_stack.append(array.type)
 

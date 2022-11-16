@@ -14,6 +14,7 @@ class FuncDirEntry():
         self.num_temps_float = 0
         self.num_temps_char = 0
         self.num_temps_bool = 0
+        self.num_pointer_temps = 0
         self.starts_at = -1
         self.is_returning_value = False
 
@@ -21,6 +22,7 @@ class FuncDirEntry():
         return f'''type: {self.type} starts_at: {self.starts_at}\n 
         num_vars_int: {self.num_vars_int} num_vars_float: {self.num_vars_float} num_vars_char: {self.num_vars_char} num_vars_bool: {self.num_vars_bool}\n 
         num_temps_int: {self.num_temps_int} num_temps_float: {self.num_temps_float} num_temps_char: {self.num_temps_char} num_temps_bool: {self.num_temps_bool}\n
+        num_pointer_temps: {self.num_pointer_temps} \n
         params_list : {self.params_list} \n
         vars_table: {self.check_for_vars_table()}'''
         
@@ -28,6 +30,7 @@ class FuncDirEntry():
         return f'''type: {self.type} starts_at: {self.starts_at}\n 
         num_vars_int: {self.num_vars_int} num_vars_float: {self.num_vars_float} num_vars_char: {self.num_vars_char} num_vars_bool: {self.num_vars_bool}\n 
         num_temps_int: {self.num_temps_int} num_temps_float: {self.num_temps_float} num_temps_char: {self.num_temps_char} num_temps_bool: {self.num_temps_bool}\n
+        num_pointer_temps: {self.num_pointer_temps} \n
         params_list : {self.params_list} \n
         vars_table: {self.check_for_vars_table()} \n'''
 
@@ -90,9 +93,8 @@ class FuncDir():
             self.func_dir[scopeID].num_temps_char += 1
         elif type == types['bool']:
             self.func_dir[scopeID].num_temps_bool += 1
-
-    def set_scope_num_temps(self, scopeID: str, num_temps: int) -> None:
-        self.func_dir[scopeID].num_temps = num_temps
+        elif type == 'pointer':
+            self.func_dir[scopeID].num_pointer_temps += 1
 
     def set_scope_start(self, scopeID, start: int) -> None:
         self.func_dir[scopeID].starts_at = start

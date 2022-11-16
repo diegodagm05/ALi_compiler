@@ -11,6 +11,8 @@ func main(){
 
     void func start() {
         A[4] = 5;
+        // This should throw an error
+        B[0][5] = 6; 
     }
 
     void func update() {
