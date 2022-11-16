@@ -176,6 +176,15 @@ class VirtualMemory():
         self.temp_bool_counter += 1
         return address
 
+    # Assign array addresses
+    def assign_local_array_address_int(self, array_size: int) -> int:
+        if self.local_int_counter > self.local_int_range[1]:
+            raise Exception(f'Too many variables of {type}')
+        else:
+            address = self.local_int_counter
+            self.local_int_counter += array_size
+            return address
+
     def reset_scope_counters(self) -> None:
         self.local_int_counter = self.local_int_range[0]
         self.local_float_counter = self.local_float_range[0]
@@ -225,6 +234,20 @@ class VirtualMemory():
                 return self.assign_local_address_bool()
         else:
             raise Exception(f'Unrecognized type on memory assignment. Got a {type}')        
+
+    def assign_array_address(self, type: str, array_size: int, is_global: bool = False ) -> int:
+        if type == types['int']:
+            if is_global:
+                pass
+            else:
+                return self.assign_local_array_address_int(array_size)
+        elif type == types['float']:
+            pass
+        elif type == types['char']:
+            pass
+        elif type == types['bool']:            
+            pass
+        
 
 virtual_memory = VirtualMemory()
     

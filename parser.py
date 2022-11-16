@@ -109,11 +109,15 @@ def p_vars_p(p):
 
 def p_ids(p):
     '''ids : ID store_id ids_p
-            | ID array_indexing_decl '''
+           | ID store_id_array array_indexing_init ids_p'''
 
 def p_store_id(p):
     '''store_id : '''
-    semantics.add_id(p[-1])
+    semantics.add_id(p[-1], False)
+
+def p_store_id_array(p):
+    '''store_id_array : '''
+    semantics.add_id(p[-1], True)
 
 def p_store_ids(p):
     '''store_ids : '''
@@ -135,7 +139,7 @@ def p_set_current_type(p):
     semantics.set_current_type(p[-1])
 
 def p_array_type(p):
-    '''array_type : ARRAY '<' type '>' array_indexing'''
+    '''array_type : ARRAY '<' type '>' '''
 
 def p_functions(p):
     '''functions : return_function functions
@@ -240,7 +244,6 @@ def p_assignment(p):
         semantics.add_id_operand(p[1])
         semantics.gen_assignment_quad()
 
-
 def p_array_assignment(p):
     '''array_assignment : ID '=' array_assign_type ';' '''
  
@@ -332,9 +335,17 @@ def p_array_indexing(p):
     '''array_indexing : '[' expression ']' 
                       | '[' expression ']'  '[' expression ']' '''
 
-def p_array_indexing_decl(p):
-    '''array_indexing : '[' I_CONST ']' 
-                      | '[' I_CONST ']'  '[' I_CONST ']' '''
+def p_array_indexing_init(p):
+    '''array_indexing_init : '[' I_CONST set_dim1_size ']'
+                           | '[' I_CONST set_dim1_size ']'  '[' I_CONST set_dim2_size ']' '''
+
+def p_set_dim1_size(p):
+    ''' set_dim1_size : '''
+    semantics.set_dim1_size(p[-1])
+
+def p_set_dim2_size(p):
+    ''' set_dim2_size : '''
+    semantics.set_dim2_size(p[-1])
 
 def p_while(p):
     '''while : WHILE start_while '(' expression ')' evaluate_while_expression interior_block end_while'''
