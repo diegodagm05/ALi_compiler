@@ -86,6 +86,19 @@ Se identificaron Issues.
         
 <br>
 
+## Avance 6.
+---
+- **Fecha:** 15/Nov/2022
+
+- **Descripción:** Maquina Virtual y 
+
+- **Estado:**
+    - Maquina Virtual: COMPLETO -> Ejecucion de estatutos condicionales, ciclos, y expresiones aritemticas y lógicas.
+    - Arreglos: COMPLETO -> Declaración de arreglos válida. Almacenamiento de arreglos en tabla de variables y asignación de memoria correspondiente
+    - Arreglos: EN PROGRESO -> generación de cuádruplos para indexamiento.
+
+<br>
+
 ## Avance #.
 ---
 - **Fecha:** 00/month/0000

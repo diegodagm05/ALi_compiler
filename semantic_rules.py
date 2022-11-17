@@ -51,10 +51,8 @@ class SemanticRules:
         self.id_queue.append(id)
         self.is_array_queue.append(is_array)
 
-    # TODO: Change this function when handling array types
     def set_current_type(self, type: str) -> None:
         self.current_type = type
-
 
     def set_dim1_size(self, dim: int):
         self.dim_queue.append(dim)
@@ -290,7 +288,7 @@ class SemanticRules:
         self.set_scope('main')
 
     def end_main_function(self):
-        # self.function_directory.get_scope('main').release_scope_vars_table()
+        self.function_directory.get_scope('main').release_scope_vars_table()
         end_program_quad = Quadruple('endprogram')
         self.append_quad(end_program_quad)
 
