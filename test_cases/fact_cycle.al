@@ -1,5 +1,5 @@
 // ALi
-// Program for recursive factorial
+// Program to calculate the factorial with loop
 
 int func factorial(n : int){
     

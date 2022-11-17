@@ -1,5 +1,5 @@
 // ALi
-// Program to sort an array
+// Program to sort an array using Bubble sort algorithm
 
 func main(){
 

@@ -1,5 +1,5 @@
 // ALi
-// Program for recursive factorial
+// Program to get the fibonacci series with loop.
 
 int func fibonacci(n : int){
     
