@@ -12,7 +12,10 @@ quadruple_operations = operations | {
     'parameter': 21,
     'endfunc': 22,
     'return': 23, 
-    'endprogram': 24,
+    'verify': 24,
+    'add_base_address': 25,
+    'multiply_displacement': 26,
+    'endprogram': 27
 }
 
 class Quadruple():
@@ -27,10 +30,10 @@ class Quadruple():
         self.result = result
 
     def __str__(self) -> str:
-        return f'\n{self.op_code} {self.operator1} {self.operator2} {self.result}'
+        return f'{self.op_code} {self.operator1} {self.operator2} {self.result}'
 
     def __repr__(self) -> str:
-        return f'\n{self.op_code} {self.operator1} {self.operator2} {self.result}'
+        return f'{self.op_code} {self.operator1} {self.operator2} {self.result}'
 
     def fill_result(self, result: int) -> None:
         self.result = result

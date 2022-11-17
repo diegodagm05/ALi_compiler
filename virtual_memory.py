@@ -7,6 +7,7 @@ FLOAT_START = INT_START + DATATYPE_SIZES
 CHAR_START = FLOAT_START + DATATYPE_SIZES
 BOOL_START = CHAR_START + DATATYPE_SIZES
 STRING_START = BOOL_START + DATATYPE_SIZES
+POINTER_START = STRING_START + DATATYPE_SIZES 
 
 class VirtualMemory():
     # Int ranges
@@ -52,6 +53,10 @@ class VirtualMemory():
     # String constants
     constant_string_range = [STRING_START, STRING_START + DATATYPE_KIND_SIZE - 1]
     constant_string_counter = constant_string_range[0] 
+
+    # Temp pointer ranges
+    temp_pointer_range = [POINTER_START, POINTER_START + DATATYPE_KIND_SIZE - 1]
+    temp_pointer_counter = temp_pointer_range[0]
 
     # Assign global addresses
     def assign_global_address_int(self):
@@ -242,6 +247,13 @@ class VirtualMemory():
             self.global_bool_counter += array_size
             return address
 
+    def assign_temp_pointer_address(self) -> int:
+        if self.temp_pointer_counter > self.temp_pointer_range[1]:
+            raise Exception(f'Too many array indexing operations')
+        address = self.temp_pointer_counter
+        self.temp_pointer_counter += 1
+        return address
+
     def reset_scope_counters(self) -> None:
         self.local_int_counter = self.local_int_range[0]
         self.local_float_counter = self.local_float_range[0]
@@ -251,6 +263,7 @@ class VirtualMemory():
         self.temp_float_counter = self.temp_float_range[0]
         self.temp_char_counter = self.temp_char_range[0]
         self.temp_bool_counter = self.temp_bool_range[0]
+        self.temp_pointer_counter = self.temp_pointer_range[0]
     
     def assign_mem_address(self, type: str, is_global: bool = False, is_temp: bool = False, is_const: bool = False) -> int:
         if type == types['int']:

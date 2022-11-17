@@ -13,10 +13,10 @@ class VarsTableEntry:
         self.total_dim_size = total_dim_size
 
     def __str__(self) -> str:
-        return f'type: {self.type} address: {self.address} is_array: {self.is_array} dim1: {self.dim1} dim2: {self.dim2} total_size: {self.total_dim_size}'
+        return f'type: {self.type} address: {self.address} is_array: {self.is_array} dim1: {self.dim1} dim2: {self.dim2} total_size: {self.total_dim_size} \n'
 
     def __repr__(self) -> str:
-        return f'type: {self.type} address: {self.address} is_array: {self.is_array} dim1: {self.dim1} dim2: {self.dim2} total_size: {self.total_dim_size}'
+        return f'type: {self.type} address: {self.address} is_array: {self.is_array} dim1: {self.dim1} dim2: {self.dim2} total_size: {self.total_dim_size} \n'
 
 class VarsTable():
     def __init__(self) -> None:
@@ -30,11 +30,10 @@ class VarsTable():
         if name in self.vars_table:
             raise Exception(f'Redeclaration of identifier {name} is not allowed')
         if is_array:
-            # print(f'The name of this array is {name} ')
-            address = virtual_memory.assign_array_address(types[type], total_size, is_global_entry)
+            address = virtual_memory.assign_array_address(types[type], total_size, is_global=is_global_entry)
             self.vars_table[name] = VarsTableEntry(types[type], address, is_array, dim1, dim2, total_size)
         else:
-            address = virtual_memory.assign_mem_address(types[type])
+            address = virtual_memory.assign_mem_address(types[type], is_global=is_global_entry)
             self.vars_table[name] = VarsTableEntry(types[type], address)
 
     def lookup_entry(self, name: str) -> tuple[bool, Union[VarsTableEntry, None]]:
