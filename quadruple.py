@@ -13,7 +13,8 @@ quadruple_operations = operations | {
     'endfunc': 22,
     'return': 23, 
     'verify': 24,
-    'endprogram': 25
+    'add_base_address': 25,
+    'endprogram': 26
 }
 
 class Quadruple():

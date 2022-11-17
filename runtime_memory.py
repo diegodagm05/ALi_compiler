@@ -12,6 +12,7 @@ class MemorySegment():
     '''
     def __init__(self, num_ints: int = 0, num_floats: int = 0, num_chars: int = 0, num_bools: int = 0, 
                 num_ints_temp: int = 0, num_floats_temp: int = 0, num_chars_temp: int = 0, num_bools_temp: int = 0,
+                num_temps_pointer: int = 0,
                 num_strings: int = 0) -> None:
         # We check if we actually need to create the segment of memory for a given type
         if num_ints > 0:
@@ -30,6 +31,8 @@ class MemorySegment():
             self.chars_mem_temp : list[ Union[str, None]] = self.generate_mem_segment(num_chars_temp)
         if num_bools_temp > 0:
             self.bools_mem_temp : list[Union[bool, None]] = self.generate_mem_segment(num_bools_temp)
+        if num_temps_pointer > 0:
+            self.temps_pointer_mem : list[Union[int, None]] = self.generate_mem_segment(num_temps_pointer)
         if num_strings > 0:
             self.strings_mem : list[Union[str, None]] = self.generate_mem_segment(num_strings)
 
@@ -51,6 +54,8 @@ class MemorySegment():
             result += '\n chars mem_temp: ' + str(self.chars_mem_temp)
         if hasattr(self, 'bools_mem_temp'):
             result += '\n bools mem_temp: ' + str(self.bools_mem_temp)
+        if hasattr(self, 'temps_pointer_mem'):
+            result += ' \n Temps pointer mem: ' +  str(self.temps_pointer_mem)
         if hasattr(self, 'strings_mem'):
             result += ' \n Strings mem: ' +  str(self.strings_mem)
         return result
@@ -69,8 +74,10 @@ class MemorySegment():
         char_temp_index = self.get_char_temp_index(virtual_address)
         bool_index = self.get_bool_index(virtual_address)
         bool_temp_index = self.get_bool_temp_index(virtual_address)
+        temp_pointer_index = self.get_temp_pointer_index(virtual_address)
         string_index = self.get_string_index(virtual_address)
         if int_index != None: 
+            print(f'int index = {int_index} vaddress {virtual_address}')
             value = self.ints_mem[int_index]
         elif int_temp_index != None:
             value = self.ints_mem_temp[int_temp_index]
@@ -88,6 +95,9 @@ class MemorySegment():
             value = self.bools_mem_temp[bool_temp_index]
         elif string_index != None: 
             value = self.strings_mem[string_index]
+        elif temp_pointer_index != None:
+            real_address = self.temps_pointer_mem[temp_pointer_index]
+            self.retrieve_content(real_address)
         else:
             value = None
         if value is None:
@@ -104,6 +114,7 @@ class MemorySegment():
         char_temp_index = self.get_char_temp_index(virtual_address)
         bool_index = self.get_bool_index(virtual_address)
         bool_temp_index = self.get_bool_temp_index(virtual_address)
+        temp_pointer_index = self.get_temp_pointer_index(virtual_address)
         string_index = self.get_string_index(virtual_address)
         if int_index != None: 
             self.ints_mem[int_index] = value
@@ -121,6 +132,8 @@ class MemorySegment():
             self.bools_mem[bool_index] = value
         elif bool_temp_index != None: 
             self.bools_mem_temp[bool_temp_index] = value
+        elif temp_pointer_index != None:
+            self.temps_pointer_mem[temp_pointer_index] = value
         elif string_index != None: 
             self.strings_mem[string_index] = value
         else:
@@ -210,6 +223,13 @@ class MemorySegment():
         else: 
             return None
 
+    def get_temp_pointer_index(self, virtual_address: int) -> Union[str, None]:
+        # Check if the address belongs to temp pointers
+        if self.in_virtual_range(virtual_address, VirtualMemory.temp_pointer_range[0], VirtualMemory.temp_pointer_range[1]): 
+            return virtual_address - VirtualMemory.temp_pointer_range[0]
+        else: 
+            return None
+
     def get_string_index(self, virtual_address: int) -> Union[str, None]:
         # Check if the address belongs to constant strings
         if self.in_virtual_range(virtual_address, VirtualMemory.constant_string_range[0], VirtualMemory.constant_string_range[1]): 
@@ -229,7 +249,8 @@ class RuntimeMemory():
             global_scope.num_vars_int,
             global_scope.num_vars_float,
             global_scope.num_vars_char,
-            global_scope.num_vars_bool
+            global_scope.num_vars_bool,
+            num_temps_pointer=global_scope.num_pointer_temps
         )
         self.mem_stack : deque[MemorySegment] = deque()
         self.current_mem_segment : MemorySegment = self.generate_main_memory_segment(func_dir)
@@ -257,14 +278,16 @@ class RuntimeMemory():
             main_scope.num_temps_int,
             main_scope.num_temps_float,
             main_scope.num_temps_char,
-            main_scope.num_temps_bool
+            main_scope.num_temps_bool,
+            main_scope.num_pointer_temps
         )
         return mem_segment
 
     def create_mem_segment(self, resources: list[list[int]]) -> None:
         local_resources = resources[0]
         temp_resources = resources[1]
-        new_mem_segment = MemorySegment(local_resources[0], local_resources[1], local_resources[2], local_resources[3],temp_resources[0], temp_resources[1], temp_resources[2], temp_resources[3])
+        temp_pointer_resources = resources[2][0]
+        new_mem_segment = MemorySegment(local_resources[0], local_resources[1], local_resources[2], local_resources[3],temp_resources[0], temp_resources[1], temp_resources[2], temp_resources[3], temp_pointer_resources)
         self.activation_record = new_mem_segment
 
     def sleep_current_memory(self):

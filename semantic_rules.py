@@ -46,6 +46,7 @@ class SemanticRules:
     def append_quad(self, quadruple: Quadruple) -> None:
         self.quadruples.append(quadruple)
         self.quadruple_counter += 1
+        print(f'Appended quad -> {quadruple}')
 
     def add_id(self, id: str, is_array: bool) -> None:
         self.id_queue.append(id)
@@ -76,10 +77,10 @@ class SemanticRules:
                 dim2 = self.dim_queue.popleft()
                 total_size = dim1 * dim2
             if self.current_scopeID == 'global':
-              self.current_var_table.add_entry(name, self.current_type, True, is_array, dim1, dim2, total_size)
+                self.current_var_table.add_entry(name, self.current_type, True, is_array, dim1, dim2, total_size)
             else:
-              self.current_var_table.add_entry(name, self.current_type, False, is_array, dim1, dim2, total_size)
-            self.current_scope_var_count += 1
+                self.current_var_table.add_entry(name, self.current_type, False, is_array, dim1, dim2, total_size)
+            self.current_scope_var_count += total_size
         self.store_number_of_local_variables()
 
     # Quadruple related modules
@@ -99,6 +100,7 @@ class SemanticRules:
                 self.operands_stack.append(global_variable.address)
                 self.types_stack.append(global_variable.type)
         else:
+            print(f'Added id to stack {variable.address}')
             self.operands_stack.append(variable.address)
             self.types_stack.append(variable.type)
 
@@ -112,6 +114,7 @@ class SemanticRules:
             address = self.const_vars_table.add_entry(operand, type)
             self.operands_stack.append(address)
             self.types_stack.append(type)
+            print(f'Added constant to stack {address}')
                     
     def gen_operation_quad(self) -> None:
         right_type = self.types_stack.pop()
@@ -127,6 +130,7 @@ class SemanticRules:
             quadruple = Quadruple(curr_operator, left_operand, right_operand, temp_result)
             self.append_quad(quadruple)
             self.types_stack.append(match_types)
+            print(f'Added temp to stack {temp_result}')
             self.operands_stack.append(temp_result)
             self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, match_types)
 
@@ -137,6 +141,7 @@ class SemanticRules:
         match_types = sem_cube.match_types(assign_result_type, assignment_operand_type, assignment_operator)
         assign_result = self.operands_stack.pop()
         expression_to_assign = self.operands_stack.pop()
+        print(f'Assign result {assign_result} expression to assign {expression_to_assign}')
         if match_types == 'ERROR':
             raise Exception(f'Type mismatch. \'{assignment_operand_type}\' \' {expression_to_assign} \' cannot be assigned to \'{assign_result_type} \'{assign_result}\' \n''')
         else:
@@ -333,9 +338,10 @@ class SemanticRules:
         # resources needed will be stored as a list
         resources = [
             [scope.num_vars_int, scope.num_vars_float, scope.num_vars_char, scope.num_vars_bool],
-            [scope.num_temps_int, scope.num_temps_float, scope.num_temps_char, scope.num_temps_bool]
+            [scope.num_temps_int, scope.num_temps_float, scope.num_temps_char, scope.num_temps_bool],
             [scope.num_pointer_temps]
         ]
+        print(f'Resources in compilation {resources}')
         for param in scope.params_list:
             if param == 'i':
                 resources[0][0] += 1
@@ -409,7 +415,7 @@ class SemanticRules:
             self.call_param_ptr = types['bool']
 
     # Generates array indexing quadruples
-    def gen_array_indexing_quads(self, array_id, dim):
+    def gen_array_indexing_quads(self, array_id: str, dim: int):
         # First, look if the array is the defined in the local scope
         (is_defined, array) = self.current_var_table.lookup_entry(array_id)
         is_array = array.is_array
@@ -433,10 +439,9 @@ class SemanticRules:
                 raise Exception('Type Mismatch. Array indexing expects int')
             else:
                 verify_quad = Quadruple('verify', array_index, 0, array.dim1)
-                # TODO Temp Pointer
                 temp_pointer = virtual_memory.assign_temp_pointer_address()
                 self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, 'pointer')
-                add_base_addr_quad = Quadruple('+', array.address, array_index, temp_pointer)
+                add_base_addr_quad = Quadruple('add_base_address', array.address, array_index, temp_pointer)
                 self.append_quad(verify_quad)
                 self.append_quad(add_base_addr_quad)
         else:
@@ -461,7 +466,7 @@ class SemanticRules:
                 # 2a) 6. Suma ty con dirB(id) y dejalo en TEMP POINTER
                 temp_pointer = virtual_memory.assign_temp_pointer_address()
                 self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, 'pointer')
-                add_base_addr_quad = Quadruple('+', array.address, temp_result2, temp_pointer)
+                add_base_addr_quad = Quadruple('add_base_address', array.address, temp_result2, temp_pointer)
                 self.append_quad(verify_quad1)
                 self.append_quad(verify_quad2)
                 self.append_quad(multiply_s1_d2)

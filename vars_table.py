@@ -13,10 +13,10 @@ class VarsTableEntry:
         self.total_dim_size = total_dim_size
 
     def __str__(self) -> str:
-        return f'type: {self.type} address: {self.address} is_array: {self.is_array} dim1: {self.dim1} dim2: {self.dim2} total_size: {self.total_dim_size}'
+        return f'type: {self.type} address: {self.address} is_array: {self.is_array} dim1: {self.dim1} dim2: {self.dim2} total_size: {self.total_dim_size} \n'
 
     def __repr__(self) -> str:
-        return f'type: {self.type} address: {self.address} is_array: {self.is_array} dim1: {self.dim1} dim2: {self.dim2} total_size: {self.total_dim_size}'
+        return f'type: {self.type} address: {self.address} is_array: {self.is_array} dim1: {self.dim1} dim2: {self.dim2} total_size: {self.total_dim_size} \n'
 
 class VarsTable():
     def __init__(self) -> None:

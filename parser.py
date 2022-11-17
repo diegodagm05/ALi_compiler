@@ -225,7 +225,6 @@ def p_start_else(p):
 
 def p_end_if(p):
     '''end_if : '''
-    print(p);
     semantics.end_if()
 
 def p_interior_block(p):
@@ -457,7 +456,7 @@ def p_constants(p):
                  | get_game_ev'''
 
 def p_variable(p):
-    '''variable : ID array_indexing 
+    '''variable : array_indexing 
                 | ID add_variable_to_operand_stack'''
 
 def p_add_variable_to_operand_stack(p):
