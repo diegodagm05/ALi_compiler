@@ -172,8 +172,8 @@ def p_end_function(p):
 def p_statements(p):
     # TODO: Handle return statement correctly
     '''statements : assignment ';'
-                  | array_init
                   | call_to_fun ';'
+                  | array_init ';' 
                   | write
                   | conditionals
                   | cycles
@@ -237,33 +237,20 @@ def p_params(p):
     semantics.store_function_param(p[1], p[3])
 
 def p_assignment(p):
-    '''assignment : ID '=' add_op expression
-                  | array_indexing '=' add_op expression '''
-    # array_indexing rule does not return a value, therefore that rule adds the id to the stack
-    if p[1] is not None:
-        semantics.add_id_operand(p[1])
+    '''assignment : variable '=' add_op expression '''
     semantics.gen_assignment_quad()
 
 def p_array_init(p):
-    '''array_init : ID '=' array_init_type ';' '''
- 
-def p_array_init_type(p): 
-    '''array_init_type : 1d_array_init
-                         | 2d_array_init'''
-
-def p_1d_array_init(p):
-    '''1d_array_init : '[' exp_1d ']' '''
+    '''array_init : ID '[' ']' '=' '[' exp_1d ']'
+                  | ID '[' ']' '[' ']' '=' '[' exp_2d ']' '''
 
 def p_exp_1d(p):
     '''exp_1d : expression ',' exp_1d
               | expression'''
 
-def p_2d_array_init(p):
-    '''2d_array_init : '[' exp_2d ']' '''
-
 def p_exp_2d(p):
-    '''exp_2d : 1d_array_init ',' exp_2d
-              | 1d_array_init'''
+    '''exp_2d : '[' exp_1d  ']' ',' exp_2d
+              | '[' exp_1d ']' '''
 
 def p_write(p):
     '''write : PRINT '(' write_p ')' ';' '''
@@ -338,6 +325,7 @@ def p_array_indexing(p):
         semantics.gen_array_indexing_quads(p[1], 1)
     else:
         semantics.gen_array_indexing_quads(p[1], 2)
+    print('Temp pointer is now in the stack')
 
 def p_array_indexing_init(p):
     '''array_indexing_init : '[' I_CONST set_dim1_size ']'
@@ -457,11 +445,10 @@ def p_constants(p):
 
 def p_variable(p):
     '''variable : array_indexing 
-                | ID add_variable_to_operand_stack'''
+                | ID'''
+    if p[1] is not None:
+        semantics.add_id_operand(p[1])
 
-def p_add_variable_to_operand_stack(p):
-    '''add_variable_to_operand_stack : '''
-    semantics.add_id_operand(p[-1])
 
 def p_add_const_to_operand_stack_string(p):
     '''

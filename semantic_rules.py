@@ -46,12 +46,10 @@ class SemanticRules:
     def append_quad(self, quadruple: Quadruple) -> None:
         self.quadruples.append(quadruple)
         self.quadruple_counter += 1
-        print(f'Appended quad -> {quadruple}')
 
     def add_id(self, id: str, is_array: bool) -> None:
         self.id_queue.append(id)
         self.is_array_queue.append(is_array)
-        # print(f'id_queue rn: {self.id_queue}')
 
     # TODO: Change this function when handling array types
     def set_current_type(self, type: str) -> None:
@@ -100,7 +98,6 @@ class SemanticRules:
                 self.operands_stack.append(global_variable.address)
                 self.types_stack.append(global_variable.type)
         else:
-            print(f'Added id to stack {variable.address}')
             self.operands_stack.append(variable.address)
             self.types_stack.append(variable.type)
 
@@ -114,7 +111,6 @@ class SemanticRules:
             address = self.const_vars_table.add_entry(operand, type)
             self.operands_stack.append(address)
             self.types_stack.append(type)
-            print(f'Added constant to stack {address}')
                     
     def gen_operation_quad(self) -> None:
         right_type = self.types_stack.pop()
@@ -130,18 +126,16 @@ class SemanticRules:
             quadruple = Quadruple(curr_operator, left_operand, right_operand, temp_result)
             self.append_quad(quadruple)
             self.types_stack.append(match_types)
-            print(f'Added temp to stack {temp_result}')
             self.operands_stack.append(temp_result)
             self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, match_types)
 
     def gen_assignment_quad(self):
-        assign_result_type = self.types_stack.pop()
         assignment_operand_type = self.types_stack.pop()
+        assign_result_type = self.types_stack.pop()
         assignment_operator = self.operators_stack.pop()
         match_types = sem_cube.match_types(assign_result_type, assignment_operand_type, assignment_operator)
-        assign_result = self.operands_stack.pop()
         expression_to_assign = self.operands_stack.pop()
-        print(f'Assign result {assign_result} expression to assign {expression_to_assign}')
+        assign_result = self.operands_stack.pop()
         if match_types == 'ERROR':
             raise Exception(f'Type mismatch. \'{assignment_operand_type}\' \' {expression_to_assign} \' cannot be assigned to \'{assign_result_type} \'{assign_result}\' \n''')
         else:
@@ -341,7 +335,6 @@ class SemanticRules:
             [scope.num_temps_int, scope.num_temps_float, scope.num_temps_char, scope.num_temps_bool],
             [scope.num_pointer_temps]
         ]
-        print(f'Resources in compilation {resources}')
         for param in scope.params_list:
             if param == 'i':
                 resources[0][0] += 1
@@ -455,7 +448,7 @@ class SemanticRules:
                 verify_quad1 = Quadruple('verify', array_index1, 0, array.dim1)
                 # 2a) 3. Multiplica s1 * dim2 y dejalo en tx
                 temp_result = virtual_memory.assign_mem_address('int', is_temp=True)
-                multiply_s1_d2 = Quadruple('*', array_index1, array.dim2, temp_result)
+                multiply_s1_d2 = Quadruple('multiply_displacement', array_index1, array.dim2, temp_result)
                 self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, 'int')
                 # 2a) 4. Verifica pop1 contra 0 y dim2
                 verify_quad2 = Quadruple('verify', array_index2, 0, array.dim2)

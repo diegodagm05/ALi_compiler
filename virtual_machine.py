@@ -6,8 +6,8 @@ from parser import ali_parser
 
 
 def virtual_machine(compilation_results: CompilationResults) -> None:
-    print(compilation_results.func_dir)
-    print(compilation_results.consts_table)
+    # print(compilation_results.func_dir)
+    # print(compilation_results.consts_table)
     print('--ALi CONSOLE OUTPUT--')
     runtime_memory = RuntimeMemory(compilation_results.consts_table, compilation_results.func_dir)
     quadruples : list[Quadruple] = compilation_results.quadruples
@@ -15,10 +15,10 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
     call_stack = deque()
     while True:
         current_quad = quadruples[ip]
-        print("-----------------------------------------")
-        print(f"Quad # {ip} \n Processing {current_quad}  ")
-        print(f'current memory -> \n{runtime_memory.current_mem_segment}')
-        print(f'const memory segment -> \n{runtime_memory.constant_memory_segment}')
+        # print("-----------------------------------------")
+        # print(f"Quad # {ip} \n Processing {current_quad}  ")
+        # print(f'current memory -> \n{runtime_memory.current_mem_segment}')
+        # print(f'const memory segment -> \n{runtime_memory.constant_memory_segment}')
         if current_quad.op_code == quadruple_operations['endprogram']:
             break 
         elif current_quad.op_code == quadruple_operations['+']:
@@ -162,8 +162,14 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
             base_address = current_quad.operator1
             add_value = runtime_memory.retrieve_content(current_quad.operator2)
             result = base_address + add_value
-            runtime_memory.assign_content(current_quad.result, result)
+            runtime_memory.current_mem_segment.assign_content(current_quad.result, result, storing_vaddress=True)
             ip += 1
+        elif current_quad.op_code == quadruple_operations['multiply_displacement']:
+            index_expression = runtime_memory.retrieve_content(current_quad.operator1)
+            mutiplier = current_quad.operator2
+            result = index_expression * mutiplier
+            runtime_memory.current_mem_segment.assign_content(current_quad.result, result)
+            ip += 1 
         else:
             raise RuntimeError('Unknown action for virtual machine')
 

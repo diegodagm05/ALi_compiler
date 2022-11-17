@@ -77,7 +77,6 @@ class MemorySegment():
         temp_pointer_index = self.get_temp_pointer_index(virtual_address)
         string_index = self.get_string_index(virtual_address)
         if int_index != None: 
-            print(f'int index = {int_index} vaddress {virtual_address}')
             value = self.ints_mem[int_index]
         elif int_temp_index != None:
             value = self.ints_mem_temp[int_temp_index]
@@ -97,7 +96,7 @@ class MemorySegment():
             value = self.strings_mem[string_index]
         elif temp_pointer_index != None:
             real_address = self.temps_pointer_mem[temp_pointer_index]
-            self.retrieve_content(real_address)
+            value = self.retrieve_content(real_address)
         else:
             value = None
         if value is None:
@@ -105,7 +104,7 @@ class MemorySegment():
         else:
             return value
 
-    def assign_content(self, virtual_address: int, value: Any) -> None:
+    def assign_content(self, virtual_address: int, value: Any, storing_vaddress: bool = False) -> None:
         int_index = self.get_int_index(virtual_address)
         int_temp_index = self.get_int_temp_index(virtual_address)
         float_index = self.get_float_index(virtual_address)
@@ -133,7 +132,11 @@ class MemorySegment():
         elif bool_temp_index != None: 
             self.bools_mem_temp[bool_temp_index] = value
         elif temp_pointer_index != None:
-            self.temps_pointer_mem[temp_pointer_index] = value
+            if storing_vaddress:
+                self.temps_pointer_mem[temp_pointer_index] = value
+            else:
+                real_address = self.temps_pointer_mem[temp_pointer_index]
+                self.assign_content(real_address, value)
         elif string_index != None: 
             self.strings_mem[string_index] = value
         else:
