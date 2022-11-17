@@ -22,7 +22,7 @@ func main() {
     init_global_vars();
     a = VAR;
     b = VAR + 1;
-    c = calculateSum(b);
+    c = calculateSum(b) * 2;
     print("Calculate sum result is: ", c);
     x = 'c';
     j = 3.14;

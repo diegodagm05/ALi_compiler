@@ -30,11 +30,10 @@ class VarsTable():
         if name in self.vars_table:
             raise Exception(f'Redeclaration of identifier {name} is not allowed')
         if is_array:
-            # print(f'The name of this array is {name} ')
-            address = virtual_memory.assign_array_address(types[type], total_size, is_global_entry)
+            address = virtual_memory.assign_array_address(types[type], total_size, is_global=is_global_entry)
             self.vars_table[name] = VarsTableEntry(types[type], address, is_array, dim1, dim2, total_size)
         else:
-            address = virtual_memory.assign_mem_address(types[type])
+            address = virtual_memory.assign_mem_address(types[type], is_global=is_global_entry)
             self.vars_table[name] = VarsTableEntry(types[type], address)
 
     def lookup_entry(self, name: str) -> tuple[bool, Union[VarsTableEntry, None]]:

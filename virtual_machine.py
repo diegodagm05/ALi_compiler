@@ -19,6 +19,7 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
         # print(f"Quad # {ip} \n Processing {current_quad}  ")
         # print(f'current memory -> \n{runtime_memory.current_mem_segment}')
         # print(f'const memory segment -> \n{runtime_memory.constant_memory_segment}')
+        # print(f'global mem segment -> \n{runtime_memory.global_memory_segment}')
         if current_quad.op_code == quadruple_operations['endprogram']:
             break 
         elif current_quad.op_code == quadruple_operations['+']:

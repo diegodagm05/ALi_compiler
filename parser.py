@@ -325,7 +325,6 @@ def p_array_indexing(p):
         semantics.gen_array_indexing_quads(p[1], 1)
     else:
         semantics.gen_array_indexing_quads(p[1], 2)
-    print('Temp pointer is now in the stack')
 
 def p_array_indexing_init(p):
     '''array_indexing_init : '[' I_CONST set_dim1_size ']'

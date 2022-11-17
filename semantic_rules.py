@@ -73,9 +73,9 @@ class SemanticRules:
                 dim2 = self.dim_queue.popleft()
                 total_size = dim1 * dim2
             if self.current_scopeID == 'global':
-                self.current_var_table.add_entry(name, self.current_type, True, is_array, dim1, dim2, total_size)
+                self.current_var_table.add_entry(name=name, type=self.current_type, is_array=is_array, dim1=dim1, dim2=dim2, total_size=total_size, is_global_entry=True)
             else:
-                self.current_var_table.add_entry(name, self.current_type, False, is_array, dim1, dim2, total_size)
+                self.current_var_table.add_entry(name=name, type=self.current_type, is_array=is_array, dim1=dim1, dim2=dim2, total_size=total_size, is_global_entry=False)
             self.current_scope_var_count += total_size
         self.store_number_of_local_variables()
 
@@ -331,7 +331,7 @@ class SemanticRules:
         resources = [
             [scope.num_vars_int, scope.num_vars_float, scope.num_vars_char, scope.num_vars_bool],
             [scope.num_temps_int, scope.num_temps_float, scope.num_temps_char, scope.num_temps_bool],
-            [scope.num_pointer_temps]
+            scope.num_pointer_temps
         ]
         for param in scope.params_list:
             if param == 'i':
@@ -388,7 +388,9 @@ class SemanticRules:
             (call_scope_exists, current_call_scope_global_entry) = self.function_directory.get_scope_var_table('global').lookup_entry(self.current_call_scopeID)
             if not call_scope_exists:
                 raise Exception(f'\'{self.current_call_scopeID}\' is unable to return a value')
-            assign_call_result_quad = Quadruple('=', current_call_scope_global_entry.address, result=temp_result)
+            # Take out the function address from the operands stack
+            function_address = self.operands_stack.pop()
+            assign_call_result_quad = Quadruple('=', function_address, result=temp_result)
             self.append_quad(assign_call_result_quad)
             self.operands_stack.append(temp_result)
             self.types_stack.append(call_scope.type)
@@ -406,23 +408,26 @@ class SemanticRules:
             self.call_param_ptr = types['bool']
 
     # Generates array indexing quadruples
-    def gen_array_indexing_quads(self, array_id: str, dim: int):
+    def validate_array(self, array_id: str) -> VarsTable:
         # First, look if the array is the defined in the local scope
-        (is_defined, array) = self.current_var_table.lookup_entry(array_id)
-        is_array = array.is_array
+        (is_defined, local_array) = self.current_var_table.lookup_entry(array_id)
         if not is_defined:
             # if it is not in the local scope, look it up on the global scope
             global_var_table = self.function_directory.get_scope_var_table('global')
-            (is_defined_glbally, array) = global_var_table.lookup_entry(array_id)
-            is_array = array.is_array
+            (is_defined_glbally, global_array) = global_var_table.lookup_entry(array_id)
             if not is_defined_glbally:
                 raise Exception(f'Undeclared identifier \'{array_id}\'')
-            else:
-                if not is_array:
-                    raise Exception(f'The identifier \'{array_id}\' is not an array')
-        else:
-            if not is_array:
+            elif not global_array.is_array:
                 raise Exception(f'The identifier \'{array_id}\' is not an array')
+            else:
+                return global_array
+        elif not local_array.is_array:
+            raise Exception(f'The identifier \'{array_id}\' is not an array')
+        else:
+            return local_array
+
+    def gen_array_indexing_quads(self, array_id: str, dim: int):
+        array = self.validate_array(array_id)
         if dim == 1:
             array_index = self.operands_stack.pop()
             type_array_range = self.types_stack.pop()

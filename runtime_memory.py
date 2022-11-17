@@ -99,6 +99,7 @@ class MemorySegment():
             value = self.retrieve_content(real_address)
         else:
             value = None
+
         if value is None:
             raise RuntimeError('Cannot use uninitialized variable.')
         else:
@@ -289,7 +290,7 @@ class RuntimeMemory():
     def create_mem_segment(self, resources: list[list[int]]) -> None:
         local_resources = resources[0]
         temp_resources = resources[1]
-        temp_pointer_resources = resources[2][0]
+        temp_pointer_resources = resources[2]
         new_mem_segment = MemorySegment(local_resources[0], local_resources[1], local_resources[2], local_resources[3],temp_resources[0], temp_resources[1], temp_resources[2], temp_resources[3], temp_pointer_resources)
         self.activation_record = new_mem_segment
 
