@@ -17,7 +17,7 @@ func main(){
         
         n = 5;
         result = factorial(n);
-        print("The factorial of ", n, "is: ", result);
+        print("The factorial of ", n, " is: ", result);
 
     }
 

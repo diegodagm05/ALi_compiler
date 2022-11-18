@@ -21,7 +21,7 @@ func main(){
             }
         }
         if (!is_in_array) {
-            print("Element not found in array");
+            print("Element not found in array ");
         }
         
     }

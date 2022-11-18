@@ -13,10 +13,12 @@ func main(){
         arr = [5, 3, 9, 8, 6, 7, 2, 1, 4, 10];
         // Bubble sort algorithm
         size = 10;
-        print("Array before bubble sort: ");
+        print("size = ", size) << endl;
+        print("Array before bubble sort: ") << endl;
         for(i = 0; i < size - 1; i = i+1) {
-            print(arr[i]);
+            print(arr[i], " ");
         }
+        print(" ") << endl;
         for( i = 0; i < size - 1; i = i+1 ){
             
             for( j = 0; j < size - i - 1; j = j+1){
@@ -28,9 +30,9 @@ func main(){
                 }
             }
         }
-        print("Array after bubble sort: ");
+        print("Array after bubble sort:") << endl;
         for(i = 0; i < size - 1; i = i+1) {
-            print(arr[i]);
+            print(arr[i], " ");
         }
         
     }

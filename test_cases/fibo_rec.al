@@ -21,7 +21,7 @@ func main(){
         
         n = 10;
         result = fibonacci(n);
-        print("Fibonacci of ", n, "is: ", result);
+        print("Fibonacci of ", n, " is: ", result);
 
     }
 
