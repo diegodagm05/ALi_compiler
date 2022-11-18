@@ -8,7 +8,7 @@ func main(){
 
     void func start() {
         
-        arr[] = [5, 3, 9, 8, 6, 7, 2, 1, 4, 10];
+        arr = [5, 3, 9, 8, 6, 7, 2, 1, 4, 10];
         size = 10;
         to_find = 7;
 

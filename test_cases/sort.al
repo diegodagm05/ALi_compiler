@@ -8,7 +8,7 @@ func main(){
 
     void func start() {
         
-        arr[] = [5, 3, 9, 8, 6, 7, 2, 1, 4, 10];
+        arr = [5, 3, 9, 8, 6, 7, 2, 1, 4, 10];
         // Bubble sort algorithm
         size = 10;
         for( i = 0; i < size - 1; i = i+1 ){
