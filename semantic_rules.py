@@ -237,6 +237,10 @@ class SemanticRules:
         self.types_stack.pop()
         quadruple = Quadruple('print', None, None, result)
         self.append_quad(quadruple)
+    
+    def end_print(self):
+        end_print_quad = Quadruple('endprint')
+        self.append_quad(end_print_quad)
 
     def read_constant(self):
         result = self.operands_stack.pop()

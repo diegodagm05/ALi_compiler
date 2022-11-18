@@ -93,7 +93,8 @@ class MemorySegment():
         elif bool_temp_index != None: 
             value = self.bools_mem_temp[bool_temp_index]
         elif string_index != None: 
-            value = self.strings_mem[string_index]
+            value : str = self.strings_mem[string_index]
+            value = value.replace("\"", '')
         elif temp_pointer_index != None:
             real_address = self.temps_pointer_mem[temp_pointer_index]
             value = self.retrieve_content(real_address)

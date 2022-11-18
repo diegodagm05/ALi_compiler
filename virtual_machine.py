@@ -131,7 +131,10 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
             ip += 1
         elif current_quad.op_code == quadruple_operations['print']:
             print_content = runtime_memory.retrieve_content(current_quad.result)
-            print(print_content)
+            print(print_content, end='')
+            ip += 1
+        elif current_quad.op_code == quadruple_operations['endprint']:
+            print()
             ip += 1
         # TODO: Our 'read' operation will in reality involve handling game events
         elif current_quad.op_code == quadruple_operations['read']:
@@ -194,6 +197,8 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
             ip += 1 
         else:
             raise RuntimeError('Unknown action for virtual machine')
+    print('\n--END OF ALi CONSOLE OUTPUT--')
+    
 
 if __name__ == '__main__':
     print('Enter file name to be tested (with .al extension)')

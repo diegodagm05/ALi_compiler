@@ -255,7 +255,10 @@ def p_exp_2d(p):
               | '[' exp_1d ']' '''
 
 def p_write(p):
-    '''write : PRINT '(' write_p ')' ';' '''
+    '''write : PRINT '(' write_p ')' ';'
+             | PRINT '(' write_p ')' '<' '<' ENDL  ';' '''
+    if len(p) - 1 == 8: 
+        semantics.end_print()
  
 def p_write_p(p):
     '''write_p : write_param ',' write_p 
