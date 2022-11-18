@@ -285,7 +285,7 @@ class SemanticRules:
         current_scope = self.function_directory.get_scope(self.current_scopeID)
         if current_scope.type != 'void' and not current_scope.is_returning_value:
             raise Exception(f'Function \'{self.current_scopeID}()\' defined with a \'{current_scope.type}\' return type but there are no return statements in the function definition.')
-        # Generate an END FUNC quadruple TODO: Handle release of function memory in runtime
+        # Generate an END FUNC quadruple
         end_func_quad = Quadruple('endfunc')
         self.append_quad(end_func_quad)
         # Release scope vars table and reset virtual memory
@@ -320,6 +320,9 @@ class SemanticRules:
                 return_quad = Quadruple('return',return_value, result=current_scope_global_var.address)
                 self.append_quad(return_quad)
                 self.function_directory.set_is_returning_value(self.current_scopeID, True)
+                # Tell the virtual machine to end the function if we are returning from it
+                end_func_quad = Quadruple('endfunc')
+                self.append_quad(end_func_quad)
 
 
     # Function calling rules
@@ -338,21 +341,21 @@ class SemanticRules:
     def gen_activation_record_quad(self):
         scope = self.function_directory.get_scope(self.current_call_scopeID)
         # resources needed will be stored as a list
-        resources = [
-            [scope.num_vars_int, scope.num_vars_float, scope.num_vars_char, scope.num_vars_bool],
-            [scope.num_temps_int, scope.num_temps_float, scope.num_temps_char, scope.num_temps_bool],
-            scope.num_pointer_temps
-        ]
-        for param in scope.params_list:
-            if param == 'i':
-                resources[0][0] += 1
-            elif param == 'f':
-                resources[0][1] += 1
-            elif param == 'c':
-                resources[0][2] += 1
-            elif param == 'b':
-                resources[0][3] += 1
-        era_quad = Quadruple('era', result=resources)
+        # resources = [
+        #     [scope.num_vars_int, scope.num_vars_float, scope.num_vars_char, scope.num_vars_bool],
+        #     [scope.num_temps_int, scope.num_temps_float, scope.num_temps_char, scope.num_temps_bool],
+        #     scope.num_pointer_temps
+        # ]
+        # for param in scope.params_list:
+        #     if param == 'i':
+        #         resources[0][0] += 1
+        #     elif param == 'f':
+        #         resources[0][1] += 1
+        #     elif param == 'c':
+        #         resources[0][2] += 1
+        #     elif param == 'b':
+        #         resources[0][3] += 1
+        era_quad = Quadruple('era', result=self.current_call_scopeID)
         self.append_quad(era_quad)
         self.call_scope_params_list = scope.params_list
         self.current_call_param_counter = 0

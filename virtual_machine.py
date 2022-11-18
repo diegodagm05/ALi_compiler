@@ -1,18 +1,38 @@
 from collections import deque
+from func_dir import FuncDirEntry
 from runtime_memory import RuntimeMemory
 from quadruple import Quadruple, quadruple_operations
 from semantic_rules import semantics, CompilationResults
 from parser import ali_parser
 
+def calculate_function_resources(scope: FuncDirEntry) -> list:
+    resources = [
+        [scope.num_vars_int, scope.num_vars_float, scope.num_vars_char, scope.num_vars_bool],
+        [scope.num_temps_int, scope.num_temps_float, scope.num_temps_char, scope.num_temps_bool],
+        scope.num_pointer_temps
+    ]
+    for param in scope.params_list:
+        if param == 'i':
+            resources[0][0] += 1
+        elif param == 'f':
+            resources[0][1] += 1
+        elif param == 'c':
+            resources[0][2] += 1
+        elif param == 'b':
+            resources[0][3] += 1
+    return resources
+
 
 def virtual_machine(compilation_results: CompilationResults) -> None:
     # print(compilation_results.func_dir)
     # print(compilation_results.consts_table)
-    print('--ALi CONSOLE OUTPUT--')
     runtime_memory = RuntimeMemory(compilation_results.consts_table, compilation_results.func_dir)
     quadruples : list[Quadruple] = compilation_results.quadruples
     ip = 0
     call_stack = deque()
+    # for i, quad in enumerate(quadruples):
+    #     print(f'{i}. {quad}')
+    print('--ALi CONSOLE OUTPUT--')
     while True:
         current_quad = quadruples[ip]
         # print("-----------------------------------------")
@@ -135,7 +155,8 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
             runtime_memory.sleep_current_memory()
             ip = current_quad.result
         elif current_quad.op_code == quadruple_operations['era']:
-            resources = current_quad.result
+            scope = compilation_results.func_dir.get_scope(current_quad.result)
+            resources = calculate_function_resources(scope)
             runtime_memory.create_mem_segment(resources)
             ip += 1
         elif current_quad.op_code == quadruple_operations['parameter']:
