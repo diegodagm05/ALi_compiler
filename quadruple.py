@@ -36,5 +36,6 @@ class Quadruple():
         return f'{self.op_code} {self.operator1} {self.operator2} {self.result}'
 
     def fill_result(self, result: int) -> None:
-        self.result = result
+        if self.result is None:
+            self.result = result
     

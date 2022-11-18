@@ -13,7 +13,7 @@ func main(){
     } else {
         print("PRINT");
     }
-
+    print("Left for loop");
     for (k = 0; k < 5; k = k + 1) {
         print("Inside for loop");
         i = k;

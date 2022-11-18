@@ -220,6 +220,7 @@ class SemanticRules:
     def save_for_increment(self):
         self.for_increment_quad = self.quadruples[-1]
         del self.quadruples[-1]
+        self.quadruple_counter -= 1
 
     
     def end_for(self):
