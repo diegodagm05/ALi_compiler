@@ -176,7 +176,8 @@ def p_statements(p):
                   | array_init ';' 
                   | write
                   | conditionals
-                  | cycles
+                  | while
+                  | for
                   | read
                   | special_function_statement
                   | RETURN expression ';' handle_return_statement '''
@@ -254,7 +255,10 @@ def p_exp_2d(p):
               | '[' exp_1d ']' '''
 
 def p_write(p):
-    '''write : PRINT '(' write_p ')' ';' '''
+    '''write : PRINT '(' write_p ')' ';'
+             | PRINT '(' write_p ')' '<' '<' ENDL  ';' '''
+    if len(p) - 1 == 8: 
+        semantics.end_print()
  
 def p_write_p(p):
     '''write_p : write_param ',' write_p 
@@ -315,9 +319,9 @@ def p_end_function_call(p):
     ''' end_function_call : '''
     semantics.end_function_call()
 
-def p_cycles(p):
-    '''cycles : while
-                | for'''
+# def p_cycles(p):
+#     '''cycles : while
+#                 | for'''
 
 def p_array_indexing(p):
     '''array_indexing : ID '[' expression ']'

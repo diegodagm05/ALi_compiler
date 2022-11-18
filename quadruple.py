@@ -3,19 +3,20 @@ from semantic_cube import operations
 
 quadruple_operations = operations | {
     'print': 14,
-    'read': 15,
-    'goto': 16,
-    'gotot': 17,
-    'gotof': 18,
-    'gosub': 19,
-    'era': 20,
-    'parameter': 21,
-    'endfunc': 22,
-    'return': 23, 
-    'verify': 24,
-    'add_base_address': 25,
-    'multiply_displacement': 26,
-    'endprogram': 27
+    'endprint': 15,
+    'read': 16,
+    'goto': 17,
+    'gotot': 18,
+    'gotof': 19,
+    'gosub': 20,
+    'era': 21,
+    'parameter': 22,
+    'endfunc': 23,
+    'return': 24, 
+    'verify': 25,
+    'add_base_address': 26,
+    'multiply_displacement': 27,
+    'endprogram': 28
 }
 
 class Quadruple():

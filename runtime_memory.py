@@ -93,7 +93,8 @@ class MemorySegment():
         elif bool_temp_index != None: 
             value = self.bools_mem_temp[bool_temp_index]
         elif string_index != None: 
-            value = self.strings_mem[string_index]
+            value : str = self.strings_mem[string_index]
+            value = value.replace("\"", '')
         elif temp_pointer_index != None:
             real_address = self.temps_pointer_mem[temp_pointer_index]
             value = self.retrieve_content(real_address)
@@ -269,7 +270,13 @@ class RuntimeMemory():
             num_strings=consts_table.types_counter['string']
         )
         for value, const_entry in consts_table.const_vars_table.items():
-            mem_segment.assign_content(const_entry.address, value)
+            value_in_memory = value
+            if value == 'true':
+                value_in_memory = True
+            elif value == 'false':
+                value_in_memory = False
+            mem_segment.assign_content(const_entry.address, value_in_memory)
+                
         return mem_segment
 
     def generate_main_memory_segment(self, func_dir: FuncDir) -> MemorySegment:

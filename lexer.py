@@ -20,6 +20,7 @@ reserved = {
     'elif': 'ELIF',
     'return': 'RETURN',
     'print': 'PRINT',
+    'endl': 'ENDL',
     'read': 'READ',
     'for': 'FOR',
     'while': 'WHILE',
