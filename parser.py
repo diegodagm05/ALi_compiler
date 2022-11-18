@@ -176,7 +176,8 @@ def p_statements(p):
                   | array_init ';' 
                   | write
                   | conditionals
-                  | cycles
+                  | while
+                  | for
                   | read
                   | special_function_statement
                   | RETURN expression ';' handle_return_statement '''
@@ -315,9 +316,9 @@ def p_end_function_call(p):
     ''' end_function_call : '''
     semantics.end_function_call()
 
-def p_cycles(p):
-    '''cycles : while
-                | for'''
+# def p_cycles(p):
+#     '''cycles : while
+#                 | for'''
 
 def p_array_indexing(p):
     '''array_indexing : ID '[' expression ']'

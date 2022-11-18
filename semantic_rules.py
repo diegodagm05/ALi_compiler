@@ -35,6 +35,7 @@ class SemanticRules:
     current_param_count : int = 0
     current_scope_var_count : int = 0
     current_temp_count : int = 0
+    for_increments_stack : deque[Quadruple] = deque() 
 
     def __init__(self) -> None:
         self.set_scope('global')
@@ -218,13 +219,13 @@ class SemanticRules:
             self.append_quad(quadruple)
 
     def save_for_increment(self):
-        self.for_increment_quad = self.quadruples[-1]
+        self.for_increments_stack.append(self.quadruples[-1])
         del self.quadruples[-1]
         self.quadruple_counter -= 1
 
     
     def end_for(self):
-        self.append_quad(self.for_increment_quad)
+        self.append_quad(self.for_increments_stack.pop())
         pending_jump = self.jump_stack.pop()
         return_to = self.jump_stack.pop()
         quadruple = Quadruple('goto', result=return_to)
