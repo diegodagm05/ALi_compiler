@@ -216,8 +216,14 @@ class SemanticRules:
             self.jump_stack.append(self.quadruple_counter)
             quadruple = Quadruple('gotof', result)
             self.append_quad(quadruple)
+
+    def save_for_increment(self):
+        self.for_increment_quad = self.quadruples[-1]
+        del self.quadruples[-1]
+
     
     def end_for(self):
+        self.append_quad(self.for_increment_quad)
         pending_jump = self.jump_stack.pop()
         return_to = self.jump_stack.pop()
         quadruple = Quadruple('goto', result=return_to)

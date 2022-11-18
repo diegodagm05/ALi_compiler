@@ -360,7 +360,7 @@ def p_end_while(p):
     semantics.end_while()
 
 def p_for(p):
-    '''for : FOR '(' assignment ';' start_for expression ';' eval_for_expression assignment ')' interior_block end_for'''
+    '''for : FOR '(' assignment ';' start_for expression ';' eval_for_expression assignment save_for_increment ')' interior_block end_for'''
 
 def p_start_for(p):
     '''
@@ -379,6 +379,12 @@ def p_end_for(p):
     end_for :
     '''
     semantics.end_for()
+
+def p_save_for_increment(p):
+    '''
+    save_for_increment : 
+    '''
+    semantics.save_for_increment()
 
 # ----------------------
 # EXRPESSIONS RULES 
