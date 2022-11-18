@@ -160,6 +160,8 @@ class SemanticRules:
             raise Exception('Type mismatch on conditional expression')
         else:
             result = self.operands_stack.pop()
+            # Append fake bottom
+            self.jump_stack.append(-1)
             # Apend the gotof quad we are about to create
             self.jump_stack.append(self.quadruple_counter)
             quadruple = Quadruple('gotof', result)
@@ -176,9 +178,10 @@ class SemanticRules:
 
 
     def end_if(self):
-        while len(self.jump_stack) > 0:
+        while self.jump_stack[-1] != -1:
             pending_jump = self.jump_stack.pop()
             self.quadruples[pending_jump].fill_result(self.quadruple_counter)
+        self.jump_stack.pop()
 
     # Loops rules
     def start_while(self):
@@ -213,8 +216,15 @@ class SemanticRules:
             self.jump_stack.append(self.quadruple_counter)
             quadruple = Quadruple('gotof', result)
             self.append_quad(quadruple)
+
+    def save_for_increment(self):
+        self.for_increment_quad = self.quadruples[-1]
+        del self.quadruples[-1]
+        self.quadruple_counter -= 1
+
     
     def end_for(self):
+        self.append_quad(self.for_increment_quad)
         pending_jump = self.jump_stack.pop()
         return_to = self.jump_stack.pop()
         quadruple = Quadruple('goto', result=return_to)
