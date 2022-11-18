@@ -9,12 +9,12 @@ func main(){
     // var BLS[3][3] : array<bool>;
     var b1 : bool;
 
-    A[] = [1, 2, 3, 4, 5, 6, 7, 8];
-    B[][] = [ [0, 1], [ 2, 3 ] ];
+    A = [1, 2, 3, 4, 5, 6, 7, 8];
+    B = [ [0, 1], [ 2, 3 ] ];
 
     void func start() {
-        A[4] = 5;
-        i = A[4] + 6;
+        // A[4] = 5;
+        i = A[7] + 6;
         print("A[4] = i = ", i);
         // This should throw an error.
         // B[0][5] = 6; 

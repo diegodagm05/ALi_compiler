@@ -2,7 +2,7 @@ from collections import deque
 
 from quadruple import  Quadruple
 from semantic_cube import SemanticCube, types, operations
-from vars_table import VarsTable, ConstVarsTable
+from vars_table import VarsTable, ConstVarsTable, VarsTableEntry
 from virtual_memory import virtual_memory
 from func_dir import FuncDir
 
@@ -408,7 +408,7 @@ class SemanticRules:
             self.call_param_ptr = types['bool']
 
     # Generates array indexing quadruples
-    def validate_array(self, array_id: str) -> VarsTable:
+    def validate_array(self, array_id: str) -> VarsTableEntry:
         # First, look if the array is the defined in the local scope
         (is_defined, local_array) = self.current_var_table.lookup_entry(array_id)
         if not is_defined:
@@ -470,6 +470,31 @@ class SemanticRules:
                 self.append_quad(add_base_addr_quad)
         self.operands_stack.append(temp_pointer)
         self.types_stack.append(array.type)
+    
+    def init_array(self, array_id: str):
+        array = self.validate_array(array_id)
+        expression_stack : deque[tuple[int, str]] = deque()
+        while self.operands_stack[-1] != array.address:
+            expression_stack.append((self.operands_stack.pop(), self.types_stack.pop()))
+        # Take out the array id operand
+        array_address = self.operands_stack.pop()
+        self.types_stack.pop()
+        if array_address != array.address:
+            raise Exception('Error trying to initialize array.')
+        elif array.total_dim_size != len(expression_stack):
+            raise Exception(f'Too many expressions being assigned to array {array_id}')
+        else:
+            while len(expression_stack) > 0:
+                (expression_to_assign, expression_type) = expression_stack.pop()
+                match_types = sem_cube.match_types(array.type, expression_type, '=')
+                if match_types == 'ERROR':
+                    raise Exception(f'Type mismatch. Attempting to assign \'{expression_to_assign}\' expression to array \'{array_id}\' of type \'{array.type}\'')
+                assign_quad = Quadruple('=', expression_to_assign, result=array_address)
+                self.append_quad(assign_quad)
+                array_address += 1
+        
+        
+        
 
     def get_compilation_results(self) -> CompilationResults:
         results = CompilationResults(self.function_directory, self.const_vars_table, self.quadruples)

@@ -241,8 +241,9 @@ def p_assignment(p):
     semantics.gen_assignment_quad()
 
 def p_array_init(p):
-    '''array_init : ID '[' ']' '=' '[' exp_1d ']'
-                  | ID '[' ']' '[' ']' '=' '[' exp_2d ']' '''
+    '''array_init : variable '=' '[' exp_1d ']'
+                  | variable '=' '[' exp_2d ']' '''
+    semantics.init_array(p[1])
 
 def p_exp_1d(p):
     '''exp_1d : expression ',' exp_1d
@@ -447,6 +448,7 @@ def p_variable(p):
                 | ID'''
     if p[1] is not None:
         semantics.add_id_operand(p[1])
+    p[0] = p[1]
 
 
 def p_add_const_to_operand_stack_string(p):
@@ -504,6 +506,7 @@ if __name__ == "__main__":
     print(semantics.types_stack)
     print(semantics.operands_stack)
     print(semantics.operators_stack)
+    print(semantics.const_vars_table)
     print(semantics.function_directory)
     i = 0
     for quad in semantics.quadruples:
