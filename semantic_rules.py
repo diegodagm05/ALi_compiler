@@ -528,14 +528,14 @@ class SemanticRules:
 
     def gen_canvas(self, has_specified_canvas_dimensions: bool) -> None:
         if not has_specified_canvas_dimensions:
-            gen_canvas_quad = Quadruple('gen_canvas', 720, 720, 'black')
+            gen_canvas_quad = Quadruple('gen_default_canvas', 720, 720, (0,0,0))
         else:
             bg_color = self.operands_stack.pop()
             bg_color_type= self.types_stack.pop()    
-            width = self.operands_stack.pop()
-            width_type = self.types_stack.pop()
             height = self.operands_stack.pop()
             height_type = self.types_stack.pop()
+            width = self.operands_stack.pop()
+            width_type = self.types_stack.pop()
             if bg_color_type != 'string':
                 raise Exception('Type mismatch. \'genCanvas()\' expects a string as a background color.')
             if width_type != 'int':
