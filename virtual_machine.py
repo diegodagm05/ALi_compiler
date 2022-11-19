@@ -1,9 +1,15 @@
 from collections import deque
-from func_dir import FuncDirEntry
-from runtime_memory import RuntimeMemory
-from quadruple import Quadruple, quadruple_operations
-from semantic_rules import semantics, CompilationResults
 from parser import ali_parser
+
+import pygame
+
+from func_dir import FuncDirEntry
+from quadruple import Quadruple, quadruple_operations
+from runtime_memory import RuntimeMemory
+from semantic_rules import CompilationResults, semantics
+
+
+screen = None
 
 def calculate_function_resources(scope: FuncDirEntry) -> list:
     resources = [
@@ -21,6 +27,12 @@ def calculate_function_resources(scope: FuncDirEntry) -> list:
         elif param == 'b':
             resources[0][3] += 1
     return resources
+
+def convert_string_to_rgb_tuple(color: str) -> tuple[int]:
+    if len(color) != 7:
+        raise Exception(f'RGB string with 6 digits expected for color parameter. Insted given \'{color}\'')
+    color_s = color.lstrip('#')
+    return tuple(int(color_s[i:i+2], 16) for i in (0, 2, 4))
 
 
 def virtual_machine(compilation_results: CompilationResults) -> None:
@@ -195,6 +207,77 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
             result = index_expression * mutiplier
             runtime_memory.current_mem_segment.assign_content(current_quad.result, result)
             ip += 1 
+        # Special functions
+        elif current_quad.op_code == quadruple_operations['start']:
+            pygame.init()
+        elif current_quad.op_code == quadruple_operations['update']:
+            pygame.display.flip()
+        elif current_quad.op_code == quadruple_operations['gen_default_canvas']:
+            global screen
+            screen = pygame.display.set_mode((current_quad.operator1, current_quad.operator2))
+            screen.fill(current_quad.result) # current quad result should be a tuple that represents the rgb value
+        elif current_quad.op_code == quadruple_operations['gen_canvas']:
+            global screen
+            width = runtime_memory.retrieve_content(current_quad.operator1)
+            height = runtime_memory.retrieve_content(current_quad.operator2)
+            color = runtime_memory.retrieve_content(current_quad.result)
+            screen = pygame.display.set_mode((width, height))
+            rgb_color = convert_string_to_rgb_tuple(color)
+            screen.fill(rgb_color) # current quad result should be a tuple that represents the rgb value
+        elif current_quad.op_code == quadruple_operations['set_canvas_tile']:
+            caption = runtime_memory.retrieve_content(current_quad.result)
+            pygame.display.set_caption(caption)
+        elif current_quad.op_code == quadruple_operations['set_canvas_background']:
+            global screen
+            color = runtime_memory.retrieve_content(current_quad.result)
+            rgb_color = convert_string_to_rgb_tuple(color)
+            screen.fill(rgb_color) # current quad result should be a tuple that represents the rgb value
+        elif current_quad.op_code == quadruple_operations['get_window_width']:
+            window_width = screen.get_width()
+            runtime_memory.assign_content(current_quad.result, window_width)
+        elif current_quad.op_code == quadruple_operations['get_window_height']:
+            window_height = screen.get_height(current_quad.result, window_height)
+        elif current_quad.op_code == quadruple_operations['get_game_event']:
+            for event in pygame.event.get():
+                # This is to enable a user to quit a game with CTRL + C in case they are unable to reach quitGame() function in their code
+                if event.type == pygame.QUIT:
+                    print('Game has been ended by the user.')
+                    break
+                if event.type == pygame.K_SPACE:
+                    key = 0
+                elif event.type == pygame.K_LEFT:
+                    key = 1
+                elif event.type == pygame.K_UP:
+                    key = 2
+                elif event.type == pygame.K_RIGHT:
+                    key = 3
+                elif event.type == pygame.K_DOWN:
+                    key = 4
+                elif event.type == pygame.K_ESCAPE:
+                    key = 5
+                elif event.type == pygame.KEYUP:
+                    key = 6
+                elif event.type == pygame.KEYDOWN:
+                    key = 7
+            runtime_memory.assign_content(current_quad.result, key)
+        elif current_quad.op_code == quadruple_operations['draw_game_object']:
+            (xpos_vaddr, ypos_vaddr) = current_quad.operator1
+            (xsize_vaddr, ysize_vaddr) = current_quad.operator2
+            color = runtime_memory.retrieve_content(current_quad.result)
+            rgb_color = convert_string_to_rgb_tuple(color)
+            xpos = runtime_memory.retrieve_content(xpos_vaddr)
+            ypos = runtime_memory.retrieve_content(ypos_vaddr)
+            screen_width = screen.get_width()
+            screen_height = screen.get_height()
+            if xpos < screen_width or xpos > screen_width:
+                raise RuntimeError(f'Attempting to draw a game object outside of the screen. Exceeding the width of the game screen. \n Drawing at {xpos} for screen with {screen_width}')
+            if ypos < screen_height or ypos > screen_height:
+                raise RuntimeError(f'Attempting to draw a game object outside of the screen. Exceeding the height of the game screen. \n Drawing at {ypos} for screen height {screen_height}')
+            xsize = runtime_memory.retrieve_content(xsize_vaddr)
+            ysize = runtime_memory.retrieve_content(ysize_vaddr)
+            gameObject = pygame.Surface((xsize, ysize))
+            gameObject.fill(rgb_color) # current quad result should be a tuple that represents the rgb value
+            screen.blit(gameObject, (xpos, ypos))
         else:
             raise RuntimeError('Unknown action for virtual machine')
     print('\n--END OF ALi CONSOLE OUTPUT--')

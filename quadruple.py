@@ -20,13 +20,14 @@ quadruple_operations = operations | {
     # Special function operations
     'start': 30,
     'update': 31,
-    'gen_canvas': 32,
-    'set_canvas_title': 33,
-    'set_canvas_background': 34,
-    'get_window_height': 35,
+    'gen_default_canvas': 32,
+    'gen_canvas': 33,
+    'set_canvas_title': 34,
+    'set_canvas_background': 35,
     'get_window_width': 36,
-    'get_game_event': 37,
-    'draw_game_object': 38,
+    'get_window_height': 37,
+    'get_game_event': 38,
+    'draw_game_object': 39,
 }
 
 class Quadruple():
