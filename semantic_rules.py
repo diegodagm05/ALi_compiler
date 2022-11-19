@@ -511,9 +511,26 @@ class SemanticRules:
                 self.append_quad(assign_quad)
                 array_address += 1
         
+    # Special function semantic rules
+    def gen_canvas(self, has_specified_canvas_dimensions: bool) -> None:
+        if not has_specified_canvas_dimensions:
+            gen_canvas_quad = Quadruple('gen_canvas', 720, 720, 'black')
+        else:
+            bg_color = self.operands_stack.pop()
+            bg_color_type= self.types_stack.pop()    
+            width = self.operands_stack.pop()
+            width_type = self.types_stack.pop()
+            height = self.operands_stack.pop()
+            height_type = self.types_stack.pop()
+            if bg_color_type != 'string':
+                raise Exception('Type mismatch. \'genCanvas()\' expects a string as a background color.')
+            if width_type != 'int':
+                raise Exception('Type mismatch.  \'genCanvas()\' expects an integer as for width.')
+            if height_type != 'int':
+                raise Exception('Type mismatch.  \'genCanvas()\' expects an integer as for width.')
+            gen_canvas_quad = Quadruple('gen_canvas', height, width, bg_color)
+        self.append_quad(gen_canvas_quad)
         
-        
-
     def get_compilation_results(self) -> CompilationResults:
         results = CompilationResults(self.function_directory, self.const_vars_table, self.quadruples)
         return results

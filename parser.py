@@ -50,8 +50,28 @@ def p_update_function(p):
     '''update_function : VOID FUNC UPDATE '(' ')' interior_block '''
 
 def p_sft(p):
-    '''sft : gen_canvas stm
-            | stm'''
+    '''sft : gen_canvas gen_canvas_quad stm
+           | default_gen_canvas gen_canvas_quad stm '''
+
+def p_default_gen_canvas(p):
+    '''
+    default_gen_canvas :
+    '''
+    p[0] = False
+
+def p_gen_canvas_quad(p):
+    '''
+    gen_canvas_quad :
+    '''
+    print(p[0])
+    print(p[-1])
+    if p[-1]:
+        # use the values from gen canvas function
+        # they will be the last two in the operands stack and the last value in the constants stack
+        semantics.gen_canvas(True)
+    else:
+        # generate canvas with default values
+        semantics.gen_canvas(False)
 
 def p_special_function_statement(p):
     '''special_function_statement : set_canvas_title
@@ -60,7 +80,8 @@ def p_special_function_statement(p):
 
 # TODO: Add checks to make sure params are of the right type
 def p_gen_canvas(p):
-    '''gen_canvas : GEN_CANVAS '(' expression ',' expression ',' STRING_CONST ')' ';' '''
+    '''gen_canvas : GEN_CANVAS '(' expression ',' expression ',' STRING_CONST add_const_to_operand_stack_string ')' ';' '''
+    p[0] = True
 
 def p_set_canvas_title(p):
     '''set_canvas_title : SET_CANVAS_TITLE '(' STRING_CONST ')' ';' '''
