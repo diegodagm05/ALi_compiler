@@ -44,10 +44,23 @@ def p_main_block_p(p):
                     | vars '''
 
 def p_start_function(p):
-    '''start_function : VOID FUNC START '(' ')' '{' sft '}' '''
+    '''start_function : VOID FUNC START '(' ')' '{' sft '}' '''                       
+    semantics.gen_start_quad()
 
 def p_update_function(p):
-    '''update_function : VOID FUNC UPDATE '(' ')' interior_block '''
+    '''update_function : VOID FUNC UPDATE update_start '(' ')' interior_block update_end '''
+
+def p_update_start(p):
+    '''
+    update_start : 
+    '''
+    semantics.update_start()
+
+def p_update_end(p):
+    '''
+    update_end :
+    '''
+    semantics.update_end()
 
 def p_sft(p):
     '''sft : gen_canvas gen_canvas_quad stm

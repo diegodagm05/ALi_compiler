@@ -512,6 +512,20 @@ class SemanticRules:
                 array_address += 1
         
     # Special function semantic rules
+    def gen_start_quad(self):
+        start_quad = Quadruple('start')
+        self.append_quad(start_quad)
+
+    def update_start(self):
+        update_quadruple = Quadruple('update')
+        self.append_quad(update_quadruple)
+        self.jump_stack.append(self.quadruple_counter)
+
+    def update_end(self):
+        jump_to_update_start = self.jump_stack.pop()
+        goto_update_start_quad = Quadruple('goto', result=jump_to_update_start)
+        self.append_quad(goto_update_start_quad)
+
     def gen_canvas(self, has_specified_canvas_dimensions: bool) -> None:
         if not has_specified_canvas_dimensions:
             gen_canvas_quad = Quadruple('gen_canvas', 720, 720, 'black')
