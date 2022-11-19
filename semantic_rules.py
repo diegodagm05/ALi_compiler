@@ -530,7 +530,49 @@ class SemanticRules:
                 raise Exception('Type mismatch.  \'genCanvas()\' expects an integer as for width.')
             gen_canvas_quad = Quadruple('gen_canvas', height, width, bg_color)
         self.append_quad(gen_canvas_quad)
-        
+
+    def set_canvas_title(self) -> None:
+        canvas_title = self.operands_stack.pop()
+        canvas_title_type = self.types_stack.pop()
+        if canvas_title_type != 'string':
+            raise Exception('Type mismatch. \'setCanvasTitle()\' expects a \'string\' value as a parameter.')
+        else:
+            canvas_title_quad = Quadruple('set_canvas_title', result=canvas_title)
+            self.append_quad(canvas_title_quad)
+
+    def set_canvas_bg_color(self) -> None: 
+        canvas_bg_color = self.operands_stack.pop()
+        canvas_bg_color_type = self.types_stack.pop()
+        if canvas_bg_color_type != 'string':
+            raise Exception('Type mismatch. \'setCanvasBackground()\' expects a \'string\' value as a parameter.')
+        else:
+            canvas_bg_color_quad = Quadruple('set_canvas_background', result=canvas_bg_color)
+            self.append_quad(canvas_bg_color_quad)
+    
+    def get_window_height(self) -> None:
+        temp_result = virtual_memory.assign_mem_address('int', is_temp=True)
+        get_window_height_quad = Quadruple('get_window_height', result=temp_result)
+        self.append_quad(get_window_height_quad)
+        self.types_stack.append('int')
+        self.operands_stack.append(temp_result)
+        self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, 'int')
+    
+    def get_window_width(self) -> None:
+        temp_result = virtual_memory.assign_mem_address('int', is_temp=True)
+        get_window_width_quad = Quadruple('get_window_width', result=temp_result)
+        self.append_quad(get_window_width_quad)
+        self.types_stack.append('int')
+        self.operands_stack.append(temp_result)
+        self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, 'int')
+    
+    def get_game_event(self) -> None:
+        temp_result = virtual_memory.assign_mem_address('int', is_temp=True)
+        get_game_event_quad = Quadruple('get_game_event', result=temp_result)
+        self.append_quad(get_game_event_quad)
+        self.types_stack.append('int')
+        self.operands_stack.append(temp_result)
+        self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, 'int')
+
     def get_compilation_results(self) -> CompilationResults:
         results = CompilationResults(self.function_directory, self.const_vars_table, self.quadruples)
         return results

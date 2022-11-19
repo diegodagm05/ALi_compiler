@@ -63,8 +63,6 @@ def p_gen_canvas_quad(p):
     '''
     gen_canvas_quad :
     '''
-    print(p[0])
-    print(p[-1])
     if p[-1]:
         # use the values from gen canvas function
         # they will be the last two in the operands stack and the last value in the constants stack
@@ -84,20 +82,26 @@ def p_gen_canvas(p):
     p[0] = True
 
 def p_set_canvas_title(p):
-    '''set_canvas_title : SET_CANVAS_TITLE '(' STRING_CONST ')' ';' '''
+    '''set_canvas_title : SET_CANVAS_TITLE '(' STRING_CONST add_const_to_operand_stack_string ')' ';' '''
+    semantics.set_canvas_title()
+    
 
 def p_set_canvas_bg(p):
-    '''set_canvas_bg : SET_CANVAS_BG '(' STRING_CONST ')' ';' '''
+    '''set_canvas_bg : SET_CANVAS_BG '(' STRING_CONST add_const_to_operand_stack_string ')' ';' '''
+    semantics.set_canvas_bg_color()
 
 # Special getter functions will be treated as expressions 
 def p_get_window_h(p):
     '''get_window_h : GET_WINDOW_H '(' ')' '''
+    semantics.get_window_height()
 
 def p_get_window_w(p):
     '''get_window_w : GET_WINDOW_W '(' ')' '''
+    semantics.get_window_width()
 
 def p_get_game_ev(p):
     '''get_game_ev : GET_GAME_EV '(' ')' '''
+    semantics.get_game_event()
 
 # TODO: Add checks to make sure params are of the right type
 def p_draw_game_object(p):
