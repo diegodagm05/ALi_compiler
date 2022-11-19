@@ -572,6 +572,30 @@ class SemanticRules:
         self.types_stack.append('int')
         self.operands_stack.append(temp_result)
         self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, 'int')
+    
+    def draw_game_object(self) -> None:
+        color = self.operands_stack.pop()
+        color_type = self.types_stack.pop()
+        ysize = self.operands_stack.pop()
+        ysize_type = self.types_stack.pop()
+        xsize = self.operands_stack.pop()
+        xsize_type = self.types_stack.pop()
+        ypos = self.operands_stack.pop()
+        ypos_type = self.types_stack.pop()
+        xpos = self.operands_stack.pop()
+        xpos_type = self.types_stack.pop()
+        if color_type != 'string':
+            raise Exception('Type mismatch. \'drawGameObject()\' expects a \'string\' for \'color\'')
+        if ysize_type != 'int':
+            raise Exception('Type mismatch. \'drawGameObject()\' expects a \'int\' for \'ysize\'')
+        if xsize_type != 'int':
+            raise Exception('Type mismatch. \'drawGameObject()\' expects a \'int\' for \'xsize\'')
+        if ypos_type != 'int':
+            raise Exception('Type mismatch. \'drawGameObject()\' expects a \'int\' for \'ypos\'')
+        if xpos_type != 'int':
+            raise Exception('Type mismatch. \'drawGameObject()\' expects a \'int\' for \'xpos\'')
+        draw_game_object_quad = Quadruple('draw_game_object', [xpos,ypos], [xsize, ysize], color)
+        self.append_quad(draw_game_object_quad)
 
     def get_compilation_results(self) -> CompilationResults:
         results = CompilationResults(self.function_directory, self.const_vars_table, self.quadruples)

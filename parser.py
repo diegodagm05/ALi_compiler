@@ -105,7 +105,8 @@ def p_get_game_ev(p):
 
 # TODO: Add checks to make sure params are of the right type
 def p_draw_game_object(p):
-    '''draw_game_object : DRAW_GAME_OBJECT '(' expression ',' expression ',' expression ',' expression ',' STRING_CONST ')' ';' '''
+    '''draw_game_object : DRAW_GAME_OBJECT '(' expression ',' expression ',' expression ',' expression ',' STRING_CONST add_const_to_operand_stack_string ')' ';' '''
+    semantics.draw_game_object()
 
 # ----------------------
 # STATEMENTS RULES 
