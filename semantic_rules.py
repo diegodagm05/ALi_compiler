@@ -611,6 +611,10 @@ class SemanticRules:
         draw_game_object_quad = Quadruple('draw_game_object', [xpos,ypos], [xsize, ysize], color)
         self.append_quad(draw_game_object_quad)
 
+    def quit_game(self):
+        quit_game_quad = Quadruple('quit_game')
+        self.append_quad(quit_game_quad)
+
     def get_compilation_results(self) -> CompilationResults:
         results = CompilationResults(self.function_directory, self.const_vars_table, self.quadruples)
         return results

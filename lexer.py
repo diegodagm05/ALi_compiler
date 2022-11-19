@@ -37,6 +37,7 @@ reserved = {
     'getWindowWidth': 'GET_WINDOW_W',
     'getGameEvent': 'GET_GAME_EV',
     'drawGameObject': 'DRAW_GAME_OBJECT',
+    'quitGame': 'QUIT_GAME',
 }
 
 tokens = (

@@ -87,7 +87,8 @@ def p_gen_canvas_quad(p):
 def p_special_function_statement(p):
     '''special_function_statement : set_canvas_title
                                   | set_canvas_bg 
-                                  | draw_game_object'''
+                                  | draw_game_object 
+                                  | quit_game '''
 
 # TODO: Add checks to make sure params are of the right type
 def p_gen_canvas(p):
@@ -116,10 +117,13 @@ def p_get_game_ev(p):
     '''get_game_ev : GET_GAME_EV '(' ')' '''
     semantics.get_game_event()
 
-# TODO: Add checks to make sure params are of the right type
 def p_draw_game_object(p):
     '''draw_game_object : DRAW_GAME_OBJECT '(' expression ',' expression ',' expression ',' expression ',' STRING_CONST add_const_to_operand_stack_string ')' ';' '''
     semantics.draw_game_object()
+
+def p_quit_game(p):
+    '''quit_game :  QUIT_GAME '(' ')' ';' '''
+    semantics.quit_game()
 
 # ----------------------
 # STATEMENTS RULES 

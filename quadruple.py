@@ -28,6 +28,7 @@ quadruple_operations = operations | {
     'get_window_height': 37,
     'get_game_event': 38,
     'draw_game_object': 39,
+    'quit_game': 40,
 }
 
 class Quadruple():
