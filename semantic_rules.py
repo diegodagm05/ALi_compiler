@@ -155,14 +155,16 @@ class SemanticRules:
         self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, operand_type)
      
     # Conditionals rules
+    def begin_if(self):
+        # Append fake bottom
+        self.jump_stack.append(-1)
+
     def if_start(self):
         expression_type = self.types_stack.pop()
         if expression_type != types['bool']:
             raise Exception('Type mismatch on conditional expression')
         else:
             result = self.operands_stack.pop()
-            # Append fake bottom
-            self.jump_stack.append(-1)
             # Apend the gotof quad we are about to create
             self.jump_stack.append(self.quadruple_counter)
             quadruple = Quadruple('gotof', result)

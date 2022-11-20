@@ -218,7 +218,7 @@ def p_statements(p):
                   | call_to_fun ';'
                   | array_init ';' 
                   | write
-                  | conditionals
+                  | begin_if_stm conditionals
                   | while
                   | for
                   | read
@@ -235,6 +235,12 @@ def p_conditionals(p):
     '''conditionals : if_statement end_if
                     | if_else_statement end_if
                     | if_else_if_statement end_if '''
+
+def p_begin_if_stm(p):
+    '''
+    begin_if_stm :
+    '''
+    semantics.begin_if()
 
 def p_if_statement(p):
     '''if_statement : simple_if_statement'''
