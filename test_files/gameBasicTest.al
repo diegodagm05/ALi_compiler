@@ -15,8 +15,11 @@ void func drawPlayer(xpos : int, ypos: int, xsize: int, ysize : int) {
 
 func main() {
     // First, declare your variables
-    var height, event, width : int;
+    var height, event, width, xpos, ypos : int;
     init_global_vars();
+
+    xpos = 20; 
+    ypos = 20;
 
     void func start() {
         // generating a canvas with 1080 width, 800 in height and a red background
@@ -29,17 +32,27 @@ func main() {
         height = getWindowHeight();
         width = getWindowWidth();
         event = getGameEvent();
-        print("Inside update -> event = ", event, " width -> ", width, " height ->", height) << endl;
+        // print("Inside update -> event = ", event, " width -> ", width, " height ->", height) << endl;
         // quit game when user presses escape key
         if (event == 5) {
             quitGame();
         } elif (event == 1) {
-            setCanvasTitle("Reset canvas title");
-        } else {
-            print("Unrecognized game event") << endl;
+            print("Pressed leftarrow key");
+            xpos = xpos - 1;
+        } elif (event == 2) {
+            ypos = ypos + 1;
+        } elif (event == 3) {
+            xpos = xpos + 1;
+        } elif (event == 4) {
+            ypos = ypos - 1;
+        } elif(event == 0) {
+            print("Reset position") << endl;
+            xpos = 20;
+            ypos = 20;
         }
         // setting background to blue
-        setCanvasBackground("#0000FF");
-        drawPlayer(20, 20, height / 4, width / 4);
+        // setCanvasBackground("#0000FF");
+        drawPlayer(xpos, ypos, height / 4, width / 4);
+        
     }
 }

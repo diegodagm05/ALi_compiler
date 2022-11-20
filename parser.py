@@ -191,14 +191,14 @@ def p_functions(p):
                  | void_function'''
 
 def p_return_function(p):
-    '''return_function : type FUNC ID store_function '(' p ')' '{' start_function_ic function_block end_function '}' '''
+    '''return_function : type FUNC ID store_function '(' p ')' store_all_params '{' start_function_ic function_block end_function '}' '''
 
 def p_p(p):
     '''p : params
          | empty'''
 
 def p_void_function(p):
-    '''void_function : VOID set_current_type FUNC ID store_function '(' p ')' '{' start_function_ic function_block end_function '}' '''
+    '''void_function : VOID set_current_type FUNC ID store_function '(' p ')' store_all_params '{' start_function_ic function_block end_function '}' '''
 
 def p_store_function(p):
     '''store_function : '''
@@ -211,6 +211,12 @@ def p_start_function_ic(p):
 def p_end_function(p):
     '''end_function : '''
     semantics.end_function()
+
+def p_store_all_params(p):
+    '''
+    store_all_params :
+    '''
+    semantics.store_all_params()
 
 def p_statements(p):
     '''statements : assignment ';'
@@ -353,10 +359,6 @@ def p_verify_params_number(p):
 def p_end_function_call(p):
     ''' end_function_call : '''
     semantics.end_function_call()
-
-# def p_cycles(p):
-#     '''cycles : while
-#                 | for'''
 
 def p_array_indexing(p):
     '''array_indexing : ID '[' expression ']'
