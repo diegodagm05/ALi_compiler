@@ -37,8 +37,9 @@ reserved = {
     'getWindowWidth': 'GET_WINDOW_W',
     'getGameEvent': 'GET_GAME_EV',
     'drawGameObject': 'DRAW_GAME_OBJECT',
+    'quitGame': 'QUIT_GAME',
 }
-# TODO: List of token names
+
 tokens = (
    'I_CONST', 'F_CONST', 'C_CONST', 'STRING_CONST', 'ID', 'DIFFERENT', 'EQUAL', 'AND', 'OR', 'GREATER_EQ', 'LESS_EQ'
 ) + tuple(reserved.values())

@@ -44,43 +44,86 @@ def p_main_block_p(p):
                     | vars '''
 
 def p_start_function(p):
-    '''start_function : VOID FUNC START '(' ')' '{' sft '}' '''
+    '''start_function : VOID FUNC START '(' ')' '{' sft '}' '''                       
+    semantics.gen_start_quad()
 
 def p_update_function(p):
-    '''update_function : VOID FUNC UPDATE '(' ')' interior_block '''
+    '''update_function : VOID FUNC UPDATE update_start '(' ')' interior_block update_end '''
+
+def p_update_start(p):
+    '''
+    update_start : 
+    '''
+    semantics.update_start()
+
+def p_update_end(p):
+    '''
+    update_end :
+    '''
+    semantics.update_end()
 
 def p_sft(p):
-    '''sft : gen_canvas stm
-            | stm'''
+    '''sft : gen_canvas gen_canvas_quad stm
+           | default_gen_canvas gen_canvas_quad stm '''
+
+def p_default_gen_canvas(p):
+    '''
+    default_gen_canvas :
+    '''
+    p[0] = False
+
+def p_gen_canvas_quad(p):
+    '''
+    gen_canvas_quad :
+    '''
+    if p[-1]:
+        # use the values from gen canvas function
+        # they will be the last two in the operands stack and the last value in the constants stack
+        semantics.gen_canvas(True)
+    else:
+        # generate canvas with default values
+        semantics.gen_canvas(False)
 
 def p_special_function_statement(p):
     '''special_function_statement : set_canvas_title
                                   | set_canvas_bg 
-                                  | draw_game_object'''
+                                  | draw_game_object 
+                                  | quit_game '''
 
 # TODO: Add checks to make sure params are of the right type
 def p_gen_canvas(p):
-    '''gen_canvas : GEN_CANVAS '(' expression ',' expression ',' STRING_CONST ')' ';' '''
+    '''gen_canvas : GEN_CANVAS '(' expression ',' expression ',' STRING_CONST add_const_to_operand_stack_string ')' ';' '''
+    p[0] = True
 
 def p_set_canvas_title(p):
-    '''set_canvas_title : SET_CANVAS_TITLE '(' STRING_CONST ')' ';' '''
+    '''set_canvas_title : SET_CANVAS_TITLE '(' STRING_CONST add_const_to_operand_stack_string ')' ';' '''
+    semantics.set_canvas_title()
+    
 
 def p_set_canvas_bg(p):
-    '''set_canvas_bg : SET_CANVAS_BG '(' STRING_CONST ')' ';' '''
+    '''set_canvas_bg : SET_CANVAS_BG '(' STRING_CONST add_const_to_operand_stack_string ')' ';' '''
+    semantics.set_canvas_bg_color()
 
 # Special getter functions will be treated as expressions 
 def p_get_window_h(p):
     '''get_window_h : GET_WINDOW_H '(' ')' '''
+    semantics.get_window_height()
 
 def p_get_window_w(p):
     '''get_window_w : GET_WINDOW_W '(' ')' '''
+    semantics.get_window_width()
 
 def p_get_game_ev(p):
     '''get_game_ev : GET_GAME_EV '(' ')' '''
+    semantics.get_game_event()
 
-# TODO: Add checks to make sure params are of the right type
 def p_draw_game_object(p):
-    '''draw_game_object : DRAW_GAME_OBJECT '(' expression ',' expression ',' expression ',' expression ',' STRING_CONST ')' ';' '''
+    '''draw_game_object : DRAW_GAME_OBJECT '(' expression ',' expression ',' expression ',' expression ',' STRING_CONST add_const_to_operand_stack_string ')' ';' '''
+    semantics.draw_game_object()
+
+def p_quit_game(p):
+    '''quit_game :  QUIT_GAME '(' ')' ';' '''
+    semantics.quit_game()
 
 # ----------------------
 # STATEMENTS RULES 
@@ -175,7 +218,7 @@ def p_statements(p):
                   | call_to_fun ';'
                   | array_init ';' 
                   | write
-                  | conditionals
+                  | begin_if_stm conditionals
                   | while
                   | for
                   | read
@@ -192,6 +235,12 @@ def p_conditionals(p):
     '''conditionals : if_statement end_if
                     | if_else_statement end_if
                     | if_else_if_statement end_if '''
+
+def p_begin_if_stm(p):
+    '''
+    begin_if_stm :
+    '''
+    semantics.begin_if()
 
 def p_if_statement(p):
     '''if_statement : simple_if_statement'''

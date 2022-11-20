@@ -22,7 +22,7 @@ func main(){
         n = 10;
         result = fibonacci(n);
         print("Fibonacci of ", n, " is: ", result);
-
+        quitGame();
     }
 
     void func update() {

@@ -16,7 +16,19 @@ quadruple_operations = operations | {
     'verify': 25,
     'add_base_address': 26,
     'multiply_displacement': 27,
-    'endprogram': 28
+    'endprogram': 28,
+    # Special function operations
+    'start': 30,
+    'update': 31,
+    'gen_default_canvas': 32,
+    'gen_canvas': 33,
+    'set_canvas_title': 34,
+    'set_canvas_background': 35,
+    'get_window_width': 36,
+    'get_window_height': 37,
+    'get_game_event': 38,
+    'draw_game_object': 39,
+    'quit_game': 40,
 }
 
 class Quadruple():

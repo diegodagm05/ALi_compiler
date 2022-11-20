@@ -155,14 +155,16 @@ class SemanticRules:
         self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, operand_type)
      
     # Conditionals rules
+    def begin_if(self):
+        # Append fake bottom
+        self.jump_stack.append(-1)
+
     def if_start(self):
         expression_type = self.types_stack.pop()
         if expression_type != types['bool']:
             raise Exception('Type mismatch on conditional expression')
         else:
             result = self.operands_stack.pop()
-            # Append fake bottom
-            self.jump_stack.append(-1)
             # Apend the gotof quad we are about to create
             self.jump_stack.append(self.quadruple_counter)
             quadruple = Quadruple('gotof', result)
@@ -179,6 +181,7 @@ class SemanticRules:
 
 
     def end_if(self):
+        print(f'If has ended {self.jump_stack}')
         while self.jump_stack[-1] != -1:
             pending_jump = self.jump_stack.pop()
             self.quadruples[pending_jump].fill_result(self.quadruple_counter)
@@ -511,8 +514,110 @@ class SemanticRules:
                 self.append_quad(assign_quad)
                 array_address += 1
         
-        
-        
+    # Special function semantic rules
+    def gen_start_quad(self):
+        start_quad = Quadruple('start')
+        self.append_quad(start_quad)
+
+    def update_start(self):
+        self.jump_stack.append(self.quadruple_counter)
+        update_quadruple = Quadruple('update')
+        self.append_quad(update_quadruple)
+
+    def update_end(self):
+        jump_to_update_start = self.jump_stack.pop()
+        print(f'Update has ended {jump_to_update_start}')
+        goto_update_start_quad = Quadruple('goto', result=jump_to_update_start)
+        self.append_quad(goto_update_start_quad)
+
+    def gen_canvas(self, has_specified_canvas_dimensions: bool) -> None:
+        if not has_specified_canvas_dimensions:
+            gen_canvas_quad = Quadruple('gen_default_canvas', 720, 720, (0,0,0))
+        else:
+            bg_color = self.operands_stack.pop()
+            bg_color_type= self.types_stack.pop()    
+            height = self.operands_stack.pop()
+            height_type = self.types_stack.pop()
+            width = self.operands_stack.pop()
+            width_type = self.types_stack.pop()
+            if bg_color_type != 'string':
+                raise Exception('Type mismatch. \'genCanvas()\' expects a string as a background color.')
+            if width_type != 'int':
+                raise Exception('Type mismatch.  \'genCanvas()\' expects an integer as for width.')
+            if height_type != 'int':
+                raise Exception('Type mismatch.  \'genCanvas()\' expects an integer as for width.')
+            gen_canvas_quad = Quadruple('gen_canvas', height, width, bg_color)
+        self.append_quad(gen_canvas_quad)
+
+    def set_canvas_title(self) -> None:
+        canvas_title = self.operands_stack.pop()
+        canvas_title_type = self.types_stack.pop()
+        if canvas_title_type != 'string':
+            raise Exception('Type mismatch. \'setCanvasTitle()\' expects a \'string\' value as a parameter.')
+        else:
+            canvas_title_quad = Quadruple('set_canvas_title', result=canvas_title)
+            self.append_quad(canvas_title_quad)
+
+    def set_canvas_bg_color(self) -> None: 
+        canvas_bg_color = self.operands_stack.pop()
+        canvas_bg_color_type = self.types_stack.pop()
+        if canvas_bg_color_type != 'string':
+            raise Exception('Type mismatch. \'setCanvasBackground()\' expects a \'string\' value as a parameter.')
+        else:
+            canvas_bg_color_quad = Quadruple('set_canvas_background', result=canvas_bg_color)
+            self.append_quad(canvas_bg_color_quad)
+    
+    def get_window_height(self) -> None:
+        temp_result = virtual_memory.assign_mem_address('int', is_temp=True)
+        get_window_height_quad = Quadruple('get_window_height', result=temp_result)
+        self.append_quad(get_window_height_quad)
+        self.types_stack.append('int')
+        self.operands_stack.append(temp_result)
+        self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, 'int')
+    
+    def get_window_width(self) -> None:
+        temp_result = virtual_memory.assign_mem_address('int', is_temp=True)
+        get_window_width_quad = Quadruple('get_window_width', result=temp_result)
+        self.append_quad(get_window_width_quad)
+        self.types_stack.append('int')
+        self.operands_stack.append(temp_result)
+        self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, 'int')
+    
+    def get_game_event(self) -> None:
+        temp_result = virtual_memory.assign_mem_address('int', is_temp=True)
+        get_game_event_quad = Quadruple('get_game_event', result=temp_result)
+        self.append_quad(get_game_event_quad)
+        self.types_stack.append('int')
+        self.operands_stack.append(temp_result)
+        self.function_directory.increment_scope_num_temp_vars(self.current_scopeID, 'int')
+    
+    def draw_game_object(self) -> None:
+        color = self.operands_stack.pop()
+        color_type = self.types_stack.pop()
+        ysize = self.operands_stack.pop()
+        ysize_type = self.types_stack.pop()
+        xsize = self.operands_stack.pop()
+        xsize_type = self.types_stack.pop()
+        ypos = self.operands_stack.pop()
+        ypos_type = self.types_stack.pop()
+        xpos = self.operands_stack.pop()
+        xpos_type = self.types_stack.pop()
+        if color_type != 'string':
+            raise Exception('Type mismatch. \'drawGameObject()\' expects a \'string\' for \'color\'')
+        if ysize_type != 'int':
+            raise Exception('Type mismatch. \'drawGameObject()\' expects a \'int\' for \'ysize\'')
+        if xsize_type != 'int':
+            raise Exception('Type mismatch. \'drawGameObject()\' expects a \'int\' for \'xsize\'')
+        if ypos_type != 'int':
+            raise Exception('Type mismatch. \'drawGameObject()\' expects a \'int\' for \'ypos\'')
+        if xpos_type != 'int':
+            raise Exception('Type mismatch. \'drawGameObject()\' expects a \'int\' for \'xpos\'')
+        draw_game_object_quad = Quadruple('draw_game_object', [xpos,ypos], [xsize, ysize], color)
+        self.append_quad(draw_game_object_quad)
+
+    def quit_game(self):
+        quit_game_quad = Quadruple('quit_game')
+        self.append_quad(quit_game_quad)
 
     def get_compilation_results(self) -> CompilationResults:
         results = CompilationResults(self.function_directory, self.const_vars_table, self.quadruples)
