@@ -245,11 +245,6 @@ class SemanticRules:
         end_print_quad = Quadruple('endprint')
         self.append_quad(end_print_quad)
 
-    def read_constant(self):
-        result = self.operands_stack.pop()
-        self.types_stack.pop()
-        quadruple = Quadruple('read', None, None, result)
-        self.quadruples.append(quadruple)
 
     def set_scope(self, scopeID: str):
         self.current_var_table = self.function_directory.get_scope_var_table(scopeID)

@@ -21,10 +21,8 @@ reserved = {
     'return': 'RETURN',
     'print': 'PRINT',
     'endl': 'ENDL',
-    'read': 'READ',
     'for': 'FOR',
     'while': 'WHILE',
-    'read': 'READ',
     'true': 'TRUE',
     'false': 'FALSE',
     # Game Engine specific tokens

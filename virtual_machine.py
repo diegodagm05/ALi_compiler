@@ -149,9 +149,6 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
         elif current_quad.op_code == quadruple_operations['endprint']:
             print()
             ip += 1
-        # TODO: Our 'read' operation will in reality involve handling game events
-        elif current_quad.op_code == quadruple_operations['read']:
-            pass
         elif current_quad.op_code == quadruple_operations['goto']:
             ip = current_quad.result
         elif current_quad.op_code == quadruple_operations['gotot']:

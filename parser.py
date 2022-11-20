@@ -220,7 +220,6 @@ def p_statements(p):
                   | begin_if_stm conditionals
                   | while
                   | for
-                  | read
                   | special_function_statement
                   | RETURN expression ';' handle_return_statement '''
 
@@ -322,18 +321,6 @@ def p_print_value(p):
     '''
     semantics.print_value()
 
-def p_read(p):
-    '''read : READ '(' read_p ')' ';' '''
- 
-def p_read_p(p):
-    '''read_p : STRING_CONST add_const_to_operand_stack_string read_constant ',' read_p
-              | STRING_CONST add_const_to_operand_stack_string read_constant '''
-
-def p_read_constant(p):
-    '''
-    read_constant :
-    '''
-    semantics.read_constant()
 
 def p_call_to_fun(p):
     '''call_to_fun : ID verify_function '(' gen_activation_quad ')' verify_params_number end_function_call
