@@ -34,7 +34,7 @@ func main(){
         for(i = 0; i < size - 1; i = i+1) {
             print(arr[i], " ");
         }
-        
+        quitGame();
     }
 
     void func update() {

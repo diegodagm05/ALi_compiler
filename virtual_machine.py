@@ -249,7 +249,7 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
             for event in pygame.event.get():
                 # This is to enable a user to quit a game with CTRL + C in case they are unable to reach quitGame() function in their code
                 if event.type == pygame.QUIT:
-                    print('Game has been ended by the user pressing CTRL + C.')
+                    print('\nGame has been ended by the user pressing CTRL + C.')
                     break
                 if event.type == pygame.KEYDOWN:
                     keys = pygame.key.get_pressed()
@@ -288,7 +288,7 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
             pygame.draw.rect(screen, rgb_color, (xpos, ypos, xsize, ysize))
             ip += 1
         elif current_quad.op_code == quadruple_operations['quit_game']:
-            print('Game has been ended by the user.')
+            print('\nGame has been ended by the user.')
             break;
         else:
             raise RuntimeError('Unknown action for virtual machine')

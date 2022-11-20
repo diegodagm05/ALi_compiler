@@ -23,7 +23,7 @@ func main(){
         if (!is_in_array) {
             print("Element not found in array ");
         }
-        
+        quitGame();
     }
 
     void func update() {

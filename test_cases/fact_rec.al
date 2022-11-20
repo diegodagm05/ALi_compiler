@@ -18,7 +18,7 @@ func main(){
         n = 5;
         result = factorial(n);
         print("The factorial of ", n, " is: ", result);
-
+        quitGame();
     }
 
     void func update() {

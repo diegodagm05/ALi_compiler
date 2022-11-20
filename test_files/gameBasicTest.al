@@ -35,6 +35,8 @@ func main() {
             quitGame();
         } elif (event == 1) {
             setCanvasTitle("Reset canvas title");
+        } else {
+            print("Unrecognized game event") << endl;
         }
         // setting background to blue
         setCanvasBackground("#0000FF");
