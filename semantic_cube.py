@@ -58,8 +58,8 @@ class SemanticCube():
                 '=': 'ERROR',
             },
             'char': {
-                '+': types['char'],
-                '-': types['char'],
+                '+': 'ERROR',
+                '-': 'ERROR',
                 '*': 'ERROR',
                 '/': 'ERROR',
                 '&&': 'ERROR',
@@ -152,8 +152,8 @@ class SemanticCube():
         },
         'char': {
             'int': {
-                '+': types['char'],
-                '-': types['char'],
+                '+': 'ERROR',
+                '-': 'ERROR',
                 '*': 'ERROR',
                 '/': 'ERROR',
                 '&&': 'ERROR',
@@ -182,8 +182,8 @@ class SemanticCube():
                 '=': 'ERROR',
             },
             'char': {
-                '+': types['char'],
-                '-': types['char'],
+                '+':'ERROR',
+                '-':'ERROR',
                 '*': 'ERROR',
                 '/': 'ERROR',
                 '&&': 'ERROR',
