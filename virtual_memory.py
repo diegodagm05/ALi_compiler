@@ -184,7 +184,7 @@ class VirtualMemory():
     # Assign local array addresses
     def assign_local_array_address_int(self, array_size: int) -> int:
         if self.local_int_counter > self.local_int_range[1]:
-            raise Exception(f'Too many variables of type int')
+            raise Exception(f'Too many local array variables of type int')
         else:
             address = self.local_int_counter
             self.local_int_counter += array_size
@@ -192,7 +192,7 @@ class VirtualMemory():
 
     def assign_local_array_address_float(self, array_size: int) -> int:
         if self.local_float_counter > self.local_float_range[1]:
-            raise Exception(f'Too many variables of type float')
+            raise Exception(f'Too many local array variables of type float')
         else:
             address = self.local_float_counter
             self.local_float_counter += array_size
@@ -200,7 +200,7 @@ class VirtualMemory():
 
     def assign_local_array_address_char(self, array_size: int) -> int:
         if self.local_char_counter > self.local_char_range[1]:
-            raise Exception(f'Too many variables of type char')
+            raise Exception(f'Too many local array variables of type char')
         else:
             address = self.local_char_counter
             self.local_char_counter += array_size
@@ -208,7 +208,7 @@ class VirtualMemory():
 
     def assign_local_array_address_bool(self, array_size: int) -> int:
         if self.local_bool_counter > self.local_bool_range[1]:
-            raise Exception(f'Too many variables of type bool')
+            raise Exception(f'Too many local array variables of type bool')
         else:
             address = self.local_bool_counter
             self.local_bool_counter += array_size
@@ -217,7 +217,7 @@ class VirtualMemory():
     # Assign global array addresses
     def assign_global_array_address_int(self, array_size: int) -> int:
         if self.global_int_counter > self.global_int_range[1]:
-            raise Exception(f'Too many variables of type int')
+            raise Exception(f'Too many global array variables of type int')
         else:
             address = self.global_int_counter
             self.global_int_counter += array_size
@@ -225,7 +225,7 @@ class VirtualMemory():
 
     def assign_global_array_address_float(self, array_size: int) -> int:
         if self.global_float_counter > self.global_float_range[1]:
-            raise Exception(f'Too many variables of type float')
+            raise Exception(f'Too many global array variables of type float')
         else:
             address = self.global_float_counter
             self.global_float_counter += array_size
@@ -233,7 +233,7 @@ class VirtualMemory():
 
     def assign_global_array_address_char(self, array_size: int) -> int:
         if self.global_char_counter > self.global_char_range[1]:
-            raise Exception(f'Too many variables of type char')
+            raise Exception(f'Too many global array variables of type char')
         else:
             address = self.global_char_counter
             self.global_char_counter += array_size
@@ -241,7 +241,7 @@ class VirtualMemory():
 
     def assign_global_array_address_bool(self, array_size: int) -> int:
         if self.global_bool_counter > self.global_bool_range[1]:
-            raise Exception(f'Too many variables of type bool')
+            raise Exception(f'Too many global array variables of type bool')
         else:
             address = self.global_bool_counter
             self.global_bool_counter += array_size
