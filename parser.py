@@ -213,7 +213,6 @@ def p_end_function(p):
     semantics.end_function()
 
 def p_statements(p):
-    # TODO: Handle return statement correctly
     '''statements : assignment ';'
                   | call_to_fun ';'
                   | array_init ';' 
