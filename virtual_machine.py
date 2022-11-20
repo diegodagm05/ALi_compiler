@@ -30,7 +30,7 @@ def calculate_function_resources(scope: FuncDirEntry) -> list:
 
 def convert_string_to_rgb_tuple(color: str) -> tuple[int]:
     if len(color) != 7:
-        raise Exception(f'RGB string with 6 digits expected for color parameter. Insted given \'{color}\'')
+        raise Exception(f'RGB string with 6 digits expected for color parameter. Instead given \'{color}\'')
     color_s = color.lstrip('#')
     return tuple(int(color_s[i:i+2], 16) for i in (0, 2, 4))
 
@@ -47,6 +47,7 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
     print('--ALi CONSOLE OUTPUT--')
     while True:
         current_quad = quadruples[ip]
+        global screen
         # print("-----------------------------------------")
         # print(f"Quad # {ip} \n Processing {current_quad}  ")
         # print(f'current memory -> \n{runtime_memory.current_mem_segment}')
@@ -176,7 +177,7 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
             ip += 1
         elif current_quad.op_code == quadruple_operations['parameter']:
             # We need to specifically access the current memory to retrieve the values and copy them to our activation record before it is set as the current memory
-            copy_value = runtime_memory.current_mem_segment.retrieve_content(current_quad.operator1)
+            copy_value = runtime_memory.retrieve_content(current_quad.operator1)
             runtime_memory.activation_record.assign_content(current_quad.result, copy_value)
             ip += 1
         elif current_quad.op_code == quadruple_operations['endfunc']:
@@ -210,56 +211,65 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
         # Special functions
         elif current_quad.op_code == quadruple_operations['start']:
             pygame.init()
+            ip += 1
         elif current_quad.op_code == quadruple_operations['update']:
+            pygame.display.update()
             pygame.display.flip()
+            ip += 1
         elif current_quad.op_code == quadruple_operations['gen_default_canvas']:
-            global screen
             screen = pygame.display.set_mode((current_quad.operator1, current_quad.operator2))
             screen.fill(current_quad.result) # current quad result should be a tuple that represents the rgb value
+            ip += 1
         elif current_quad.op_code == quadruple_operations['gen_canvas']:
-            global screen
             width = runtime_memory.retrieve_content(current_quad.operator1)
             height = runtime_memory.retrieve_content(current_quad.operator2)
             color = runtime_memory.retrieve_content(current_quad.result)
             screen = pygame.display.set_mode((width, height))
             rgb_color = convert_string_to_rgb_tuple(color)
             screen.fill(rgb_color) # current quad result should be a tuple that represents the rgb value
-        elif current_quad.op_code == quadruple_operations['set_canvas_tile']:
+            ip += 1
+        elif current_quad.op_code == quadruple_operations['set_canvas_title']:
             caption = runtime_memory.retrieve_content(current_quad.result)
             pygame.display.set_caption(caption)
+            ip += 1
         elif current_quad.op_code == quadruple_operations['set_canvas_background']:
-            global screen
             color = runtime_memory.retrieve_content(current_quad.result)
             rgb_color = convert_string_to_rgb_tuple(color)
             screen.fill(rgb_color) # current quad result should be a tuple that represents the rgb value
+            ip += 1
         elif current_quad.op_code == quadruple_operations['get_window_width']:
             window_width = screen.get_width()
             runtime_memory.assign_content(current_quad.result, window_width)
+            ip += 1
         elif current_quad.op_code == quadruple_operations['get_window_height']:
-            window_height = screen.get_height(current_quad.result, window_height)
+            window_height = screen.get_height()
+            runtime_memory.assign_content(current_quad.result, window_height)
+            ip += 1
         elif current_quad.op_code == quadruple_operations['get_game_event']:
             for event in pygame.event.get():
                 # This is to enable a user to quit a game with CTRL + C in case they are unable to reach quitGame() function in their code
                 if event.type == pygame.QUIT:
                     print('Game has been ended by the user pressing CTRL + C.')
                     break
-                if event.type == pygame.K_SPACE:
-                    key = 0
-                elif event.type == pygame.K_LEFT:
-                    key = 1
-                elif event.type == pygame.K_UP:
-                    key = 2
-                elif event.type == pygame.K_RIGHT:
-                    key = 3
-                elif event.type == pygame.K_DOWN:
-                    key = 4
-                elif event.type == pygame.K_ESCAPE:
-                    key = 5
-                elif event.type == pygame.KEYUP:
-                    key = 6
-                elif event.type == pygame.KEYDOWN:
-                    key = 7
+                if event.type == pygame.KEYDOWN:
+                    keys = pygame.key.get_pressed()
+                    if keys[pygame.K_SPACE] :
+                        key = 0
+                    elif keys[pygame.K_LEFT]:
+                        key = 1
+                    elif keys[pygame.K_UP]:
+                        key = 2
+                    elif keys[pygame.K_RIGHT]:
+                        key = 3
+                    elif keys[pygame.K_DOWN]:
+                        key = 4
+                    elif keys[pygame.K_ESCAPE]:
+                        key = 5
+                else:
+                    # This will happen when calling the getGameEvent function without receiving an event in the frame
+                    key = -1
             runtime_memory.assign_content(current_quad.result, key)
+            ip += 1
         elif current_quad.op_code == quadruple_operations['draw_game_object']:
             (xpos_vaddr, ypos_vaddr) = current_quad.operator1
             (xsize_vaddr, ysize_vaddr) = current_quad.operator2
@@ -269,15 +279,14 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
             ypos = runtime_memory.retrieve_content(ypos_vaddr)
             screen_width = screen.get_width()
             screen_height = screen.get_height()
-            if xpos < screen_width or xpos > screen_width:
+            if xpos < screen_width and xpos > screen_width:
                 raise RuntimeError(f'Attempting to draw a game object outside of the screen. Exceeding the width of the game screen. \n Drawing at {xpos} for screen with {screen_width}')
-            if ypos < screen_height or ypos > screen_height:
+            if ypos < screen_height and ypos > screen_height:
                 raise RuntimeError(f'Attempting to draw a game object outside of the screen. Exceeding the height of the game screen. \n Drawing at {ypos} for screen height {screen_height}')
             xsize = runtime_memory.retrieve_content(xsize_vaddr)
             ysize = runtime_memory.retrieve_content(ysize_vaddr)
-            gameObject = pygame.Surface((xsize, ysize))
-            gameObject.fill(rgb_color) # current quad result should be a tuple that represents the rgb value
-            screen.blit(gameObject, (xpos, ypos))
+            pygame.draw.rect(screen, rgb_color, (xpos, ypos, xsize, ysize))
+            ip += 1
         elif current_quad.op_code == quadruple_operations['quit_game']:
             print('Game has been ended by the user.')
             break;

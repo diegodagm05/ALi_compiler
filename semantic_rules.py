@@ -179,6 +179,7 @@ class SemanticRules:
 
 
     def end_if(self):
+        print(f'If has ended {self.jump_stack}')
         while self.jump_stack[-1] != -1:
             pending_jump = self.jump_stack.pop()
             self.quadruples[pending_jump].fill_result(self.quadruple_counter)
@@ -517,12 +518,13 @@ class SemanticRules:
         self.append_quad(start_quad)
 
     def update_start(self):
+        self.jump_stack.append(self.quadruple_counter)
         update_quadruple = Quadruple('update')
         self.append_quad(update_quadruple)
-        self.jump_stack.append(self.quadruple_counter)
 
     def update_end(self):
         jump_to_update_start = self.jump_stack.pop()
+        print(f'Update has ended {jump_to_update_start}')
         goto_update_start_quad = Quadruple('goto', result=jump_to_update_start)
         self.append_quad(goto_update_start_quad)
 
