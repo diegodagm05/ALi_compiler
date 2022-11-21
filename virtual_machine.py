@@ -210,8 +210,9 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
             pygame.init()
             ip += 1
         elif current_quad.op_code == quadruple_operations['update']:
-            pygame.display.update()
             pygame.display.flip()
+            pygame.display.update()
+            screen.fill((0,0,0,0))
             ip += 1
         elif current_quad.op_code == quadruple_operations['gen_default_canvas']:
             screen = pygame.display.set_mode((current_quad.operator1, current_quad.operator2))
@@ -273,12 +274,6 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
             rgb_color = convert_string_to_rgb_tuple(color)
             xpos = runtime_memory.retrieve_content(xpos_vaddr)
             ypos = runtime_memory.retrieve_content(ypos_vaddr)
-            # screen_width = screen.get_width()
-            # screen_height = screen.get_height()
-            # if xpos < screen_width and xpos > screen_width:
-            #     raise RuntimeError(f'Attempting to draw a game object outside of the screen. Exceeding the width of the game screen. \n Drawing at {xpos} for screen with {screen_width}')
-            # if ypos < screen_height and ypos > screen_height:
-            #     raise RuntimeError(f'Attempting to draw a game object outside of the screen. Exceeding the height of the game screen. \n Drawing at {ypos} for screen height {screen_height}')
             xsize = runtime_memory.retrieve_content(xsize_vaddr)
             ysize = runtime_memory.retrieve_content(ysize_vaddr)
             pygame.draw.rect(screen, rgb_color, (xpos, ypos, xsize, ysize))
