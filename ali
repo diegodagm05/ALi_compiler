@@ -253,7 +253,7 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
                     print('\nGame has been ended by the user pressing CTRL + C.')
                     break
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE:
+                    if event.key == pygame.K_TAB:
                         key = 0
                     elif event.key == pygame.K_LEFT:
                         key = 1
