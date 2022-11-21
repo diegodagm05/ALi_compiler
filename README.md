@@ -165,7 +165,7 @@ The full semantic cube for ALi is as follows:
 |:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:---:|
 |  int  |  int  |  int  |  int  |  int  |  int  | bool | bool | bool | bool | bool | bool | bool | bool |  int  |
 |  int  | float | float | float | float | float |  err |  err |  err |  err | bool | bool | bool | bool |  err  |
-|  int  |  char |  char |  err  |  err  |  err  |  err |  err |  err |  err |  err |  err |  err |  err |  err  |
+|  int  |  char |  err  |  err  |  err  |  err  |  err |  err |  err |  err |  err |  err |  err |  err |  err  |
 |  int  |  bool |  err  |  err  |  err  |  err  |  err |  err |  err |  err |  err |  err |  err |  err |  err  |
 | float | float | float | float | float | float |  err |  err | bool | bool | bool | bool | bool | bool | float |
 | float |  char |  err  |  err  |  err  |  err  | errl |  err |  err |  err |  err |  err |  err |  err |  err  |
