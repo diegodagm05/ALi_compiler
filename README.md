@@ -11,3 +11,15 @@ To install the project dependencies run
 ```
 pip install -r ./requirements.txt
 ```
+
+## Compilation and execution
+To install the project dependencies run
+```
+pip install -r ./requirements.txt
+```
+
+To compile and execute an ALi file run
+```
+python ali /path/to/your/file.al
+```
+Note that a file **must** have the `.al` extension to be compiled and executed by the ALi Game Engine.
