@@ -7,7 +7,7 @@ from virtual_memory import VirtualMemory
 
 '''
 MemorySegment class
-Instantiating a MemorySegment object, we should now how many spaces we need for each datatype segment. Every memory segment has different lists that hold a specific type. 
+Instantiating a MemorySegment object, we should know how many spaces we need for each datatype segment. Every memory segment has different lists that hold a specific type. 
 These lists are created only on an as needed basis.
 '''
 class MemorySegment():
