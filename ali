@@ -13,6 +13,7 @@ from semantic_rules import CompilationResults, semantics
 
 
 screen = None
+canvas_background : tuple = None
 
 def calculate_function_resources(scope: FuncDirEntry) -> list:
     resources = [
@@ -50,7 +51,7 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
     print('--ALi CONSOLE OUTPUT--')
     while True:
         current_quad = quadruples[ip]
-        global screen
+        global screen, canvas_background
         # print("-----------------------------------------")
         # print(f"Quad # {ip} \n Processing {current_quad}  ")
         # print(f'current memory -> \n{runtime_memory.current_mem_segment}')
@@ -215,11 +216,11 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
         elif current_quad.op_code == quadruple_operations['update']:
             pygame.display.flip()
             pygame.display.update()
-            screen.fill((0,0,0,0))
+            screen.fill(canvas_background)
             ip += 1
         elif current_quad.op_code == quadruple_operations['gen_default_canvas']:
             screen = pygame.display.set_mode((current_quad.operator1, current_quad.operator2))
-            screen.fill(current_quad.result) # current quad result should be a tuple that represents the rgb value
+            canvas_background = current_quad.result # current quad result should be a tuple that represents the rgb value
             ip += 1
         elif current_quad.op_code == quadruple_operations['gen_canvas']:
             width = runtime_memory.retrieve_content(current_quad.operator1)
@@ -227,7 +228,7 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
             color = runtime_memory.retrieve_content(current_quad.result)
             screen = pygame.display.set_mode((width, height))
             rgb_color = convert_string_to_rgb_tuple(color)
-            screen.fill(rgb_color) # current quad result should be a tuple that represents the rgb value
+            canvas_background = rgb_color # current quad result should be a tuple that represents the rgb value
             ip += 1
         elif current_quad.op_code == quadruple_operations['set_canvas_title']:
             caption = runtime_memory.retrieve_content(current_quad.result)
@@ -236,7 +237,7 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
         elif current_quad.op_code == quadruple_operations['set_canvas_background']:
             color = runtime_memory.retrieve_content(current_quad.result)
             rgb_color = convert_string_to_rgb_tuple(color)
-            screen.fill(rgb_color) # current quad result should be a tuple that represents the rgb value
+            canvas_background = rgb_color # current quad result should be a tuple that represents the rgb value
             ip += 1
         elif current_quad.op_code == quadruple_operations['get_window_width']:
             window_width = screen.get_width()

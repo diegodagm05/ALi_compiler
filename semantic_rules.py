@@ -531,7 +531,7 @@ class SemanticRules:
                 raise Exception('Type mismatch.  \'genCanvas()\' expects an integer as for width.')
             if height_type != 'int':
                 raise Exception('Type mismatch.  \'genCanvas()\' expects an integer as for heigth.')
-            gen_canvas_quad = Quadruple('gen_canvas', height, width, bg_color)
+            gen_canvas_quad = Quadruple('gen_canvas', width, height, bg_color)
         self.append_quad(gen_canvas_quad)
 
     def set_canvas_title(self) -> None:
