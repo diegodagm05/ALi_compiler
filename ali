@@ -1,6 +1,9 @@
+#!/usr/bin/env python
+from sys import argv
 from collections import deque
 from parser import ali_parser
-
+from os import environ
+environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
 
 from func_dir import FuncDirEntry
@@ -287,8 +290,9 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
     
 
 if __name__ == '__main__':
-    print('Enter file name to be tested (with .al extension)')
-    filename = input()
+    filename = argv[1]
+    if filename[-3:] != ".al":
+        raise Exception("Error. Trying to execute a file without \'.al\' extension")
     file = open(filename)
     input_str = file.read()
     file.close()
