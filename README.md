@@ -383,3 +383,16 @@ func main(){
 }
 ```
 ### Game engine special functions
+| Function | Description | Properties | Example |
+| -------- | ----------- | ---------- | ------- |
+| start() | Procedure that will initialize the game | It is called once, at the start of every game | N/A |
+| update() | Procedure that executes the infinite game loop | It is called every frame. It updates the screen to show a new image on every frame of the game loop. | N/A |
+| generateCanvas(width, height, backgroundColor) | It takes in a height and width as integer values for the dimensions of the window and a string that specifies the background color (hex) of the window. |  If this function is not called, the game window will be set by default to 720pxx720px with a black background. This function must be called on the start() function of the main procedure. If it is called it must be the first procedure called on the start() function. | generateCanvas(900,1080, "#FCFCFC"); |
+| setCanvasTitle(title) | Sets the title of the game window by taking in a string constant. | Title must be a string constant | setCanvasTitle("My ALi Game"); |
+| setCanvasBackground(backgroundColor) | Updates the background color for the game window. | The background color must be a string constant representing a color with hexadecimal code | setCanvasBackground("#FF1111"); |
+| getWindowWidth | Returns the width of the game window. | The returned value is an integer.This function is treated the same as an expression. | windowHeight = getWindowHeight(); |
+| getWindowHeight() | Returns the height of the game window. | The returned value is an integer. This function is treated the same as an expression. | windowHeight = getWindowHeight(); | 
+| getGameEvent() | Returns one of the possible game events: key up, key down, pressed left arrow key, pressed right arrow key, pressed up arrow key, pressed down arrow key, pressed escape or pressed tab. The events will be obtained on keydown. | The events returned will be represented as an [enumerated list](#keyboard-input-game-events). This function is treated the same as an expression. | event = getGameEvent(); |
+| drawGameObject(xpos, ypos, xsize, ysize, color) | Makes a figure of size xsize by ysize at position xpos, ypos and gives it a color determined by the color parameter. | xsize, ysize, xpos, and ypos are integers representing pixels. color is an hexadecimal string representing a color. | drawGameObject(xpos, ypos, 50, 50, "#00FF00"); |
+| quitGame() |   Quits the game.We would generally like to have the user have an ESC key press to control when the game ends. | This function should be called somewhere in the infinite game loop to exit a game properly | `if (event == 5) { quitGame(); }` |
+
