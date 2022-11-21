@@ -31,7 +31,7 @@ class VirtualMemory():
     temp_float_range = [FLOAT_START + (DATATYPE_KIND_SIZE * 3), FLOAT_START + (DATATYPE_KIND_SIZE * 4) - 1]
     temp_float_counter = temp_float_range[0] 
 
-    # Global chars range from 8000 to 11999
+    # Char ranges
     global_char_range = [CHAR_START, CHAR_START + DATATYPE_KIND_SIZE - 1]
     global_char_counter = global_char_range[0] 
     constant_char_range = [CHAR_START + DATATYPE_KIND_SIZE, CHAR_START + (DATATYPE_KIND_SIZE * 2) - 1]
@@ -41,6 +41,7 @@ class VirtualMemory():
     temp_char_range = [CHAR_START + (DATATYPE_KIND_SIZE * 3), CHAR_START + (DATATYPE_KIND_SIZE * 4) - 1]
     temp_char_counter = temp_char_range[0]
 
+    # Bool ranges
     global_bool_range = [BOOL_START, BOOL_START + DATATYPE_KIND_SIZE - 1]
     global_bool_counter = global_bool_range[0] 
     constant_bool_range = [BOOL_START + DATATYPE_KIND_SIZE, BOOL_START + DATATYPE_KIND_SIZE + 1] # SPECIAL CASE: Boolean constants are only two: true or false. We use the same constants every time
