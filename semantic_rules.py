@@ -279,7 +279,6 @@ class SemanticRules:
     def store_all_params(self):
         for _ in range(self.current_param_count):
             (paramName, paramType) = self.params_stack.pop()
-            print(f"Storing param {paramName} : {paramType}")
             self.current_var_table.add_entry(paramName, paramType)
 
     def store_number_of_local_variables(self):
