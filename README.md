@@ -8,11 +8,7 @@
     - [Declaration of variables](#declaration-of-variables)
     - [Declaration of functions](#declaration-of-functions)
     - [Expressions](#expressions)
-      - [Arithmetic expressions](#arithmetic-expressions)
-      - [Relational expressions](#relational-expressions)
-      - [Boolean expressions](#boolean-expressions)
     - [Calls to functions](#calls-to-functions)
-    - [Returning values from functions](#returning-values-from-functions)
     - [Keyboard input (Game Events)](#keyboard-input-game-events)
     - [Console output](#console-output)
     - [Conditionals](#conditionals)
@@ -107,7 +103,8 @@ int func foo(paramX : int) {
     // You can also declare variables inside of a function
     var a : int;
     a = 10 * paramX;
-    // return type functions should return a value
+    // Return type functions must return a value
+    // The type of the value must match the function signature
     return a;
 }
 
@@ -135,14 +132,254 @@ func main(){
 }
 ```
 ### Expressions
-#### Arithmetic expressions
-#### Relational expressions
-#### Boolean expressions
+ALi has thre main types of expressions: arithmetic, relational and logical. All of these can be assigned to a variable of the corresponding type.
+```
+func main(){
+    var a, b : int;
+    var x, y : float;
+    var q, w : char;
+    var i, j, k : bool;
+    a = 3;
+    b = a + 2; // This is an example of an arithmetic expression
+    x = 3.14;
+    y = 3.14 / 2;
+    q = 'a';
+    w = 'b';
+    i = true;
+    k = a > b; // This is an example of a relational expression 
+    k = k && i; // This is an example of a logical expression
+    
+    void func start() {
+        // this runs at the start of a game
+
+    }
+
+    void func update() {
+        // The update refreshes the game canvas every time it is called 
+        // to enable drawing on it and listening to events
+    }
+}
+```
+The full semantic cube for ALi is as follows:
+|  left operator |  right operator |   +   |   -   |   *   |   /   |  &&  | \|\| |  ==  |  !=  |   >  |   <  |  >=  |  <=  |
+|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|
+|  int  |  int  |  int  |  int  |  int  |  int  | bool | bool | bool | bool | bool | bool | bool | bool |
+|  int  | float | float | float | float | float |  err |  err |  err |  err | bool | bool | bool | bool |
+|  int  |  char |  char |  char |  err  |  err  |  err |  err |  err |  err |  err |  err |  err |  err |
+|  int  |  bool |  err  |  err  |  err  |  err  |  err |  err |  err |  err |  err |  err |  err |  err |
+|  int  | array |  err  |  err  |  err  |  err  |  err |  err |  err |  err |  err |  err |  err |  err |
+| float | float | float | float | float | float |  err |  err | bool | bool | bool | bool | bool | bool |
+| float |  char |  err  |  err  |  err  |  err  | errl |  err |  err |  err |  err |  err |  err |  err |
+| float |  bool |  err  |  err  |  err  |  err  |  err |  err |  err |  err |  err |  err |  err |  err |
+| float | array |  err  |  err  |  err  |  err  |  err |  err |  err |  err |  err |  err |  err |  err |
+|  char |  char |  char |  char |  err  |  err  |  err |  err | bool | bool | bool | bool | bool | bool |
+|  char |  bool |  err  |  err  |  err  |  err  |  err |  err |  err |  err |  err |  err |  err |  err |
+|  char | array |  err  |  err  |  err  |  err  |  err |  err |  err |  err |  err |  err |  err |  err |
+|  bool |  bool |  err  |  err  |  err  |  err  | bool | bool | bool | bool |  err |  err |  err |  err |
+|  bool | array |  err  |  err  |  err  |  err  |  err |  err |  err |  err |  err |  err |  err |  err |
+| array | array |  err  |  err  |  err  |  err  |  err |  err |  err |  err |  err |  err |  err |  err |
+
 ### Calls to functions
-### Returning values from functions
+Once we have functions declared, we should be able to call them.
+```
+void func bar(isPrintingFoo : bool) {
+    // do something here, but do not return a value
+}
+
+int func foo() {
+    return 2;
+}
+
+func main(){
+    var a, b : int;
+    var is_bool : bool;
+    // to call a function 
+    is_bool = false;
+    bar(is_bool);
+    // A function that returns a value should be called as part of an expression or assignment
+    a = foo();
+    b = foo() * a;
+    void func start() {
+        // this runs at the start of a game
+
+    }
+
+    void func update() {
+        // The update refreshes the game canvas every time it is called 
+        // to enable drawing on it and listening to events
+    }
+}
+```
 ### Keyboard input (Game Events)
+ALi only receives keyboard inputs specific to events that are listened to inside of the game loop. In reality, this is a special function, but it has its own nuance and is therefore explained separately to the rest of the game engine specific functions.
+
+The function `getGameEvent()` returns an integer value which specifies what game event was recieved from the keyboard. The events are listened to *on keydown*, and are identified as follows. 
+|          Event          | ID |
+|:-----------------------:|:--:|
+| Pressed Tab Key         | 0  |
+| Pressed Left Arrow Key  | 1  |
+| Pressed Up Arrow Key    | 2  |
+| Pressed Right Arrow Key | 3  |
+| Pressed Down Arrow Key  | 4  |
+| Pressed Escape Key      | 5  |
+| No game event received  | -1 |
+
+We can perform game specific actions when recieving one of these events.
+```
+func main(){
+    var event: int;
+    void func start() {
+        // this runs at the start of a game
+
+    }
+
+    void func update() {
+        // The update refreshes the game canvas every time it is called 
+        // to enable drawing on it and listening to events
+        event = getGameEvent();
+        // do something with the game event
+    }
+}
+```
 ### Console output
+ALi enables printing strings to the console with the usage of the `print` keyword. This is one of the lone instances (outside of the special functions) where ALi allows the usage of strings. 
+
+We can have several different variables or string constants printed out in one same print statement by separating the varibales of strings with commas. To specify that we want a the console output to end by outputing a new line, we need to add `<< endl` to the end of our print statment. 
+```
+func main(){
+    var event: int;
+    void func start() {
+        // this runs at the start of a game
+        print("Hello from the start procedure! This string will not print a new line at the end... ");
+
+    }
+
+    void func update() {
+        // The update refreshes the game canvas every time it is called 
+        // to enable drawing on it and listening to events
+        event = getGameEvent();
+        print("Hello from the update loop! This will show up several times!") << endl;
+        print("Recieved the following event identifier = ", event) << endl;
+    }
+}
+```
 ### Conditionals
+To handle control flow through conditional statements, ALi provides several options. We can have: 
+- A simple `if` statement
+- An `if` statement followed by one or more `elif` statement
+- An `if` statement followed by one `else` statement
+- AN `if` statement followed by one or more `elif` statements ending in one `else` statement.
+```
+func main(){
+    var event, x, y : int;
+    var is_bool : bool;
+    is_bool = true;
+    if (is_bool) {
+        print("Its true!") << endl;
+    }
+    x = 0;
+    y = 1;
+    is_bool = x == y;
+    if (is_bool) {
+        print("Its still true!") << endl;
+    } else {
+        print("Its false now") << endl;
+    }
+    void func start() {
+        // this runs at the start of a game
+        print("Hello from the start procedure! This string will not print a new line at the end... ");
+
+    }
+
+    void func update() {
+        // The update refreshes the game canvas every time it is called 
+        // to enable drawing on it and listening to events
+        event = getGameEvent();
+        if (event == 0) {
+            print("Pressed the tab key!") << endl;
+        } elif (event == 1) {
+            print("Pressed the left arrow key!") << endl;
+        } elif (event == 2) {
+            print("Pressed the up arrow key!") << endl;
+        } else {
+            print("I don't know what they pressed...") << endl;
+        }
+    }
+}
+```
 ### While/For Loops
+For repetitive code blocks we have `while` and `for` loops. 
+
+A `while` loop evaluates an expression and executes the following block if the expression evaluates to `true`. 
+```
+func main(){
+    var x, y : int;
+    var is_bool : bool;
+    is_bool = true;
+    x = 0;
+    y = 10;
+    while(is_bool) {
+        x = x + 1;
+        y = y - 1;
+        if (x == y) {
+            is_bool = false;
+        }
+    }
+    void func start() {
+        // this runs at the start of a game
+        print("Hello from the start procedure! This string will not print a new line at the end... ");
+
+    }
+
+    void func update() {
+        // The update refreshes the game canvas every time it is called 
+        // to enable drawing on it and listening to events
+    }
+}
+```
+
+A `for` loop initializes a control variable, evaluates an expression, executes the following block if the expression evaluates to `true`, and finally reassigns an expression to a variable. ALi does not enforce that this reassignment occurs to the variable that was initialized at the beggining of the `for` loop. However, this reassignment also modifies this variable in a way that it cannot be modified inside the `for` loop.
+
+```
+func main(){
+    var counter : int;
+    for (counter = 0; counter < 10; counter = counter + 1) {
+        print(counter);
+        counter = 20; // This line will not increment the counter, the 20 only lives in the counter variable until the next iteration
+    }
+    
+    void func start() {
+        // this runs at the start of a game
+        print("Hello from the start procedure! This string will not print a new line at the end... ");
+
+    }
+
+    void func update() {
+        // The update refreshes the game canvas every time it is called 
+        // to enable drawing on it and listening to events
+    }
+}
+```
 ### Arrays
+ALi enbles declaration and usage of vectors and matrices (1D arrays and 2D arrays). These arrays must be declared with fixed dimensions. To access the index of an array we can use an integer variable or an expression that evaluates to an integer value. Arrays can be initialized with a set of expression separated by commas.
+```
+func main(){
+    var i, j, A[3], B[2][2] : array<int>;
+    i = 2;
+    j = i + 3;
+    A = [23, i, j*2];
+    B[1][0] = i;
+    
+    void func start() {
+        // this runs at the start of a game
+        print("Hello from the start procedure! This string will not print a new line at the end... ");
+
+    }
+
+    void func update() {
+        // The update refreshes the game canvas every time it is called 
+        // to enable drawing on it and listening to events
+    }
+}
+```
 ### Game engine special functions
