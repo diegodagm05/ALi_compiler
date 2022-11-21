@@ -191,14 +191,14 @@ def p_functions(p):
                  | void_function'''
 
 def p_return_function(p):
-    '''return_function : type FUNC ID store_function '(' p ')' '{' start_function_ic function_block end_function '}' '''
+    '''return_function : type FUNC ID store_function '(' p ')' store_all_params '{' start_function_ic function_block end_function '}' '''
 
 def p_p(p):
     '''p : params
          | empty'''
 
 def p_void_function(p):
-    '''void_function : VOID set_current_type FUNC ID store_function '(' p ')' '{' start_function_ic function_block end_function '}' '''
+    '''void_function : VOID set_current_type FUNC ID store_function '(' p ')' store_all_params '{' start_function_ic function_block end_function '}' '''
 
 def p_store_function(p):
     '''store_function : '''
@@ -212,6 +212,12 @@ def p_end_function(p):
     '''end_function : '''
     semantics.end_function()
 
+def p_store_all_params(p):
+    '''
+    store_all_params :
+    '''
+    semantics.store_all_params()
+
 def p_statements(p):
     '''statements : assignment ';'
                   | call_to_fun ';'
@@ -220,7 +226,6 @@ def p_statements(p):
                   | begin_if_stm conditionals
                   | while
                   | for
-                  | read
                   | special_function_statement
                   | RETURN expression ';' handle_return_statement '''
 
@@ -322,18 +327,6 @@ def p_print_value(p):
     '''
     semantics.print_value()
 
-def p_read(p):
-    '''read : READ '(' read_p ')' ';' '''
- 
-def p_read_p(p):
-    '''read_p : STRING_CONST add_const_to_operand_stack_string read_constant ',' read_p
-              | STRING_CONST add_const_to_operand_stack_string read_constant '''
-
-def p_read_constant(p):
-    '''
-    read_constant :
-    '''
-    semantics.read_constant()
 
 def p_call_to_fun(p):
     '''call_to_fun : ID verify_function '(' gen_activation_quad ')' verify_params_number end_function_call
@@ -366,10 +359,6 @@ def p_verify_params_number(p):
 def p_end_function_call(p):
     ''' end_function_call : '''
     semantics.end_function_call()
-
-# def p_cycles(p):
-#     '''cycles : while
-#                 | for'''
 
 def p_array_indexing(p):
     '''array_indexing : ID '[' expression ']'

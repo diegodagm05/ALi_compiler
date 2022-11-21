@@ -149,9 +149,6 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
         elif current_quad.op_code == quadruple_operations['endprint']:
             print()
             ip += 1
-        # TODO: Our 'read' operation will in reality involve handling game events
-        elif current_quad.op_code == quadruple_operations['read']:
-            pass
         elif current_quad.op_code == quadruple_operations['goto']:
             ip = current_quad.result
         elif current_quad.op_code == quadruple_operations['gotot']:
@@ -213,8 +210,9 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
             pygame.init()
             ip += 1
         elif current_quad.op_code == quadruple_operations['update']:
-            pygame.display.update()
             pygame.display.flip()
+            pygame.display.update()
+            screen.fill((0,0,0,0))
             ip += 1
         elif current_quad.op_code == quadruple_operations['gen_default_canvas']:
             screen = pygame.display.set_mode((current_quad.operator1, current_quad.operator2))
@@ -252,23 +250,22 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
                     print('\nGame has been ended by the user pressing CTRL + C.')
                     break
                 if event.type == pygame.KEYDOWN:
-                    keys = pygame.key.get_pressed()
-                    if keys[pygame.K_SPACE] :
+                    if event.key == pygame.K_SPACE:
                         key = 0
-                    elif keys[pygame.K_LEFT]:
+                    elif event.key == pygame.K_LEFT:
                         key = 1
-                    elif keys[pygame.K_UP]:
+                    elif event.key == pygame.K_UP:
                         key = 2
-                    elif keys[pygame.K_RIGHT]:
+                    elif event.key == pygame.K_RIGHT:
                         key = 3
-                    elif keys[pygame.K_DOWN]:
+                    elif event.key == pygame.K_DOWN:
                         key = 4
-                    elif keys[pygame.K_ESCAPE]:
+                    elif event.key == pygame.K_ESCAPE:
                         key = 5
                 else:
                     # This will happen when calling the getGameEvent function without receiving an event in the frame
                     key = -1
-            runtime_memory.assign_content(current_quad.result, key)
+                runtime_memory.assign_content(current_quad.result, key)
             ip += 1
         elif current_quad.op_code == quadruple_operations['draw_game_object']:
             (xpos_vaddr, ypos_vaddr) = current_quad.operator1
@@ -277,12 +274,6 @@ def virtual_machine(compilation_results: CompilationResults) -> None:
             rgb_color = convert_string_to_rgb_tuple(color)
             xpos = runtime_memory.retrieve_content(xpos_vaddr)
             ypos = runtime_memory.retrieve_content(ypos_vaddr)
-            screen_width = screen.get_width()
-            screen_height = screen.get_height()
-            if xpos < screen_width and xpos > screen_width:
-                raise RuntimeError(f'Attempting to draw a game object outside of the screen. Exceeding the width of the game screen. \n Drawing at {xpos} for screen with {screen_width}')
-            if ypos < screen_height and ypos > screen_height:
-                raise RuntimeError(f'Attempting to draw a game object outside of the screen. Exceeding the height of the game screen. \n Drawing at {ypos} for screen height {screen_height}')
             xsize = runtime_memory.retrieve_content(xsize_vaddr)
             ysize = runtime_memory.retrieve_content(ysize_vaddr)
             pygame.draw.rect(screen, rgb_color, (xpos, ypos, xsize, ysize))

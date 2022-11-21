@@ -36,6 +36,7 @@ class SemanticRules:
     current_scope_var_count : int = 0
     current_temp_count : int = 0
     for_increments_stack : deque[Quadruple] = deque() 
+    params_stack : deque[tuple] = deque()
 
     def __init__(self) -> None:
         self.set_scope('global')
@@ -181,7 +182,6 @@ class SemanticRules:
 
 
     def end_if(self):
-        print(f'If has ended {self.jump_stack}')
         while self.jump_stack[-1] != -1:
             pending_jump = self.jump_stack.pop()
             self.quadruples[pending_jump].fill_result(self.quadruple_counter)
@@ -245,11 +245,6 @@ class SemanticRules:
         end_print_quad = Quadruple('endprint')
         self.append_quad(end_print_quad)
 
-    def read_constant(self):
-        result = self.operands_stack.pop()
-        self.types_stack.pop()
-        quadruple = Quadruple('read', None, None, result)
-        self.quadruples.append(quadruple)
 
     def set_scope(self, scopeID: str):
         self.current_var_table = self.function_directory.get_scope_var_table(scopeID)
@@ -276,9 +271,15 @@ class SemanticRules:
         if paramType not in types:
             raise Exception(f'Unknown parameter type {paramType} for {paramName}')
         else:
-            self.current_var_table.add_entry(paramName, paramType)
+            # self.current_var_table.add_entry(paramName, paramType)
+            self.params_stack.append((paramName, paramType))
             self.current_param_count += 1
             self.function_directory.add_to_param_list(self.current_scopeID, paramType)
+
+    def store_all_params(self):
+        for _ in range(self.current_param_count):
+            (paramName, paramType) = self.params_stack.pop()
+            self.current_var_table.add_entry(paramName, paramType)
 
     def store_number_of_local_variables(self):
         # Save the number of local variables for the function on the Dir Function table
@@ -348,21 +349,6 @@ class SemanticRules:
 
     def gen_activation_record_quad(self):
         scope = self.function_directory.get_scope(self.current_call_scopeID)
-        # resources needed will be stored as a list
-        # resources = [
-        #     [scope.num_vars_int, scope.num_vars_float, scope.num_vars_char, scope.num_vars_bool],
-        #     [scope.num_temps_int, scope.num_temps_float, scope.num_temps_char, scope.num_temps_bool],
-        #     scope.num_pointer_temps
-        # ]
-        # for param in scope.params_list:
-        #     if param == 'i':
-        #         resources[0][0] += 1
-        #     elif param == 'f':
-        #         resources[0][1] += 1
-        #     elif param == 'c':
-        #         resources[0][2] += 1
-        #     elif param == 'b':
-        #         resources[0][3] += 1
         era_quad = Quadruple('era', result=self.current_call_scopeID)
         self.append_quad(era_quad)
         self.call_scope_params_list = scope.params_list
@@ -526,7 +512,6 @@ class SemanticRules:
 
     def update_end(self):
         jump_to_update_start = self.jump_stack.pop()
-        print(f'Update has ended {jump_to_update_start}')
         goto_update_start_quad = Quadruple('goto', result=jump_to_update_start)
         self.append_quad(goto_update_start_quad)
 
