@@ -161,7 +161,7 @@ func main(){
 }
 ```
 The full semantic cube for ALi is as follows:
-|  left operator |  right operator |   +   |   -   |   *   |   /   |  &&  | \|\| |  ==  |  !=  |   >  |   <  |  >=  |  <=  |  <=  |
+|  left operator |  right operator |   +   |   -   |   *   |   /   |  &&  | \|\| |  ==  |  !=  |   >  |   <  |  >=  |  <=  |  =  |
 |:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:---:|
 |  int  |  int  |  int  |  int  |  int  |  int  | bool | bool | bool | bool | bool | bool | bool | bool |  int  |
 |  int  | float | float | float | float | float |  err |  err |  err |  err | bool | bool | bool | bool |  err  |
