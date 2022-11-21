@@ -14,6 +14,11 @@ class CompilationResults:
         self.consts_table : ConstVarsTable = consts_table
         self.quadruples : list[Quadruple] = quadruples
 
+'''
+SemanticRules class
+This is the main class that compiles an ALi code file. It makes use of all of the data structures such as the Function Directory, Constant Vars Table, Quadruples, and stacks to generate
+ALi intermediate code. Each method for this class is a semantic rule, and each rule has been added to neuralgic points on the parser.py module to enable parsing oriented compilation. 
+'''
 class SemanticRules:
 
     operands_stack = deque()
@@ -604,9 +609,13 @@ class SemanticRules:
         quit_game_quad = Quadruple('quit_game')
         self.append_quad(quit_game_quad)
 
+    '''
+    This method should be called when we are done parsing a file. It takes the function directory, the constants table and the list of quadruples and returns them in a custom data structure
+    which is a hashmap under the hood.
+    '''
     def get_compilation_results(self) -> CompilationResults:
         results = CompilationResults(self.function_directory, self.const_vars_table, self.quadruples)
         return results
       
-
+# We export a single instance of this class since it should not be instantiated elsewhere in the compiler
 semantics = SemanticRules()

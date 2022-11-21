@@ -5,11 +5,12 @@ from quadruple import Quadruple, quadruple_operations
 from vars_table import ConstVarsTable
 from virtual_memory import VirtualMemory
 
+'''
+MemorySegment class
+Instantiating a MemorySegment object, we should now how many spaces we need for each datatype segment. Every memory segment has different lists that hold a specific type. 
+These lists are created only on an as needed basis.
+'''
 class MemorySegment():
-    '''
-    Instantiating a MemorySegment object, we should now how many spaces we need for each datatype segment. We also need to now if the
-    object instantiated will be used to store constants, and therefero we need a segment for string constants.
-    '''
     def __init__(self, num_ints: int = 0, num_floats: int = 0, num_chars: int = 0, num_bools: int = 0, 
                 num_ints_temp: int = 0, num_floats_temp: int = 0, num_chars_temp: int = 0, num_bools_temp: int = 0,
                 num_temps_pointer: int = 0,
@@ -96,6 +97,7 @@ class MemorySegment():
             value : str = self.strings_mem[string_index]
             value = value.replace("\"", '')
         elif temp_pointer_index != None:
+            # Recursively calls this same function to retrieve the content from the "real" address the temp pointer is pointing to
             real_address = self.temps_pointer_mem[temp_pointer_index]
             value = self.retrieve_content(real_address)
         else:
@@ -106,6 +108,11 @@ class MemorySegment():
         else:
             return value
 
+    '''
+    assign_content method
+    This method has a flag parameter to know if it is storing a virtual address. This is helpful when processing quadruples that reference a 
+    temporal pointer address.
+    '''
     def assign_content(self, virtual_address: int, value: Any, storing_vaddress: bool = False) -> None:
         int_index = self.get_int_index(virtual_address)
         int_temp_index = self.get_int_temp_index(virtual_address)
@@ -134,9 +141,11 @@ class MemorySegment():
         elif bool_temp_index != None: 
             self.bools_mem_temp[bool_temp_index] = value
         elif temp_pointer_index != None:
+            # Test if we are storing a a virtual address using a temp pointer
             if storing_vaddress:
                 self.temps_pointer_mem[temp_pointer_index] = value
             else:
+                # If not, recursively calls this same function to retrieve the content from the "real" address the temp pointer is pointing to
                 real_address = self.temps_pointer_mem[temp_pointer_index]
                 self.assign_content(real_address, value)
         elif string_index != None: 
@@ -145,7 +154,7 @@ class MemorySegment():
             raise RuntimeError(f'Unable to access specified virtual address \'{virtual_address}\'')
 
     '''
-    The following four methods (get_datatype_index) test whether the virtual address given is part of the range for the datatype and kind of address. 
+    The following methods (get_datatype_index) test whether the virtual address given is part of the range for the datatype and kind of address. 
     If it is, it returns the index by substracting the starting point of the virtual address for its specific datype and kind.
     If not, it returns None so that we know that the given virtual address is not part of the range
     '''
@@ -246,10 +255,15 @@ class MemorySegment():
     def in_virtual_range(self, virtual_address: int, range_start: int, range_end: int):
         return virtual_address >= range_start and virtual_address <= range_end
 
+'''
+
+'''
 class RuntimeMemory():
     def __init__(self, consts_table: ConstVarsTable, func_dir: FuncDir) -> None:
+        # Build the constant memory segment
         self.constant_memory_segment : MemorySegment = self.generate_constant_memory_segment(consts_table)
         global_scope = func_dir.get_scope('global')
+        # Build the global memory segment
         self.global_memory_segment : MemorySegment = MemorySegment(
             global_scope.num_vars_int,
             global_scope.num_vars_float,
@@ -258,6 +272,7 @@ class RuntimeMemory():
             num_temps_pointer=global_scope.num_pointer_temps
         )
         self.mem_stack : deque[MemorySegment] = deque()
+        # Take advantage of the function directory to build out the main memory segment and set it as the current memory segment from the start
         self.current_mem_segment : MemorySegment = self.generate_main_memory_segment(func_dir)
         self.activation_record : MemorySegment = None
 
@@ -269,6 +284,7 @@ class RuntimeMemory():
             consts_table.types_counter['bool'],
             num_strings=consts_table.types_counter['string']
         )
+        # We use the constants table to build out the memory segment, using the keys as the values to be stored in memory 
         for value, const_entry in consts_table.const_vars_table.items():
             value_in_memory = value
             if value == 'true':
@@ -326,8 +342,12 @@ class RuntimeMemory():
         elif self.check_for_constant_segment(virtual_address):
             return self.constant_memory_segment.assign_content(virtual_address, value)
         else:
-            return self.current_mem_segment.assign_content(virtual_address, value)
+                return self.current_mem_segment.assign_content(virtual_address, value)
 
+    '''
+    The following are helper methods do determine from which memory segment we should retreive content from or assign content to. 
+    We need to know if we should access the global, constant or current memory segment. 
+    '''
     def check_for_global_segment(self, virtual_address: int) -> bool:
         if ((virtual_address >= VirtualMemory.global_int_range[0] and virtual_address <= VirtualMemory.global_int_range[1])
             or (virtual_address >= VirtualMemory.global_float_range[0] and virtual_address <= VirtualMemory.global_float_range[1])

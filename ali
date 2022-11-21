@@ -15,12 +15,17 @@ from semantic_rules import CompilationResults, semantics
 screen = None
 canvas_background : tuple = None
 
+'''
+calculate_function_resources function
+This function receives a Function Directory Entry to calculate the amount of memory resources needed for a function.
+''' 
 def calculate_function_resources(scope: FuncDirEntry) -> list:
     resources = [
         [scope.num_vars_int, scope.num_vars_float, scope.num_vars_char, scope.num_vars_bool],
         [scope.num_temps_int, scope.num_temps_float, scope.num_temps_char, scope.num_temps_bool],
         scope.num_pointer_temps
     ]
+    # A function directory entry has a given list of parameters, where each element in the list is a character identifying the type
     for param in scope.params_list:
         if param == 'i':
             resources[0][0] += 1
@@ -32,6 +37,10 @@ def calculate_function_resources(scope: FuncDirEntry) -> list:
             resources[0][3] += 1
     return resources
 
+'''
+convert_string_to_rgb_tuple function
+Receives a string with the format \'#XXXXXX\'. Converts the string into a tuple representing an RGB color.
+''' 
 def convert_string_to_rgb_tuple(color: str) -> tuple[int]:
     if len(color) != 7:
         raise Exception(f'RGB string with 6 digits expected for color parameter. Instead given \'{color}\'')
@@ -39,24 +48,20 @@ def convert_string_to_rgb_tuple(color: str) -> tuple[int]:
     return tuple(int(color_s[i:i+2], 16) for i in (0, 2, 4))
 
 
+'''
+virtual_machine function
+Main function to execute ALi compiled code. Takes in compilation results given out by the semantics.py module and processes the list of quadruples.
+'''
 def virtual_machine(compilation_results: CompilationResults) -> None:
-    # print(compilation_results.func_dir)
-    # print(compilation_results.consts_table)
+    # Runtime memory is initialized here, using the constants table and the function directory to build out the constant and global memory segmetns
     runtime_memory = RuntimeMemory(compilation_results.consts_table, compilation_results.func_dir)
     quadruples : list[Quadruple] = compilation_results.quadruples
     ip = 0
     call_stack = deque()
-    # for i, quad in enumerate(quadruples):
-    #     print(f'{i}. {quad}')
     print('--ALi CONSOLE OUTPUT--')
     while True:
         current_quad = quadruples[ip]
         global screen, canvas_background
-        # print("-----------------------------------------")
-        # print(f"Quad # {ip} \n Processing {current_quad}  ")
-        # print(f'current memory -> \n{runtime_memory.current_mem_segment}')
-        # print(f'const memory segment -> \n{runtime_memory.constant_memory_segment}')
-        # print(f'global mem segment -> \n{runtime_memory.global_memory_segment}')
         if current_quad.op_code == quadruple_operations['endprogram']:
             break 
         elif current_quad.op_code == quadruple_operations['+']:
@@ -294,10 +299,14 @@ if __name__ == '__main__':
     filename = argv[1]
     if filename[-3:] != ".al":
         raise Exception("Error. Trying to execute a file without \'.al\' extension")
+    # Once the file extension is validated, we open it and read its contents into a string
     file = open(filename)
     input_str = file.read()
     file.close()
+    # First we parse the input file string
     ali_parser.parse(input_str)
+    # After parsing ends successfully, we obtain the compilation results
     compilation_results : CompilationResults = semantics.get_compilation_results()
+    # We call the virtual machine function to execute the compilation results
     virtual_machine(compilation_results)
 
