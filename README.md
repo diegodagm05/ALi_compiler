@@ -161,23 +161,18 @@ func main(){
 }
 ```
 The full semantic cube for ALi is as follows:
-|  left operator |  right operator |   +   |   -   |   *   |   /   |  &&  | \|\| |  ==  |  !=  |   >  |   <  |  >=  |  <=  |
-|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|
-|  int  |  int  |  int  |  int  |  int  |  int  | bool | bool | bool | bool | bool | bool | bool | bool |
-|  int  | float | float | float | float | float |  err |  err |  err |  err | bool | bool | bool | bool |
-|  int  |  char |  char |  char |  err  |  err  |  err |  err |  err |  err |  err |  err |  err |  err |
-|  int  |  bool |  err  |  err  |  err  |  err  |  err |  err |  err |  err |  err |  err |  err |  err |
-|  int  | array |  err  |  err  |  err  |  err  |  err |  err |  err |  err |  err |  err |  err |  err |
-| float | float | float | float | float | float |  err |  err | bool | bool | bool | bool | bool | bool |
-| float |  char |  err  |  err  |  err  |  err  | errl |  err |  err |  err |  err |  err |  err |  err |
-| float |  bool |  err  |  err  |  err  |  err  |  err |  err |  err |  err |  err |  err |  err |  err |
-| float | array |  err  |  err  |  err  |  err  |  err |  err |  err |  err |  err |  err |  err |  err |
-|  char |  char |  char |  char |  err  |  err  |  err |  err | bool | bool | bool | bool | bool | bool |
-|  char |  bool |  err  |  err  |  err  |  err  |  err |  err |  err |  err |  err |  err |  err |  err |
-|  char | array |  err  |  err  |  err  |  err  |  err |  err |  err |  err |  err |  err |  err |  err |
-|  bool |  bool |  err  |  err  |  err  |  err  | bool | bool | bool | bool |  err |  err |  err |  err |
-|  bool | array |  err  |  err  |  err  |  err  |  err |  err |  err |  err |  err |  err |  err |  err |
-| array | array |  err  |  err  |  err  |  err  |  err |  err |  err |  err |  err |  err |  err |  err |
+|  left operator |  right operator |   +   |   -   |   *   |   /   |  &&  | \|\| |  ==  |  !=  |   >  |   <  |  >=  |  <=  |  <=  |
+|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:---:|
+|  int  |  int  |  int  |  int  |  int  |  int  | bool | bool | bool | bool | bool | bool | bool | bool |  int  |
+|  int  | float | float | float | float | float |  err |  err |  err |  err | bool | bool | bool | bool |  err  |
+|  int  |  char |  char |  err  |  err  |  err  |  err |  err |  err |  err |  err |  err |  err |  err |  err  |
+|  int  |  bool |  err  |  err  |  err  |  err  |  err |  err |  err |  err |  err |  err |  err |  err |  err  |
+| float | float | float | float | float | float |  err |  err | bool | bool | bool | bool | bool | bool | float |
+| float |  char |  err  |  err  |  err  |  err  | errl |  err |  err |  err |  err |  err |  err |  err |  err  |
+| float |  bool |  err  |  err  |  err  |  err  |  err |  err |  err |  err |  err |  err |  err |  err |  err  |
+|  char |  char |  char |  char |  err  |  err  |  err |  err | bool | bool | bool | bool | bool | bool |  char |
+|  char |  bool |  err  |  err  |  err  |  err  |  err |  err |  err |  err |  err |  err |  err |  err |  err  |
+|  bool |  bool |  err  |  err  |  err  |  err  | bool | bool | bool | bool |  err |  err |  err |  err |  bool |
 
 ### Calls to functions
 Once we have functions declared, we should be able to call them.
